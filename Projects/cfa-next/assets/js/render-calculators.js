@@ -90,7 +90,8 @@ class CalculatorRenderer {
 
     getSlugRenderer(slug) {
         const renderers = {
-            paint: this.renderPaint.bind(this)
+            paint: this.renderPaint.bind(this),
+            drywall: this.renderDrywall.bind(this)
         };
         return renderers[slug] || null;
     }
@@ -201,6 +202,110 @@ class CalculatorRenderer {
                     <div class="result-item total">
                         <span class="label">Total Cost:</span>
                         <span id="paint-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        actionsDiv.parentNode.insertBefore(resultsDiv, actionsDiv.nextSibling);
+n    renderDrywall(section) {
+        const inputsDiv = section.querySelector('.inputs');
+        inputsDiv.innerHTML = `
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dw-wall-area">Wall Area (sq ft) <span class="required">*</span></label>
+                    <input type="number" id="dw-wall-area" name="wallArea" step="0.1" min="0" value="800" required>
+                </div>
+                <div class="input-group">
+                    <label for="dw-ceiling-area">Ceiling Area (sq ft)</label>
+                    <input type="number" id="dw-ceiling-area" name="ceilingArea" step="0.1" min="0" value="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dw-sheet-size">Sheet Size</label>
+                    <select id="dw-sheet-size" name="sheetSize">
+                        <option value="4x8">4' x 8'</option>
+                        <option value="4x12" selected>4' x 12'</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="dw-waste">Waste Factor (%)</label>
+                    <input type="number" id="dw-waste" name="waste" step="1" min="0" max="50" value="10">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dw-level">Finish Level</label>
+                    <select id="dw-level" name="level">
+                        <option value="L3">Level 3</option>
+                        <option value="L4" selected>Level 4</option>
+                        <option value="L5">Level 5</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="dw-sheet-cost">Sheet Cost ($)</label>
+                    <input type="number" id="dw-sheet-cost" name="sheetCost" step="0.01" min="0" placeholder="Auto">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dw-mud-rate">Mud Rate ($/sq ft)</label>
+                    <input type="number" id="dw-mud-rate" name="mudRate" step="0.01" min="0" value="0.25">
+                </div>
+                <div class="input-group">
+                    <label for="dw-labor-rate">Labor Rate ($/hr)</label>
+                    <input type="number" id="dw-labor-rate" name="laborRate" step="0.01" min="0" value="55">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dw-prod-hang">Hanging Productivity (sq ft/hr)</label>
+                    <input type="number" id="dw-prod-hang" name="prodHang" step="1" min="1" value="50">
+                </div>
+                <div class="input-group">
+                    <label for="dw-prod-finish">Finishing Productivity (sq ft/hr)</label>
+                    <input type="number" id="dw-prod-finish" name="prodFinish" step="1" min="1" value="35">
+                </div>
+            </div>
+        `;
+
+        // Add results section after actions
+        const actionsDiv = section.querySelector('.actions');
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'results';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = `
+            <h3>Results</h3>
+            <div class="results-grid">
+                <div class="result-group">
+                    <h4>Materials</h4>
+                    <div class="result-item">
+                        <span class="label">Sheets Required:</span>
+                        <span id="dw-sheets">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Material Cost:</span>
+                        <span id="dw-material">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="result-group">
+                    <h4>Labor</h4>
+                    <div class="result-item">
+                        <span class="label">Labor Hours:</span>
+                        <span id="dw-labor-hours">0.0 hrs</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Labor Cost:</span>
+                        <span id="dw-labor">$0.00</span>
+                    </div>
+                    <div class="result-item total">
+                        <span class="label">Total Cost:</span>
+                        <span id="dw-total">$0.00</span>
                     </div>
                 </div>
             </div>
