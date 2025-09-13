@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 22,
-    "passed": 22,
+    "total": 30,
+    "passed": 30,
     "failed": 0
   },
   "tests": [
@@ -83,6 +83,38 @@
     },
     {
       "name": "drywall: Results section is visible after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Results section is initially hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: No previous calculation stored",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Action buttons are initially disabled",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: lastCalculation.type is correct",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: lastCalculationByType has results",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Total cost is positive (382)",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Action buttons are enabled after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Results section is visible after calculation",
       "status": "PASS"
     },
     {

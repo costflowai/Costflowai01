@@ -75,7 +75,8 @@ async function setupDOM() {
         json: async () => [
           {"slug":"concrete","title":"Concrete"},
           {"slug":"paint","title":"Paint Pro"},
-          {"slug":"drywall","title":"Drywall"}
+          {"slug":"drywall","title":"Drywall"},
+          {"slug":"framing","title":"Framing"}
         ]
       };
     }
@@ -92,6 +93,7 @@ async function loadScripts(window) {
     'assets/js/render-calculators.js',
     'assets/js/compute/paint.js',
     'assets/js/compute/drywall.js',
+    'assets/js/compute/framing.js',
     'assets/js/calculators-hub.js'
   ];
 
@@ -129,7 +131,7 @@ async function waitForTabsToRender(window) {
     const tabs = window.document.querySelectorAll('[role="tab"]');
     const panels = window.document.querySelectorAll('[role="tabpanel"]');
 
-    if (tabs.length >= 3 && panels.length >= 3) {
+    if (tabs.length >= 4 && panels.length >= 4) {
       log(`Found ${tabs.length} tabs and ${panels.length} panels`);
       return true;
     }
@@ -186,6 +188,25 @@ function fillDrywallInputs(window) {
   section.querySelector('#dw-waste').value = '10';
   section.querySelector('#dw-level').value = 'L4';
   // Leave other fields as defaults
+}
+
+function fillFramingInputs(window) {
+  log('Filling Framing calculator inputs...');
+
+  const section = window.document.querySelector('#framing-calc');
+  if (!section) throw new Error('Framing section not found');
+
+  // Fill inputs as specified
+  section.querySelector('#fr-length-ft').value = '40';
+  section.querySelector('#fr-height-ft').value = '8';
+  section.querySelector('#fr-spacing-in').value = '16';
+  section.querySelector('#fr-corners').value = '2';
+  section.querySelector('#fr-openings').value = '3';
+  section.querySelector('#fr-waste').value = '10';
+  section.querySelector('#fr-stud-cost').value = '4.50';
+  section.querySelector('#fr-plate-cost').value = '1.25';
+  section.querySelector('#fr-labor-rate').value = '65';
+  section.querySelector('#fr-productivity').value = '40';
 }
 
 function assertPreCalculationState(window, slug) {
@@ -295,6 +316,27 @@ async function testDrywallCalculator(window) {
   assertPostCalculationState(window, 'drywall');
 }
 
+async function testFramingCalculator(window) {
+  log('=== Testing Framing Calculator ===');
+
+  // Navigate to framing tab
+  navigateToTab(window, 'framing');
+  await sleep(50);
+
+  // Fill inputs
+  fillFramingInputs(window);
+
+  // Assert pre-calculation state
+  assertPreCalculationState(window, 'framing');
+
+  // Click calculate
+  clickCalculateButton(window, 'framing');
+  await sleep(100); // Allow calculation to complete
+
+  // Assert post-calculation state
+  assertPostCalculationState(window, 'framing');
+}
+
 async function testNoAutoCalc(window) {
   log('=== Testing No Auto-Calculation ===');
 
@@ -371,6 +413,7 @@ async function runSmokeTests() {
     await testTabNavigation(window);
     await testPaintCalculator(window);
     await testDrywallCalculator(window);
+    await testFramingCalculator(window);
     await testNoAutoCalc(window);
 
     // Final summary

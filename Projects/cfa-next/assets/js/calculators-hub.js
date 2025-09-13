@@ -110,6 +110,13 @@
         const normalized = normalizeResult(slug, result, section);
         stashLastCalculation(slug, normalized);
         enableActions(section, true);
+
+        // Show results section after successful calculation
+        const resultsDiv = section.querySelector('.results');
+        if (resultsDiv) {
+          resultsDiv.style.display = 'block';
+        }
+
         console.log(`✓ ${slug} calculation completed`, normalized);
       } catch (err) {
         console.error(`✗ ${slug} calculation failed`, err);
@@ -143,6 +150,13 @@
       const normalized = normalizeResult(slug, result, section);
       stashLastCalculation(slug, normalized);
       enableActions(section, true);
+
+      // Show results section after successful calculation
+      const resultsDiv = section.querySelector('.results');
+      if (resultsDiv) {
+        resultsDiv.style.display = 'block';
+      }
+
       return normalized;
     },
     enableActions,
