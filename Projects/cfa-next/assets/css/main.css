@@ -1,0 +1,246 @@
+/**
+ * CFA Calculator Suite - Minimal Tab Styles
+ * AA-compliant colors and responsive tab navigation
+ */
+
+/* Base styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8fafc;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Hidden utility */
+[hidden] {
+    display: none !important;
+}
+
+/* Calculator suite layout */
+.calculator-suite {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.suite-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.suite-header h1 {
+    font-size: 2.25rem;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.suite-header p {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Tab navigation */
+#calc-tabs {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+#calc-tabs button[role="tab"] {
+    flex: 1;
+    padding: 16px 20px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    font-size: 16px;
+}
+
+#calc-tabs button[role="tab"]:hover {
+    background: #f9fafb;
+    color: #374151;
+}
+
+#calc-tabs button[role="tab"][aria-selected="true"] {
+    background: #eff6ff;
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+#calc-tabs button[role="tab"]:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: -2px;
+    z-index: 2;
+}
+
+/* Calculator panels */
+#calc-panels section[role="tabpanel"] {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.calc-header h2 {
+    color: #1f2937;
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+}
+
+/* Inputs placeholder */
+.inputs {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 6px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.inputs::before {
+    content: "Input fields will be rendered here dynamically";
+}
+
+/* Action buttons */
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.btn-primary:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.btn {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+.btn:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .suite-header h1 {
+        font-size: 2rem;
+    }
+
+    #calc-tabs {
+        flex-direction: column;
+        border-radius: 8px;
+    }
+
+    #calc-tabs button[role="tab"] {
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        border-left: 3px solid transparent;
+        padding: 14px 20px;
+    }
+
+    #calc-tabs button[role="tab"]:last-child {
+        border-bottom: none;
+    }
+
+    #calc-tabs button[role="tab"][aria-selected="true"] {
+        border-left-color: #2563eb;
+        border-bottom-color: #e5e7eb;
+    }
+
+    #calc-tabs button[role="tab"]:last-child[aria-selected="true"] {
+        border-bottom: none;
+    }
+
+    #calc-panels section[role="tabpanel"] {
+        padding: 20px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    #calc-tabs button[role="tab"] {
+        border: 1px solid transparent;
+    }
+
+    #calc-tabs button[role="tab"][aria-selected="true"] {
+        border-color: #2563eb;
+        background: white;
+    }
+
+    .btn-primary,
+    .btn {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+    }
+}

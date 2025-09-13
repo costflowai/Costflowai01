@@ -1,4 +1,1 @@
-/calculators/concrete   /calculators 200!
-/calculators/paint      /calculators 200!
-/calculators/drywall    /calculators 200!
-/*.html                 /:splat 301!
+/calculators/:slug   /calculators 200!
