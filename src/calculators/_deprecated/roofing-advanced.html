@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Roofing Calculator - Advanced Materials | CostFlowAI</title>
+    <meta name="description" content="Calculate roofing materials, analyze slopes, estimate labor costs, and compare roof systems. Professional roofing estimation tool.">
+    <link rel="canonical" href="https://costflowai.com/calculators/roofing">
+    <link rel="stylesheet" href="../assets/css/calculator.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <!-- Optimized font loading with preload for better performance -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"></noscript>
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Roofing Calculator - Advanced Materials",
+      "url": "https://costflowai.com/calculators/roofing",
+      "operatingSystem": "Web",
+      "applicationCategory": "BusinessApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization", 
+        "name": "CostFlowAI",
+        "url": "https://costflowai.com"
+      },
+      "description": "Calculate roofing materials, analyze slopes, estimate labor costs, and compare roof systems. Professional roofing estimation tool."
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html">
+                    <img src="../assets/images/logo.png" alt="CostFlow AI" class="logo">
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/calculators/">Calculators</a>
+                <a href="/blog/">Blog</a>
+                <a href="/#contact">Contact</a>
+                <a href="/#contact">💬 Feedback</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="calc-container" id="roofing-calc" data-calc="roofing">
+                <div class="calc-header">
+                    <h1><i class="fas fa-home"></i> Advanced Roofing Calculator</h1>
+                    <p>Comprehensive roofing material and cost analysis with multiple roof types</p>
+                </div>
+
+                <div class="calc-content">
+                    <div class="input-section">
+                        <div class="card">
+                            <h3><i class="fas fa-ruler-combined"></i> Roof Dimensions</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="roofLength">Roof Length (ft)</label>
+                                    <input type="number" id="roofLength" value="40" min="10" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="roofWidth">Roof Width (ft)</label>
+                                    <input type="number" id="roofWidth" value="24" min="10" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="roofPitch">Roof Pitch (rise:run)</label>
+                                    <select id="roofPitch">
+                                        <option value="3/12">3:12</option>
+                                        <option value="4/12">4:12</option>
+                                        <option value="5/12">5:12</option>
+                                        <option value="6/12" selected>6:12</option>
+                                        <option value="7/12">7:12</option>
+                                        <option value="8/12">8:12</option>
+                                        <option value="9/12">9:12</option>
+                                        <option value="10/12">10:12</option>
+                                        <option value="12/12">12:12</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="roofStyle">Roof Style</label>
+                                    <select id="roofStyle">
+                                        <option value="gable" selected>Gable</option>
+                                        <option value="hip">Hip</option>
+                                        <option value="shed">Shed</option>
+                                        <option value="gambrel">Gambrel</option>
+                                        <option value="mansard">Mansard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-layer-group"></i> Roofing Materials</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="materialType">Primary Material</label>
+                                    <select id="materialType">
+                                        <option value="asphalt-shingles" selected>Asphalt Shingles</option>
+                                        <option value="architectural-shingles">Architectural Shingles</option>
+                                        <option value="metal-standing-seam">Metal Standing Seam</option>
+                                        <option value="metal-panels">Metal Panels</option>
+                                        <option value="tile-clay">Clay Tile</option>
+                                        <option value="tile-concrete">Concrete Tile</option>
+                                        <option value="slate">Slate</option>
+                                        <option value="cedar-shakes">Cedar Shakes</option>
+                                        <option value="tpo">TPO Membrane</option>
+                                        <option value="epdm">EPDM Membrane</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="underlaymentType">Underlayment</label>
+                                    <select id="underlaymentType">
+                                        <option value="felt-15" selected>15lb Felt</option>
+                                        <option value="felt-30">30lb Felt</option>
+                                        <option value="synthetic">Synthetic</option>
+                                        <option value="ice-shield">Ice & Water Shield</option>
+                                        <option value="self-adhering">Self-Adhering</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="decking">Roof Decking</label>
+                                    <select id="decking">
+                                        <option value="osb-7/16" selected>7/16" OSB</option>
+                                        <option value="osb-5/8">5/8" OSB</option>
+                                        <option value="plywood-1/2">1/2" Plywood</option>
+                                        <option value="plywood-5/8">5/8" Plywood</option>
+                                        <option value="plywood-3/4">3/4" Plywood</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ventilation">Ventilation System</label>
+                                    <select id="ventilation">
+                                        <option value="ridge-soffit" selected>Ridge & Soffit</option>
+                                        <option value="turbine">Turbine Vents</option>
+                                        <option value="power-exhaust">Power Exhaust</option>
+                                        <option value="none">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-tools"></i> Installation Details</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="tearOff">Tear-off Existing</label>
+                                    <select id="tearOff">
+                                        <option value="none" selected>New Construction</option>
+                                        <option value="1-layer">1 Layer</option>
+                                        <option value="2-layer">2 Layers</option>
+                                        <option value="3-layer">3+ Layers</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="complexity">Job Complexity</label>
+                                    <select id="complexity">
+                                        <option value="simple">Simple (Few cuts/angles)</option>
+                                        <option value="moderate" selected>Moderate</option>
+                                        <option value="complex">Complex (Many angles/cuts)</option>
+                                        <option value="very-complex">Very Complex</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accessibility">Site Accessibility</label>
+                                    <select id="accessibility">
+                                        <option value="easy" selected>Easy</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="difficult">Difficult</option>
+                                        <option value="very-difficult">Very Difficult</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="season">Installation Season</label>
+                                    <select id="season">
+                                        <option value="spring">Spring</option>
+                                        <option value="summer" selected>Summer</option>
+                                        <option value="fall">Fall</option>
+                                        <option value="winter">Winter</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-dollar-sign"></i> Pricing & Labor</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="materialCostSqFt">Material Cost ($/sq ft)</label>
+                                    <input type="number" id="materialCostSqFt" value="2.50" min="0.5" max="50" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="laborRate">Labor Rate ($/sq ft)</label>
+                                    <input type="number" id="laborRate" value="3.50" min="1" max="20" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="wasteFactor">Waste Factor (%)</label>
+                                    <input type="number" id="wasteFactor" value="15" min="5" max="30" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profitMargin">Profit Margin (%)</label>
+                                    <input type="number" id="profitMargin" value="20" min="0" max="50" step="1">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Calculate Button -->
+                        <div class="calculate-button-section">
+                            <button type="button" onclick="calculator.calculate()" class="calculate-btn roofing" data-action="calculate" aria-label="Calculate roofing materials and cost estimate">
+                                <i class="fas fa-calculator" aria-hidden="true"></i>
+                                Calculate Roofing Estimate
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="results-section" role="status" aria-live="polite">
+                        <div class="card">
+                            <h3><i class="fas fa-chart-area"></i> Roof Area Analysis</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Roof Area (plan view):</span>
+                                    <span class="value" id="planArea">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Actual Roof Area:</span>
+                                    <span class="value" id="actualArea">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Pitch Factor:</span>
+                                    <span class="value" id="pitchFactor">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Roofing Squares:</span>
+                                    <span class="value" id="roofingSquares">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-boxes"></i> Material Requirements</h3>
+                            <div id="materialBreakdown" class="material-list">
+                                <!-- Material breakdown will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-hammer"></i> Labor Analysis</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Base Labor Hours:</span>
+                                    <span class="value" id="baseLaborHours">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Complexity Multiplier:</span>
+                                    <span class="value" id="complexityMultiplier">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Total Labor Hours:</span>
+                                    <span class="value" id="totalLaborHours">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Crew Size Recommended:</span>
+                                    <span class="value" id="crewSize">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-calendar-alt"></i> Project Timeline</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Tear-off Time:</span>
+                                    <span class="value" id="tearOffTime">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Installation Time:</span>
+                                    <span class="value" id="installationTime">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Weather Buffer:</span>
+                                    <span class="value" id="weatherBuffer">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Total Project Days:</span>
+                                    <span class="value" id="totalProjectDays">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-calculator"></i> Cost Summary</h3>
+                            <div class="cost-breakdown">
+                                <div class="cost-row">
+                                    <span>Primary Materials:</span>
+                                    <span id="primaryMaterialCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Underlayment & Decking:</span>
+                                    <span id="secondaryMaterialCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Accessories & Trim:</span>
+                                    <span id="accessoryCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Material Subtotal:</span>
+                                    <span id="materialSubtotal">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Waste (<span id="wastePercent">15</span>%):</span>
+                                    <span id="wasteCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Total Materials:</span>
+                                    <span id="totalMaterialCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Labor Cost:</span>
+                                    <span id="totalLaborCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Tear-off Cost:</span>
+                                    <span id="tearOffCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotalCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Profit (<span id="profitPercent">20</span>%):</span>
+                                    <span id="profitCost">$0</span>
+                                </div>
+                                <div class="cost-row total">
+                                    <span>Total Project Cost:</span>
+                                    <span id="totalCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Cost per Square:</span>
+                                    <span id="costPerSquare">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-actions">
+                    <button onclick="calculator.saveCalculation()" data-action="save" aria-label="Save roofing calculation to browser storage"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+                    <button onclick="calculator.exportCSV()" data-action="export" aria-label="Export roofing calculation as CSV file"><i class="fas fa-download" aria-hidden="true"></i> Export CSV</button>
+                    <button onclick="calculator.shareLink()" data-action="share" aria-label="Generate shareable link for roofing calculation"><i class="fas fa-share" aria-hidden="true"></i> Share Link</button>
+                    <button onclick="calculator.printResults()" data-action="print" aria-label="Print roofing calculation results"><i class="fas fa-print" aria-hidden="true"></i> Print</button>
+                    <button data-action="email" aria-label="Email roofing calculation results"><i class="fas fa-envelope" aria-hidden="true"></i> Email</button>
+                </div>
+
+                <div class="methodology-section">
+                    <div class="card">
+                        <h3><i class="fas fa-info-circle"></i> Calculation Methodology</h3>
+                        <div class="methodology-content">
+                            <h4>Area Calculations:</h4>
+                            <p>• Roof area calculated using pitch factor multipliers</p>
+                            <p>• Accounts for different roof styles (gable, hip, shed, etc.)</p>
+                            <p>• Includes ridge, hip, and valley adjustments</p>
+                            
+                            <h4>Material Calculations:</h4>
+                            <p>• Material quantities based on coverage rates per manufacturer specs</p>
+                            <p>• Includes waste factors for cuts, overlaps, and installation errors</p>
+                            <p>• Accounts for starter strips, ridge caps, and ventilation requirements</p>
+                            
+                            <h4>Labor Productivity:</h4>
+                            <p>• Base productivity rates from industry standards (RSMeans)</p>
+                            <p>• Adjusted for job complexity, accessibility, and seasonal factors</p>
+                            <p>• Includes setup, installation, and cleanup time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 CostFlow AI. Professional construction cost analysis.</p>
+        </div>
+    </footer>
+
+    <!-- Core scripts loaded in proper order with defer for optimal performance -->
+    <script src="../assets/js/calculator-core.js" defer></script>
+    <script src="/assets/js/export-utilities.js" defer></script>
+    <script src="/assets/js/calculators-hub.js" defer></script>
+    <script defer>
+        class AdvancedRoofingCalculator extends ProCalculator {
+            constructor() {
+                super('Advanced Roofing Calculator');
+                this.initializeCalculator();
+            }
+
+            initializeCalculator() {
+                const inputs = [
+                    'roofLength', 'roofWidth', 'roofPitch', 'roofStyle',
+                    'materialType', 'underlaymentType', 'decking', 'ventilation',
+                    'tearOff', 'complexity', 'accessibility', 'season',
+                    'materialCostSqFt', 'laborRate', 'wasteFactor', 'profitMargin'
+                ];
+
+                // Wait for DOM to be fully loaded
+                document.addEventListener('DOMContentLoaded', () => {
+                    inputs.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            // Use passive listeners for better scrolling performance
+                            element.addEventListener('input', () => this.calculate(), { passive: true });
+                            element.addEventListener('change', () => this.calculate());
+                        }
+                    });
+
+                    // Update material cost when material type changes
+                    const materialType = document.getElementById('materialType');
+                    if (materialType) {
+                        materialType.addEventListener('change', () => {
+                            this.updateMaterialCost();
+                            this.calculate();
+                        });
+                    }
+
+                    this.loadFromURL();
+                    this.calculate();
+                });
+            }
+
+            updateMaterialCost() {
+                const materialType = document.getElementById('materialType').value;
+                const materialCosts = {
+                    'asphalt-shingles': 2.50,
+                    'architectural-shingles': 3.50,
+                    'metal-standing-seam': 8.50,
+                    'metal-panels': 6.00,
+                    'tile-clay': 4.50,
+                    'tile-concrete': 3.00,
+                    'slate': 12.00,
+                    'cedar-shakes': 8.00,
+                    'tpo': 5.50,
+                    'epdm': 4.50
+                };
+                
+                document.getElementById('materialCostSqFt').value = materialCosts[materialType] || 2.50;
+            }
+
+            calculate() {
+                this.collectInputs();
+                this.calculateAreas();
+                this.calculateMaterials();
+                this.calculateLabor();
+                this.calculateTimeline();
+                this.calculateCosts();
+                this.displayResults();
+                this.updateInputs();
+                
+                // Move focus to results for accessibility
+                const resultsSection = document.querySelector('.results-section');
+                if (resultsSection) {
+                    resultsSection.setAttribute('tabindex', '-1');
+                    resultsSection.focus();
+                    setTimeout(() => resultsSection.removeAttribute('tabindex'), 100);
+                }
+            }
+
+            collectInputs() {
+                this.inputs = {
+                    roofLength: parseFloat(document.getElementById('roofLength').value) || 40,
+                    roofWidth: parseFloat(document.getElementById('roofWidth').value) || 24,
+                    roofPitch: document.getElementById('roofPitch').value || '6/12',
+                    roofStyle: document.getElementById('roofStyle').value || 'gable',
+                    materialType: document.getElementById('materialType').value || 'asphalt-shingles',
+                    underlaymentType: document.getElementById('underlaymentType').value || 'felt-15',
+                    decking: document.getElementById('decking').value || 'osb-7/16',
+                    ventilation: document.getElementById('ventilation').value || 'ridge-soffit',
+                    tearOff: document.getElementById('tearOff').value || 'none',
+                    complexity: document.getElementById('complexity').value || 'moderate',
+                    accessibility: document.getElementById('accessibility').value || 'easy',
+                    season: document.getElementById('season').value || 'summer',
+                    materialCostSqFt: parseFloat(document.getElementById('materialCostSqFt').value) || 2.50,
+                    laborRate: parseFloat(document.getElementById('laborRate').value) || 3.50,
+                    wasteFactor: parseFloat(document.getElementById('wasteFactor').value) || 15,
+                    profitMargin: parseFloat(document.getElementById('profitMargin').value) || 20
+                };
+            }
+
+            calculateAreas() {
+                const { roofLength, roofWidth, roofPitch, roofStyle } = this.inputs;
+                
+                // Plan area
+                this.results.planArea = roofLength * roofWidth;
+                
+                // Calculate pitch factor
+                const [rise, run] = roofPitch.split('/').map(Number);
+                const pitchAngle = Math.atan(rise / run);
+                this.results.pitchFactor = 1 / Math.cos(pitchAngle);
+                
+                // Style multipliers
+                const styleMultipliers = {
+                    'gable': 1.0,
+                    'hip': 1.1,
+                    'shed': 1.0,
+                    'gambrel': 1.15,
+                    'mansard': 1.2
+                };
+                
+                const styleMultiplier = styleMultipliers[roofStyle] || 1.0;
+                
+                // Actual roof area
+                this.results.actualArea = this.results.planArea * this.results.pitchFactor * styleMultiplier;
+                
+                // Roofing squares (100 sq ft each)
+                this.results.roofingSquares = this.results.actualArea / 100;
+            }
+
+            calculateMaterials() {
+                const { materialType, underlaymentType, decking, ventilation } = this.inputs;
+                const { actualArea } = this.results;
+                
+                // Primary material coverage rates (sq ft per unit)
+                const coverageRates = {
+                    'asphalt-shingles': 33.3, // per bundle
+                    'architectural-shingles': 32.8,
+                    'metal-standing-seam': 100, // per sq
+                    'metal-panels': 100,
+                    'tile-clay': 90,
+                    'tile-concrete': 90,
+                    'slate': 100,
+                    'cedar-shakes': 25,
+                    'tpo': 100,
+                    'epdm': 100
+                };
+                
+                const coverage = coverageRates[materialType] || 33.3;
+                this.results.primaryMaterialQty = Math.ceil(actualArea / coverage);
+                
+                // Underlayment (typically 400 sq ft per roll)
+                this.results.underlaymentQty = Math.ceil(actualArea / 400);
+                
+                // Ridge length calculation
+                const ridgeLength = this.inputs.roofLength + (this.inputs.roofStyle === 'hip' ? this.inputs.roofWidth : 0);
+                this.results.ridgeCapQty = Math.ceil(ridgeLength / 12); // per linear foot
+                
+                // Starter strip
+                const eaveLength = 2 * (this.inputs.roofLength + this.inputs.roofWidth);
+                this.results.starterStripQty = Math.ceil(eaveLength / 33.3);
+                
+                // Ventilation
+                this.results.ventilationQty = Math.ceil(actualArea / 150); // 1 vent per 150 sq ft
+            }
+
+            calculateLabor() {
+                const { materialType, complexity, accessibility, tearOff } = this.inputs;
+                const { actualArea } = this.results;
+                
+                // Base labor rates (hours per square)
+                const baseLaborRates = {
+                    'asphalt-shingles': 1.5,
+                    'architectural-shingles': 1.8,
+                    'metal-standing-seam': 2.5,
+                    'metal-panels': 2.0,
+                    'tile-clay': 3.0,
+                    'tile-concrete': 2.8,
+                    'slate': 4.0,
+                    'cedar-shakes': 3.5,
+                    'tpo': 1.2,
+                    'epdm': 1.0
+                };
+                
+                const baseRate = baseLaborRates[materialType] || 1.5;
+                this.results.baseLaborHours = this.results.roofingSquares * baseRate;
+                
+                // Complexity multipliers
+                const complexityMultipliers = {
+                    'simple': 0.9,
+                    'moderate': 1.0,
+                    'complex': 1.3,
+                    'very-complex': 1.6
+                };
+                
+                // Accessibility multipliers
+                const accessibilityMultipliers = {
+                    'easy': 1.0,
+                    'moderate': 1.1,
+                    'difficult': 1.25,
+                    'very-difficult': 1.5
+                };
+                
+                this.results.complexityMultiplier = complexityMultipliers[complexity] || 1.0;
+                const accessibilityMultiplier = accessibilityMultipliers[accessibility] || 1.0;
+                
+                // Total labor hours
+                this.results.totalLaborHours = this.results.baseLaborHours * this.results.complexityMultiplier * accessibilityMultiplier;
+                
+                // Recommended crew size
+                this.results.crewSize = Math.max(2, Math.min(6, Math.ceil(this.results.roofingSquares / 10)));
+                
+                // Tear-off labor
+                const tearOffRates = {
+                    'none': 0,
+                    '1-layer': 0.8,
+                    '2-layer': 1.2,
+                    '3-layer': 1.8
+                };
+                
+                this.results.tearOffHours = this.results.roofingSquares * (tearOffRates[tearOff] || 0);
+            }
+
+            calculateTimeline() {
+                const { season } = this.inputs;
+                const { totalLaborHours, tearOffHours, crewSize } = this.results;
+                
+                // Working hours per day (8 hours standard)
+                const hoursPerDay = 8;
+                
+                // Tear-off time
+                this.results.tearOffDays = tearOffHours > 0 ? Math.ceil(tearOffHours / (hoursPerDay * crewSize)) : 0;
+                
+                // Installation time
+                this.results.installationDays = Math.ceil(totalLaborHours / (hoursPerDay * crewSize));
+                
+                // Weather buffer based on season
+                const weatherBuffers = {
+                    'spring': 0.2,
+                    'summer': 0.1,
+                    'fall': 0.3,
+                    'winter': 0.5
+                };
+                
+                const weatherBuffer = weatherBuffers[season] || 0.2;
+                this.results.weatherBufferDays = Math.ceil((this.results.tearOffDays + this.results.installationDays) * weatherBuffer);
+                
+                // Total project days
+                this.results.totalProjectDays = this.results.tearOffDays + this.results.installationDays + this.results.weatherBufferDays;
+            }
+
+            calculateCosts() {
+                const { materialCostSqFt, laborRate, wasteFactor, profitMargin } = this.inputs;
+                const { actualArea, roofingSquares, totalLaborHours, tearOffHours } = this.results;
+                
+                // Material costs
+                this.results.primaryMaterialCost = actualArea * materialCostSqFt;
+                
+                // Secondary materials (underlayment, decking, etc.)
+                this.results.secondaryMaterialCost = actualArea * 0.75; // Estimate
+                
+                // Accessories (ridge cap, starter, flashing, etc.)
+                this.results.accessoryCost = roofingSquares * 45;
+                
+                // Material subtotal
+                this.results.materialSubtotal = this.results.primaryMaterialCost + this.results.secondaryMaterialCost + this.results.accessoryCost;
+                
+                // Waste
+                this.results.wasteCost = this.results.materialSubtotal * (wasteFactor / 100);
+                
+                // Total materials
+                this.results.totalMaterialCost = this.results.materialSubtotal + this.results.wasteCost;
+                
+                // Labor cost
+                this.results.totalLaborCost = actualArea * laborRate;
+                
+                // Tear-off cost
+                this.results.tearOffCost = tearOffHours * 35; // $35/hour for tear-off
+                
+                // Subtotal
+                this.results.subtotalCost = this.results.totalMaterialCost + this.results.totalLaborCost + this.results.tearOffCost;
+                
+                // Profit
+                this.results.profitCost = this.results.subtotalCost * (profitMargin / 100);
+                
+                // Total cost
+                this.results.totalCost = this.results.subtotalCost + this.results.profitCost;
+                
+                // Cost per square
+                this.results.costPerSquare = this.results.totalCost / roofingSquares;
+            }
+
+            displayResults() {
+                // Area Analysis
+                document.getElementById('planArea').textContent = `${this.results.planArea.toFixed(0)} sq ft`;
+                document.getElementById('actualArea').textContent = `${this.results.actualArea.toFixed(0)} sq ft`;
+                document.getElementById('pitchFactor').textContent = this.results.pitchFactor.toFixed(3);
+                document.getElementById('roofingSquares').textContent = `${this.results.roofingSquares.toFixed(1)} sq`;
+                
+                // Material breakdown
+                this.displayMaterialBreakdown();
+                
+                // Labor Analysis
+                document.getElementById('baseLaborHours').textContent = `${this.results.baseLaborHours.toFixed(1)} hrs`;
+                document.getElementById('complexityMultiplier').textContent = `${this.results.complexityMultiplier}x`;
+                document.getElementById('totalLaborHours').textContent = `${this.results.totalLaborHours.toFixed(1)} hrs`;
+                document.getElementById('crewSize').textContent = `${this.results.crewSize} workers`;
+                
+                // Timeline
+                document.getElementById('tearOffTime').textContent = `${this.results.tearOffDays} days`;
+                document.getElementById('installationTime').textContent = `${this.results.installationDays} days`;
+                document.getElementById('weatherBuffer').textContent = `${this.results.weatherBufferDays} days`;
+                document.getElementById('totalProjectDays').textContent = `${this.results.totalProjectDays} days`;
+                
+                // Costs
+                document.getElementById('primaryMaterialCost').textContent = `$${this.results.primaryMaterialCost.toFixed(2)}`;
+                document.getElementById('secondaryMaterialCost').textContent = `$${this.results.secondaryMaterialCost.toFixed(2)}`;
+                document.getElementById('accessoryCost').textContent = `$${this.results.accessoryCost.toFixed(2)}`;
+                document.getElementById('materialSubtotal').textContent = `$${this.results.materialSubtotal.toFixed(2)}`;
+                document.getElementById('wastePercent').textContent = this.inputs.wasteFactor;
+                document.getElementById('wasteCost').textContent = `$${this.results.wasteCost.toFixed(2)}`;
+                document.getElementById('totalMaterialCost').textContent = `$${this.results.totalMaterialCost.toFixed(2)}`;
+                document.getElementById('totalLaborCost').textContent = `$${this.results.totalLaborCost.toFixed(2)}`;
+                document.getElementById('tearOffCost').textContent = `$${this.results.tearOffCost.toFixed(2)}`;
+                document.getElementById('subtotalCost').textContent = `$${this.results.subtotalCost.toFixed(2)}`;
+                document.getElementById('profitPercent').textContent = this.inputs.profitMargin;
+                document.getElementById('profitCost').textContent = `$${this.results.profitCost.toFixed(2)}`;
+                document.getElementById('totalCost').textContent = `$${this.results.totalCost.toFixed(2)}`;
+                document.getElementById('costPerSquare').textContent = `$${this.results.costPerSquare.toFixed(2)}`;
+            }
+
+            displayMaterialBreakdown() {
+                const materialDiv = document.getElementById('materialBreakdown');
+                const { materialType } = this.inputs;
+                
+                // Material names mapping
+                const materialNames = {
+                    'asphalt-shingles': 'Asphalt Shingles',
+                    'architectural-shingles': 'Architectural Shingles',
+                    'metal-standing-seam': 'Metal Standing Seam',
+                    'metal-panels': 'Metal Panels',
+                    'tile-clay': 'Clay Tiles',
+                    'tile-concrete': 'Concrete Tiles',
+                    'slate': 'Natural Slate',
+                    'cedar-shakes': 'Cedar Shakes',
+                    'tpo': 'TPO Membrane',
+                    'epdm': 'EPDM Membrane'
+                };
+                
+                materialDiv.innerHTML = `
+                    <div class="material-item">
+                        <div class="material-description">
+                            <strong>${materialNames[materialType] || 'Primary Material'}</strong>
+                            <span>${this.results.primaryMaterialQty} units</span>
+                        </div>
+                        <div class="material-cost">$${this.results.primaryMaterialCost.toFixed(2)}</div>
+                    </div>
+                    <div class="material-item">
+                        <div class="material-description">
+                            <strong>Underlayment</strong>
+                            <span>${this.results.underlaymentQty} rolls</span>
+                        </div>
+                        <div class="material-cost">$${(this.results.underlaymentQty * 45).toFixed(2)}</div>
+                    </div>
+                    <div class="material-item">
+                        <div class="material-description">
+                            <strong>Ridge Cap</strong>
+                            <span>${this.results.ridgeCapQty} lin ft</span>
+                        </div>
+                        <div class="material-cost">$${(this.results.ridgeCapQty * 3.50).toFixed(2)}</div>
+                    </div>
+                    <div class="material-item">
+                        <div class="material-description">
+                            <strong>Starter Strip</strong>
+                            <span>${this.results.starterStripQty} bundles</span>
+                        </div>
+                        <div class="material-cost">$${(this.results.starterStripQty * 28).toFixed(2)}</div>
+                    </div>
+                    <div class="material-item">
+                        <div class="material-description">
+                            <strong>Ventilation</strong>
+                            <span>${this.results.ventilationQty} units</span>
+                        </div>
+                        <div class="material-cost">$${(this.results.ventilationQty * 25).toFixed(2)}</div>
+                    </div>
+                `;
+            }
+
+            printResults() {
+                const printWindow = window.open('', '_blank');
+                const materialNames = {
+                    'asphalt-shingles': 'Asphalt Shingles',
+                    'architectural-shingles': 'Architectural Shingles',
+                    'metal-standing-seam': 'Metal Standing Seam',
+                    'metal-panels': 'Metal Panels',
+                    'tile-clay': 'Clay Tiles',
+                    'tile-concrete': 'Concrete Tiles',
+                    'slate': 'Natural Slate',
+                    'cedar-shakes': 'Cedar Shakes',
+                    'tpo': 'TPO Membrane',
+                    'epdm': 'EPDM Membrane'
+                };
+                
+                const printContent = `
+                    <html>
+                    <head>
+                        <title>Advanced Roofing Calculator Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .section { margin-bottom: 20px; }
+                            .section h3 { color: #2c5282; border-bottom: 2px solid #2c5282; padding-bottom: 5px; }
+                            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                            .material-table { width: 100%; border-collapse: collapse; }
+                            .material-table th, .material-table td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+                            .cost-summary { background: #f7fafc; padding: 15px; border-radius: 5px; }
+                            .total-row { font-weight: bold; border-top: 2px solid #2c5282; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h2>Advanced Roofing Calculator Results</h2>
+                            <p>Project: ${this.inputs.roofLength}' x ${this.inputs.roofWidth}' ${this.inputs.roofStyle} roof</p>
+                            <p>Material: ${materialNames[this.inputs.materialType] || this.inputs.materialType}</p>
+                            <p>Generated: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Roof Analysis</h3>
+                            <div class="grid">
+                                <div>Plan Area: ${this.results.planArea.toFixed(0)} sq ft</div>
+                                <div>Actual Area: ${this.results.actualArea.toFixed(0)} sq ft</div>
+                                <div>Pitch Factor: ${this.results.pitchFactor.toFixed(3)}</div>
+                                <div>Roofing Squares: ${this.results.roofingSquares.toFixed(1)} sq</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Material Requirements</h3>
+                            <table class="material-table">
+                                <tr><th>Item</th><th>Quantity</th><th>Unit Cost</th><th>Total Cost</th></tr>
+                                <tr><td>${materialNames[this.inputs.materialType] || 'Primary Material'}</td><td>${this.results.primaryMaterialQty}</td><td>$${this.inputs.materialCostSqFt}/sq ft</td><td>$${this.results.primaryMaterialCost.toFixed(2)}</td></tr>
+                                <tr><td>Underlayment</td><td>${this.results.underlaymentQty} rolls</td><td>$45.00</td><td>$${(this.results.underlaymentQty * 45).toFixed(2)}</td></tr>
+                                <tr><td>Ridge Cap</td><td>${this.results.ridgeCapQty} lin ft</td><td>$3.50</td><td>$${(this.results.ridgeCapQty * 3.50).toFixed(2)}</td></tr>
+                                <tr><td>Accessories</td><td>Various</td><td>-</td><td>$${this.results.accessoryCost.toFixed(2)}</td></tr>
+                            </table>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Project Timeline</h3>
+                            <div class="grid">
+                                <div>Installation: ${this.results.installationDays} days</div>
+                                <div>Tear-off: ${this.results.tearOffDays} days</div>
+                                <div>Weather Buffer: ${this.results.weatherBufferDays} days</div>
+                                <div>Total Duration: ${this.results.totalProjectDays} days</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Cost Summary</h3>
+                            <div class="cost-summary">
+                                <div>Total Materials: $${this.results.totalMaterialCost.toFixed(2)}</div>
+                                <div>Labor Cost: $${this.results.totalLaborCost.toFixed(2)}</div>
+                                <div>Tear-off Cost: $${this.results.tearOffCost.toFixed(2)}</div>
+                                <div>Profit (${this.inputs.profitMargin}%): $${this.results.profitCost.toFixed(2)}</div>
+                                <div class="total-row">Total Project Cost: $${this.results.totalCost.toFixed(2)}</div>
+                                <div>Cost per Square: $${this.results.costPerSquare.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    <script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body>
+                    </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.print();
+            }
+        }
+
+        // Initialize calculator after DOM is ready
+        let calculator;
+        document.addEventListener('DOMContentLoaded', () => {
+            calculator = new AdvancedRoofingCalculator();
+        });
+    </script>
+<!-- Print functionality integrated into main calculator initialization -->
+</body>
+</html>

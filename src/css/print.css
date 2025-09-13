@@ -1,0 +1,165 @@
+/**
+ * Print styles for calculator PDF export
+ * Optimized for A4 size with clean layout
+ */
+
+@media print {
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 12mm;
+    margin-top: 15mm;
+    margin-bottom: 15mm;
+  }
+
+  /* Hide non-essential elements */
+  header,
+  nav,
+  footer,
+  .no-print,
+  .nav-tabs,
+  .calc-actions,
+  .btn,
+  button,
+  .feedback-widget,
+  .cookie-notice {
+    display: none !important;
+  }
+
+  /* Body adjustments */
+  body {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    color: #000 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Calculator card layout */
+  .calc-card,
+  .calculator-panel,
+  .calc-container {
+    page-break-inside: avoid;
+    border: 1px solid #ccc !important;
+    margin-bottom: 15mm !important;
+    padding: 5mm !important;
+    box-shadow: none !important;
+  }
+
+  /* Export section - main content */
+  #calc-export {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Results sections */
+  .results,
+  .result-summary,
+  .cost-breakdown {
+    margin: 8px 0 !important;
+    padding: 8px !important;
+    border: 1px solid #ddd !important;
+    background: #f9f9f9 !important;
+  }
+
+  /* Tables */
+  .breakdown-table,
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 8px 0 !important;
+  }
+
+  .breakdown-table td,
+  .breakdown-table th,
+  table td,
+  table th {
+    border: 1px solid #ccc !important;
+    padding: 4px !important;
+    text-align: left !important;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 18px !important;
+    margin: 0 0 8px 0 !important;
+  }
+
+  h2 {
+    font-size: 16px !important;
+    margin: 8px 0 4px 0 !important;
+  }
+
+  h3 {
+    font-size: 14px !important;
+    margin: 6px 0 4px 0 !important;
+  }
+
+  /* Input forms - show values */
+  .calculator-form {
+    border: 1px solid #ccc !important;
+    padding: 5mm !important;
+    margin-bottom: 5mm !important;
+  }
+
+  .form-group {
+    margin-bottom: 4px !important;
+  }
+
+  .form-group label {
+    font-weight: bold !important;
+    display: inline !important;
+    margin-right: 8px !important;
+  }
+
+  /* Value display */
+  .result-value,
+  .value {
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+
+  /* Disclaimers */
+  .disclaimer,
+  .rom-disclaimer {
+    font-size: 10px !important;
+    margin: 5mm 0 !important;
+    padding: 2mm !important;
+    border: 1px solid #999 !important;
+    background: #f0f0f0 !important;
+  }
+
+  /* Print header */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 10mm;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5mm;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+  }
+
+  /* Links - show URLs */
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 10px;
+    color: #666;
+  }
+
+  /* Remove link styling */
+  a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+}

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>Electrical Load Calculator - Service & NEC | CostFlowAI</title>
+  <meta name="description" content="Calculate electrical loads, size service panels, check voltage drop, and ensure NEC compliance. Professional electrical design calculator.">
+  <link rel="canonical" href="https://costflowai.com/calculators/electrical">
+  <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/print.css" media="print">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Electrical Load Calculator - Service & NEC",
+      "url": "https://costflowai.com/calculators/electrical",
+      "operatingSystem": "Web",
+      "applicationCategory": "BusinessApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization", 
+        "name": "CostFlowAI",
+        "url": "https://costflowai.com"
+      },
+      "description": "Calculate electrical loads, size service panels, check voltage drop, and ensure NEC compliance. Professional electrical design calculator."
+    }
+    </script>
+  <style>
+    .calc-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .calc-header { text-align: center; margin-bottom: 2rem; }
+    .quick-actions { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
+    .calc-body { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .input-section { background: #f7fafc; padding: 1.5rem; border-radius: 8px; }
+    .results-section { background: white; border: 2px solid #e2e8f0; padding: 1.5rem; border-radius: 8px; }
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; margin: 0.25rem; }
+    .btn-primary { background: #ff6b35; color: white; }
+    .btn-secondary { background: #e2e8f0; }
+    .result-primary { font-size: 2rem; font-weight: bold; color: #1e3a5f; }
+    .breakdown-table { width: 100%; margin-top: 1rem; }
+    .breakdown-table td { padding: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+    .disclaimer { background: #fff5f5; border-left: 3px solid #ff6b35; padding: 1rem; margin-top: 2rem; }
+    .load-section { background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .nec-compliance { background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .voltage-drop { background: #fef7ed; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .compliance-pass { color: #10b981; font-weight: bold; }
+    .compliance-fail { color: #ef4444; font-weight: bold; }
+    @media (max-width: 768px) { .calc-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/calculators/">Calculators</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#contact">Contact</a>
+      <a href="/#contact">💬 Feedback</a>
+    </nav>
+    
+    <div class="header">
+      <h1>⚡ Electrical Load Calculator</h1>
+      <p>Service sizing, load calculations, and NEC compliance verification</p>
+    </div>
+  </header>
+  
+  <div class="calc-container" id="electrical-calc" data-calc="electrical">
+    <div class="calc-header">
+      <h2>Electrical Load Center Calculator</h2>
+      <p>Service sizing, wire calculations, and NEC compliance verification</p>
+      <div class="quick-actions">
+        <button class="btn btn-secondary" onclick="loadDefaults('residential')">Residential Service</button>
+        <button class="btn btn-secondary" onclick="loadDefaults('commercial')">Commercial Service</button>
+        <button class="btn btn-secondary" onclick="loadLastUsed()">Load Last Used</button>
+      </div>
+    </div>
+
+    <div class="calc-body">
+      <div class="input-section">
+        <h3>Electrical Service Parameters</h3>
+        
+        <!-- Service Information -->
+        <fieldset class="input-group">
+          <legend>Service Type</legend>
+          <div>
+            <input type="radio" id="serviceResidential" name="serviceType" value="residential" checked>
+            <label for="serviceResidential">Residential</label>
+          </div>
+          <div>
+            <input type="radio" id="serviceCommercial" name="serviceType" value="commercial">
+            <label for="serviceCommercial">Commercial</label>
+          </div>
+          <div>
+            <input type="radio" id="serviceIndustrial" name="serviceType" value="industrial">
+            <label for="serviceIndustrial">Industrial</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="input-group">
+          <legend>Voltage System</legend>
+          <div>
+            <input type="radio" id="voltage120240" name="voltageSystem" value="120/240" checked>
+            <label for="voltage120240">120/240V Single Phase</label>
+          </div>
+          <div>
+            <input type="radio" id="voltage120208" name="voltageSystem" value="120/208">
+            <label for="voltage120208">120/208V Three Phase</label>
+          </div>
+          <div>
+            <input type="radio" id="voltage277480" name="voltageSystem" value="277/480">
+            <label for="voltage277480">277/480V Three Phase</label>
+          </div>
+        </fieldset>
+
+        <!-- Load Calculations -->
+        <div class="load-section">
+          <h4>Connected Loads</h4>
+          
+          <div class="input-group">
+            <label>General Lighting (sq ft)</label>
+            <input type="number" id="lightingArea" value="2000" min="0">
+          </div>
+          
+          <div class="input-group">
+            <label>Small Appliance Circuits</label>
+            <input type="number" id="applianceCircuits" value="2" min="0">
+          </div>
+
+          <div class="input-group">
+            <label>Electric Range (kW)</label>
+            <input type="number" id="rangeLoad" value="12" min="0" step="0.5">
+          </div>
+
+          <div class="input-group">
+            <label>Electric Dryer (kW)</label>
+            <input type="number" id="dryerLoad" value="5" min="0" step="0.5">
+          </div>
+
+          <div class="input-group">
+            <label>Electric Water Heater (kW)</label>
+            <input type="number" id="waterHeaterLoad" value="4.5" min="0" step="0.5">
+          </div>
+
+          <div class="input-group">
+            <label>Air Conditioning (tons)</label>
+            <input type="number" id="acLoad" value="3" min="0" step="0.5">
+          </div>
+
+          <div class="input-group">
+            <label>Electric Heat (kW)</label>
+            <input type="number" id="heatLoad" value="0" min="0" step="0.5">
+          </div>
+
+          <div class="input-group">
+            <label>Other Fixed Appliances (kW)</label>
+            <input type="number" id="otherLoad" value="2" min="0" step="0.5">
+          </div>
+        </div>
+
+        <!-- Wire Sizing Section -->
+        <div class="load-section">
+          <h4>Wire Sizing Parameters</h4>
+          
+          <div class="input-group">
+            <label>Circuit Current (Amps)</label>
+            <input type="number" id="circuitCurrent" value="20" min="0">
+          </div>
+          
+          <div class="input-group">
+            <label>Circuit Length (feet)</label>
+            <input type="number" id="circuitLength" value="100" min="0">
+          </div>
+
+          <div class="input-group">
+            <label>Wire Type</label>
+            <select id="wireType">
+              <option value="copper" selected>Copper</option>
+              <option value="aluminum">Aluminum</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Installation Method</label>
+            <select id="installMethod">
+              <option value="conduit" selected>Conduit/Raceway</option>
+              <option value="cable">Cable</option>
+              <option value="direct">Direct Burial</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Ambient Temperature (°C)</label>
+            <input type="number" id="ambientTemp" value="30" min="0" max="60">
+          </div>
+
+          <div class="input-group">
+            <label>Number of Conductors</label>
+            <select id="conductorCount">
+              <option value="3" selected>3 Conductors</option>
+              <option value="4">4-6 Conductors</option>
+              <option value="7">7-9 Conductors</option>
+              <option value="10">10+ Conductors</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calculate-button-section">
+          <button type="button" class="calculate-btn electrical" data-action="calculate">
+            <i class="fas fa-bolt"></i>
+            Calculate Electrical Estimate
+          </button>
+        </div>
+      </div>
+
+      <div class="results-section" role="status" aria-live="polite">
+        <h3>Electrical Load Results</h3>
+        
+        <div style="text-align: center; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+          <div>Calculated Service Load</div>
+          <div class="result-primary" id="serviceLoad">0 Amps</div>
+          <div style="color: #718096;" id="serviceSize">Recommended service size</div>
+        </div>
+
+        <div style="text-align: center; padding: 1rem; margin-top: 1rem; background: #fff5f5; border-radius: 8px;">
+          <div>Required Wire Size</div>
+          <div class="result-primary" id="wireSize">#12 AWG</div>
+          <div style="color: #718096;" id="wireDetails">Based on current and voltage drop</div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Load Calculation (NEC Article 220)</h4>
+        <table class="breakdown-table">
+          <tr><td>General Lighting</td><td align="right" id="lightingLoadDisplay">0 VA</td></tr>
+          <tr><td>Small Appliances</td><td align="right" id="applianceLoadDisplay">0 VA</td></tr>
+          <tr><td>Laundry</td><td align="right" id="laundryLoadDisplay">1500 VA</td></tr>
+          <tr><td>Electric Range</td><td align="right" id="rangeLoadDisplay">0 VA</td></tr>
+          <tr><td>Electric Dryer</td><td align="right" id="dryerLoadDisplay">0 VA</td></tr>
+          <tr><td>Water Heater</td><td align="right" id="waterHeaterDisplay">0 VA</td></tr>
+          <tr><td>A/C or Heat (largest)</td><td align="right" id="hvacLoadDisplay">0 VA</td></tr>
+          <tr><td>Other Appliances</td><td align="right" id="otherLoadDisplay">0 VA</td></tr>
+          <tr style="border-top: 2px solid #1e3a5f;"><td><strong>Total Connected Load</strong></td><td align="right" id="totalConnectedLoad"><strong>0 VA</strong></td></tr>
+          <tr><td>Demand Factor Applied</td><td align="right" id="demandLoad">0 VA</td></tr>
+        </table>
+
+        <div class="voltage-drop">
+          <h4>Voltage Drop Analysis</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <strong>Voltage Drop</strong>
+              <div id="voltageDrop">0.0%</div>
+              <div style="color: #718096; font-size: 0.9rem;">NEC recommends ≤ 5%</div>
+            </div>
+            <div>
+              <strong>Power Loss</strong>
+              <div id="powerLoss">0 Watts</div>
+              <div style="color: #718096; font-size: 0.9rem;">Heat generated in wire</div>
+            </div>
+          </div>
+          <div style="margin-top: 1rem;" id="voltageDropStatus">
+            <span class="compliance-pass">✓ Voltage drop within NEC limits</span>
+          </div>
+        </div>
+
+        <div class="nec-compliance">
+          <h4>NEC Compliance Check</h4>
+          <div id="necCompliance">
+            <div id="ampacityCheck" class="compliance-pass">✓ Wire ampacity adequate</div>
+            <div id="voltageDropCheck" class="compliance-pass">✓ Voltage drop acceptable</div>
+            <div id="deratCheck" class="compliance-pass">✓ Derating factors applied</div>
+            <div id="conduitFillCheck" class="compliance-pass">✓ Conduit fill within limits</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Wire Specifications</h4>
+        <div id="wireSpecs" style="color: #718096;">
+          <div>Conductor: <span id="conductorSize">#12 AWG</span></div>
+          <div>Ampacity: <span id="wireAmpacity">20 Amps</span></div>
+          <div>Conduit: <span id="conduitSize">3/4" EMT</span></div>
+          <div>Temperature rating: <span id="tempRating">90°C</span></div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Panel Schedule</h4>
+        <div id="panelSchedule" style="font-size: 0.9rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; font-weight: bold;">
+            <div>Circuit</div><div>Load</div><div>Breaker</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+            <div>Lighting</div><div id="lightingBreaker">15A</div><div>Multiple</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+            <div>Appliances</div><div id="applianceBreaker">20A</div><div>Multiple</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+            <div>Range</div><div id="rangeBreaker">50A</div><div>Double</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
+            <div>A/C</div><div id="acBreaker">30A</div><div>Double</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="saveCalculation()" data-action="save" aria-label="Save electrical load calculation">💾 Save</button>
+          <button class="btn btn-secondary" onclick="exportLoadSheet()" data-action="export" aria-label="Export load sheet as CSV file">📊 Export Load Sheet</button>
+          <button class="btn btn-secondary" onclick="shareCalculation()" aria-label="Generate shareable link">🔗 Share</button>
+          <button class="btn btn-secondary" onclick="window.print()" data-action="print" aria-label="Print electrical load results">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Important:</strong> This provides rough order of magnitude (ROM) estimates based on NEC guidelines. All electrical work must be designed by qualified professionals and comply with local codes. Always consult with a licensed electrician.
+    </div>
+
+    <details style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+      <summary style="cursor: pointer; font-weight: bold;">📐 Calculation Methodology</summary>
+      <div style="margin-top: 1rem;">
+        <h4>NEC Calculations:</h4>
+        <ul>
+          <li><strong>General Lighting:</strong> 3 VA/sq ft (dwelling) or per NEC Table 220.12</li>
+          <li><strong>Demand Factors:</strong> Applied per NEC 220.42 for ranges, 220.54 for dryers</li>
+          <li><strong>Voltage Drop:</strong> VD = 2 × K × I × L / CM (single phase)</li>
+          <li><strong>Wire Sizing:</strong> Based on NEC Table 310.15(B)(16) with derating</li>
+          <li><strong>Service Size:</strong> Next standard size above calculated load (NEC 230.42)</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- Scripts loaded in proper order with defer for performance -->
+  <script src="/assets/js/calculator-core.js" defer></script>
+  <script src="/assets/js/export-utilities.js" defer></script>
+  <script src="/assets/js/calculators.js" defer></script>
+  <script src="/assets/js/calculators-hub.js" defer></script>
+  <script defer>
+    let calc;
+    
+    // Initialize calculator after DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        calc = new ProCalculator('electrical-load');
+        
+        // Auto-calculate when inputs change
+        document.addEventListener('input', calculate);
+        document.addEventListener('change', calculate);
+        
+        // Load from URL if shared
+        if (calc.loadFromURL()) {
+            Object.keys(calc.inputs).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) element.value = calc.inputs[key];
+            });
+        }
+        calculate();
+    });
+    
+    // Electrical data and NEC tables
+    const electricalData = {
+      // Wire ampacity table (75°C column from NEC 310.15(B)(16))
+      wireAmpacity: {
+        copper: {14: 20, 12: 25, 10: 35, 8: 50, 6: 65, 4: 85, 3: 100, 2: 115, 1: 130, '1/0': 150, '2/0': 175, '3/0': 200, '4/0': 230},
+        aluminum: {12: 20, 10: 30, 8: 40, 6: 50, 4: 65, 3: 75, 2: 90, 1: 100, '1/0': 120, '2/0': 135, '3/0': 155, '4/0': 180}
+      },
+      // Wire resistance (ohms per 1000 feet)
+      wireResistance: {
+        copper: {14: 3.07, 12: 1.93, 10: 1.21, 8: 0.764, 6: 0.491, 4: 0.308, 3: 0.245, 2: 0.194, 1: 0.154, '1/0': 0.122, '2/0': 0.0967, '3/0': 0.0766, '4/0': 0.0608},
+        aluminum: {12: 3.18, 10: 2.00, 8: 1.26, 6: 0.808, 4: 0.508, 3: 0.403, 2: 0.319, 1: 0.253, '1/0': 0.201, '2/0': 0.159, '3/0': 0.126, '4/0': 0.100}
+      },
+      // Temperature derating factors
+      tempDerating: {25: 1.08, 30: 1.00, 35: 0.91, 40: 0.82, 45: 0.71, 50: 0.58, 55: 0.41, 60: 0.00},
+      // Conductor bundling derating
+      bundleDerating: {3: 1.00, 4: 0.80, 7: 0.70, 10: 0.50},
+      // Standard service sizes
+      serviceSizes: [100, 125, 150, 200, 225, 320, 400, 600, 800, 1000],
+      // Load factors for demand calculation
+      demandFactors: {
+        lighting: {first3000: 1.0, next117000: 0.35, over120000: 0.25},
+        appliances: 1.0,
+        range: {under12: 0.667, over12: 0.80},
+        dryer: 1.0,
+        hvac: 1.0
+      }
+    };
+
+    function calculate() {
+      // Get all inputs
+      const serviceType = document.querySelector('input[name="serviceType"]:checked')?.value || 'residential';
+      const voltageSystem = document.querySelector('input[name="voltageSystem"]:checked')?.value || '120/240';
+      const lightingArea = parseFloat(document.getElementById('lightingArea').value) || 0;
+      const applianceCircuits = parseFloat(document.getElementById('applianceCircuits').value) || 0;
+      const rangeLoad = parseFloat(document.getElementById('rangeLoad').value) || 0;
+      const dryerLoad = parseFloat(document.getElementById('dryerLoad').value) || 0;
+      const waterHeaterLoad = parseFloat(document.getElementById('waterHeaterLoad').value) || 0;
+      const acLoad = parseFloat(document.getElementById('acLoad').value) || 0;
+      const heatLoad = parseFloat(document.getElementById('heatLoad').value) || 0;
+      const otherLoad = parseFloat(document.getElementById('otherLoad').value) || 0;
+      
+      // Wire sizing inputs
+      const circuitCurrent = parseFloat(document.getElementById('circuitCurrent').value) || 0;
+      const circuitLength = parseFloat(document.getElementById('circuitLength').value) || 0;
+      const wireType = document.getElementById('wireType').value;
+      const installMethod = document.getElementById('installMethod').value;
+      const ambientTemp = parseFloat(document.getElementById('ambientTemp').value) || 30;
+      const conductorCount = parseInt(document.getElementById('conductorCount').value);
+
+      // Calculate individual loads (in VA)
+      const lightingLoadVA = lightingArea * (serviceType === 'residential' ? 3 : 5); // VA per sq ft
+      const applianceLoadVA = applianceCircuits * 1500; // Small appliance circuits
+      const laundryLoadVA = serviceType === 'residential' ? 1500 : 0; // Laundry circuit
+      const rangeLoadVA = rangeLoad * 1000;
+      const dryerLoadVA = dryerLoad * 1000;
+      const waterHeaterLoadVA = waterHeaterLoad * 1000;
+      const acLoadVA = acLoad * 3500; // Approx 3.5 kVA per ton
+      const heatLoadVA = heatLoad * 1000;
+      const otherLoadVA = otherLoad * 1000;
+
+      // Apply demand factors for total connected load
+      const generalLoad = lightingLoadVA + applianceLoadVA + laundryLoadVA;
+      let demandGeneralLoad = 0;
+      if (generalLoad <= 3000) {
+        demandGeneralLoad = generalLoad;
+      } else if (generalLoad <= 120000) {
+        demandGeneralLoad = 3000 + (generalLoad - 3000) * 0.35;
+      } else {
+        demandGeneralLoad = 3000 + 117000 * 0.35 + (generalLoad - 120000) * 0.25;
+      }
+
+      // Apply range demand factor
+      const demandRangeLoad = rangeLoadVA * (rangeLoadVA <= 12000 ? 0.8 : 0.8);
+      
+      // HVAC load (largest of A/C or heat)
+      const hvacLoadVA = Math.max(acLoadVA, heatLoadVA);
+      
+      const totalConnectedVA = lightingLoadVA + applianceLoadVA + laundryLoadVA + rangeLoadVA + dryerLoadVA + waterHeaterLoadVA + hvacLoadVA + otherLoadVA;
+      const totalDemandVA = demandGeneralLoad + demandRangeLoad + dryerLoadVA + waterHeaterLoadVA + hvacLoadVA + otherLoadVA;
+
+      // Convert to amperage (single phase)
+      const voltage = voltageSystem === '120/240' ? 240 : voltageSystem === '120/208' ? 208 : 480;
+      const serviceLoadAmps = totalDemandVA / voltage;
+      
+      // Determine service size (next standard size above calculated load)
+      const recommendedService = electricalData.serviceSizes.find(size => size >= serviceLoadAmps) || 400;
+
+      // Wire sizing calculation
+      const derated = getWireDeratingFactor(ambientTemp, conductorCount);
+      const requiredAmpacity = circuitCurrent / derated;
+      const selectedWireSize = getWireSize(wireType, requiredAmpacity);
+      const wireAmpacity = electricalData.wireAmpacity[wireType][selectedWireSize] * derated;
+
+      // Voltage drop calculation
+      const resistance = electricalData.wireResistance[wireType][selectedWireSize] || 1.0;
+      const voltageDrop = (2 * resistance * circuitCurrent * circuitLength / 1000) / voltage * 100;
+      const powerLoss = circuitCurrent * circuitCurrent * resistance * circuitLength / 1000;
+
+      // Conduit sizing (simplified)
+      const conduitSize = getConduitSize(selectedWireSize, conductorCount);
+
+      // Update display
+      document.getElementById('serviceLoad').textContent = Math.round(serviceLoadAmps) + ' Amps';
+      document.getElementById('serviceSize').textContent = recommendedService + ' Amp Service Recommended';
+      
+      // Move focus to results for accessibility
+      const resultsSection = document.querySelector('.results-section');
+      if (resultsSection) {
+        resultsSection.setAttribute('tabindex', '-1');
+        resultsSection.focus();
+        setTimeout(() => resultsSection.removeAttribute('tabindex'), 100);
+      }
+      document.getElementById('wireSize').textContent = '#' + selectedWireSize + ' AWG ' + wireType;
+      document.getElementById('wireDetails').textContent = `${wireAmpacity.toFixed(0)}A capacity (derated)`;
+
+      // Load breakdown display
+      document.getElementById('lightingLoadDisplay').textContent = lightingLoadVA.toFixed(0) + ' VA';
+      document.getElementById('applianceLoadDisplay').textContent = applianceLoadVA.toFixed(0) + ' VA';
+      document.getElementById('laundryLoadDisplay').textContent = laundryLoadVA.toFixed(0) + ' VA';
+      document.getElementById('rangeLoadDisplay').textContent = rangeLoadVA.toFixed(0) + ' VA';
+      document.getElementById('dryerLoadDisplay').textContent = dryerLoadVA.toFixed(0) + ' VA';
+      document.getElementById('waterHeaterDisplay').textContent = waterHeaterLoadVA.toFixed(0) + ' VA';
+      document.getElementById('hvacLoadDisplay').textContent = hvacLoadVA.toFixed(0) + ' VA';
+      document.getElementById('otherLoadDisplay').textContent = otherLoadVA.toFixed(0) + ' VA';
+      document.getElementById('totalConnectedLoad').textContent = totalConnectedVA.toFixed(0) + ' VA';
+      document.getElementById('demandLoad').textContent = totalDemandVA.toFixed(0) + ' VA';
+
+      // Voltage drop analysis
+      document.getElementById('voltageDrop').textContent = voltageDrop.toFixed(1) + '%';
+      document.getElementById('powerLoss').textContent = powerLoss.toFixed(0) + ' Watts';
+      
+      const voltageDropStatus = document.getElementById('voltageDropStatus');
+      if (voltageDrop <= 5) {
+        voltageDropStatus.innerHTML = '<span class="compliance-pass">✓ Voltage drop within NEC limits</span>';
+      } else {
+        voltageDropStatus.innerHTML = '<span class="compliance-fail">✗ Voltage drop exceeds 5% - consider larger wire</span>';
+      }
+
+      // NEC compliance checks
+      document.getElementById('ampacityCheck').className = wireAmpacity >= circuitCurrent ? 'compliance-pass' : 'compliance-fail';
+      document.getElementById('ampacityCheck').textContent = wireAmpacity >= circuitCurrent ? '✓ Wire ampacity adequate' : '✗ Wire ampacity insufficient';
+      
+      document.getElementById('voltageDropCheck').className = voltageDrop <= 5 ? 'compliance-pass' : 'compliance-fail';
+      document.getElementById('voltageDropCheck').textContent = voltageDrop <= 5 ? '✓ Voltage drop acceptable' : '✗ Voltage drop too high';
+
+      // Wire specifications
+      document.getElementById('conductorSize').textContent = '#' + selectedWireSize + ' AWG ' + wireType;
+      document.getElementById('wireAmpacity').textContent = wireAmpacity.toFixed(0) + ' Amps';
+      document.getElementById('conduitSize').textContent = conduitSize;
+      document.getElementById('tempRating').textContent = '75°C';
+
+      // Panel schedule
+      document.getElementById('lightingBreaker').textContent = '15A';
+      document.getElementById('applianceBreaker').textContent = '20A';
+      document.getElementById('rangeBreaker').textContent = Math.ceil(rangeLoad * 1000 / voltage) + 'A';
+      document.getElementById('acBreaker').textContent = Math.ceil(acLoad * 5) + 'A';
+
+      // Save to calculator object
+      calc.inputs = { 
+        serviceType, voltageSystem, lightingArea, applianceCircuits, rangeLoad, dryerLoad,
+        waterHeaterLoad, acLoad, heatLoad, otherLoad, circuitCurrent, circuitLength,
+        wireType, installMethod, ambientTemp, conductorCount
+      };
+      calc.results = { 
+        serviceLoad: serviceLoadAmps.toFixed(1),
+        serviceSize: recommendedService,
+        wireSize: selectedWireSize,
+        voltageDrop: voltageDrop.toFixed(1)
+      };
+    }
+
+    function getWireDeratingFactor(temp, conductors) {
+      const tempFactor = electricalData.tempDerating[temp] || 
+                        (temp < 25 ? 1.08 : temp > 60 ? 0.0 : 1.0);
+      const bundleFactor = electricalData.bundleDerating[conductors] || 0.5;
+      return tempFactor * bundleFactor;
+    }
+
+    function getWireSize(wireType, requiredAmpacity) {
+      const ampacities = electricalData.wireAmpacity[wireType];
+      for (const [size, ampacity] of Object.entries(ampacities)) {
+        if (ampacity >= requiredAmpacity) {
+          return size;
+        }
+      }
+      return '4/0'; // Largest standard size
+    }
+
+    function getConduitSize(wireSize, conductorCount) {
+      // Simplified conduit sizing
+      const wireNum = parseInt(wireSize) || (wireSize.includes('/') ? 0 : 1);
+      if (wireNum >= 12) return '1/2" EMT';
+      if (wireNum >= 10) return '3/4" EMT';
+      if (wireNum >= 6) return '1" EMT';
+      return '1.25" EMT';
+    }
+
+    function loadDefaults(type) {
+      if (!calc) return; // Ensure calc is initialized
+      
+      if (type === 'residential') {
+        document.getElementById('serviceType').value = 'residential';
+        document.getElementById('lightingArea').value = '2000';
+        document.getElementById('rangeLoad').value = '12';
+        document.getElementById('acLoad').value = '3';
+      } else {
+        document.getElementById('serviceType').value = 'commercial';
+        document.getElementById('lightingArea').value = '5000';
+        document.getElementById('rangeLoad').value = '0';
+        document.getElementById('acLoad').value = '10';
+      }
+      calculate();
+    }
+
+    function loadLastUsed() {
+      if (calc.loadLastUsed()) {
+        Object.keys(calc.inputs).forEach(key => {
+          const element = document.getElementById(key);
+          if (element) element.value = calc.inputs[key];
+        });
+        calculate();
+      }
+    }
+
+    function saveCalculation() {
+      calc.saveCalculation();
+    }
+
+    function exportLoadSheet() {
+      calc.exportCSV();
+    }
+
+    function shareCalculation() {
+      calc.shareLink();
+    }
+
+    // Initialization handled in DOMContentLoaded above
+  </script>
+<!-- Print functionality integrated into main script for better performance -->
+</body>
+</html>

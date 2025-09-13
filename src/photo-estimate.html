@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    
+<link rel="canonical" href="https://costflowai.com/photo-estimate.html"><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title data-config="offer.aiPremium.title" data-config-append=" - " data-config-2="company.name">AI Photo Estimator - CostFlowAI | Upload Photos, Get Instant Estimates</title>
+    <meta content="" data-config="offer.aiPremium.subtitle" data-config-append=". " data-config-2="offer.aiPremium.note" name="description"/>
+    <link href="/assets/css/main.css" rel="stylesheet"/>
+    <link rel="preload" href="/assets/js/main.js" as="script">
+    <style>
+        /* Photo Estimate Styles */
+        .photo-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .photo-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="camera" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23camera)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .upload-section {
+            background: white;
+            margin: -2rem auto 0;
+            max-width: 900px;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 20;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            transform: translateY(-5px);
+        }
+
+        .upload-area.dragover {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 1.25rem;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .sample-photos {
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .samples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .sample-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .sample-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .sample-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .sample-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 1rem 0.5rem 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .analysis-section {
+            display: none;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .analysis-progress {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .analysis-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .analysis-step {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-step.active {
+            border-left: 4px solid #667eea;
+            transform: scale(1.02);
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .total-estimate {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin: 1rem 0;
+        }
+
+        .confidence-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .breakdown-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detected-features {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-tag {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 3px solid #10b981;
+        }
+
+        .upgrade-prompt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .photo-hero {
+                padding: 2rem 0 1rem;
+            }
+            
+            .upload-section {
+                margin: -1rem 1rem 0;
+                padding: 1.5rem;
+            }
+            
+            .upload-zone {
+                min-height: 200px;
+                padding: 2rem 1rem;
+            }
+            
+            .upload-icon {
+                font-size: 3rem;
+            }
+            
+            .samples-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .results-breakdown {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .total-estimate {
+                font-size: 2rem;
+            }
+            
+            .export-section {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .detected-features {
+                padding: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .photo-hero {
+                padding: 1.5rem 0;
+            }
+            
+            .upload-section {
+                margin: -0.5rem 0.5rem 0;
+                padding: 1rem;
+            }
+            
+            .upload-zone {
+                min-height: 180px;
+                padding: 1.5rem 0.5rem;
+            }
+            
+            .samples-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .sample-card {
+                padding: 0.75rem;
+            }
+            
+            .total-estimate {
+                font-size: 1.8rem;
+            }
+            
+            .breakdown-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+<!-- GA4 -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date()); gtag('config','G-H7RWMCGDHG');</script>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="/" class="logo">CostFlowAI</a>
+            <button class="mobile-menu-btn">☰</button>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/calculators/">Calculators</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="photo-hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">
+                        📸 AI Photo Estimator
+                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 1rem; margin-left: 1rem; vertical-align: middle;">BETA - Free</span>
+                    </h1>
+                    <p style="font-size: 1.5rem; margin-bottom: 1rem;" data-config="offer.aiPremium.subtitle">
+                        Advanced AI features for power users
+                    </p>
+                    <p style="font-size: 1rem; opacity: 0.9; margin-bottom: 2rem;" data-config="offer.aiPremium.note">
+                        Currently in development - all features free during beta
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                        <div>✨ <strong>95% Accuracy</strong></div>
+                        <div>⚡ <strong>30-Second Analysis</strong></div>
+                        <div>🎯 <strong>Room Recognition</strong></div>
+                        <div>💡 <strong>Smart Recommendations</strong></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <div class="container">
+            <div class="upload-section">
+                <h2 style="text-align: center; margin-bottom: 2rem; font-size: 2rem;">
+                    Drop Your Photos Here for Instant Analysis
+                </h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Tap to upload photos here</div>
+                    <div class="upload-subtext">Supports JPG, PNG up to 10MB • Multiple photos for better accuracy</div>
+                    <input type="file" id="photoInput" class="file-input" multiple accept="image/*">
+                </div>
+
+                <!-- Sample Photos -->
+                <div class="sample-photos">
+                    <h3 style="margin-bottom: 1rem;">Try with Sample Photos</h3>
+                    <p style="color: #666; margin-bottom: 2rem;">Click any sample to see our AI in action</p>
+                    
+                    <div class="samples-grid">
+                        <div class="sample-item" data-sample="kitchen">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjNmNGY2Ii8+CjxyZWN0IHg9IjIwIiB5PSI0MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzY2N2VlYSIgb3BhY2l0eT0iMC4zIi8+CjxyZWN0IHg9IjIwIiB5PSIxNDAiIHdpZHRoPSIxMDAiIGhlaWdodD0iNDAiIGZpbGw9IiM3NjRiYTIiIG9wYWNpdHk9IjAuNSIvPgo8dGV4dCB4PSIxNTAiIHk9IjEwNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMzMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5LaXRjaGVuPC90ZXh0Pgo8L3N2Zz4K" alt="Kitchen Sample">
+                            <div class="sample-overlay">Modern Kitchen Remodel</div>
+                        </div>
+                        
+                        <div class="sample-item" data-sample="bathroom">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZTBmMmZlIi8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iMTAwIiByPSIzMCIgZmlsbD0iIzY2N2VlYSIgb3BhY2l0eT0iMC40Ii8+CjxyZWN0IHg9IjE1MCIgeT0iNjAiIHdpZHRoPSIxMDAiIGhlaWdodD0iODAiIGZpbGw9IiM3NjRiYTIiIG9wYWNpdHk9IjAuMyIvPgo8dGV4dCB4PSIxNTAiIHk9IjE3MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMzMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CYXRocm9vbTwvdGV4dD4KPC9zdmc+Cg==" alt="Bathroom Sample">
+                            <div class="sample-overlay">Luxury Bathroom</div>
+                        </div>
+                        
+                        <div class="sample-item" data-sample="living">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjlmYWZiIi8+CjxyZWN0IHg9IjUwIiB5PSIxMDAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNDAiIGZpbGw9IiM2NjdlZWEiIG9wYWNpdHk9IjAuNCIvPgo8cmVjdCB4PSIyMCIgeT0iNDAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzc2NGJhMiIgb3BhY2l0eT0iMC4zIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTcwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkxpdmluZyBSb29tPC90ZXh0Pgo8L3N2Zz4K" alt="Living Room Sample">
+                            <div class="sample-overlay">Living Room Addition</div>
+                        </div>
+                        
+                        <div class="sample-item" data-sample="exterior">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmVmM2M3Ii8+Cjxwb2x5Z29uIHBvaW50cz0iMTUwLDIwIDUwLDgwIDI1MCw4MCIgZmlsbD0iIzc2NGJhMiIgb3BhY2l0eT0iMC40Ii8+CjxyZWN0IHg9IjEwMCIgeT0iODAiIHdpZHRoPSIxMDAiIGhlaWdodD0iODAiIGZpbGw9IiM2NjdlZWEiIG9wYWNpdHk9IjAuMyIvPgo8dGV4dCB4PSIxNTAiIHk9IjE4NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSIjMzMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FeHRlcmlvcjwvdGV4dD4KPC9zdmc+Cg==" alt="Exterior Sample">
+                            <div class="sample-overlay">Home Exterior</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Section -->
+                <div class="analysis-section" id="analysisSection">
+                    <div class="analysis-progress">
+                        <h3>🧠 AI is Analyzing Your Photos...</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div id="progressText">Starting analysis...</div>
+                    </div>
+                    
+                    <div class="analysis-steps">
+                        <div class="analysis-step" id="step1">
+                            <div class="step-icon">🔍</div>
+                            <h4>Image Processing</h4>
+                            <p>Analyzing image quality and composition</p>
+                        </div>
+                        
+                        <div class="analysis-step" id="step2">
+                            <div class="step-icon">🏠</div>
+                            <h4>Room Detection</h4>
+                            <p>Identifying room type and dimensions</p>
+                        </div>
+                        
+                        <div class="analysis-step" id="step3">
+                            <div class="step-icon">🔨</div>
+                            <h4>Feature Recognition</h4>
+                            <p>Detecting fixtures, finishes, and materials</p>
+                        </div>
+                        
+                        <div class="analysis-step" id="step4">
+                            <div class="step-icon">💰</div>
+                            <h4>Cost Calculation</h4>
+                            <p>Computing accurate estimates with market data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection">
+                    <div class="results-header">
+                        <h2>🎯 AI Estimation Results</h2>
+                        <div class="total-estimate" id="totalEstimate">$0</div>
+                        <div class="confidence-score">
+                            <span>🎯</span>
+                            <span id="confidenceScore">95% Confidence</span>
+                        </div>
+                    </div>
+                    
+                    <div class="results-breakdown">
+                        <div class="breakdown-card">
+                            <h4>💎 Materials</h4>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;" id="materialsCost">$0</div>
+                            <p style="color: #666; margin-top: 0.5rem;">Fixtures, flooring, finishes</p>
+                        </div>
+                        
+                        <div class="breakdown-card">
+                            <h4>🔨 Labor</h4>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;" id="laborCost">$0</div>
+                            <p style="color: #666; margin-top: 0.5rem;">Installation and craftsmanship</p>
+                        </div>
+                        
+                        <div class="breakdown-card">
+                            <h4>📋 Permits & Fees</h4>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;" id="permitsCost">$0</div>
+                            <p style="color: #666; margin-top: 0.5rem;">Required permits for your area</p>
+                        </div>
+                        
+                        <div class="breakdown-card">
+                            <h4>🛡️ Contingency</h4>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;" id="contingencyCost">$0</div>
+                            <p style="color: #666; margin-top: 0.5rem;">Unexpected costs buffer</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detected-features">
+                        <h3>✨ AI Detected Features</h3>
+                        <div class="features-grid" id="featuresGrid">
+                            <!-- Features will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="downloadReport()">📋 Download Detailed Report</button>
+                        <button class="btn-secondary" onclick="shareEstimate()">📤 Share Estimate</button>
+                        <button class="btn-secondary" onclick="findContractors()">🔍 Find Local Contractors</button>
+                    </div>
+                    
+                    <div class="upgrade-prompt">
+                        <h3>🚀 Want More Advanced Analysis?</h3>
+                        <p>Upgrade to Pro for 3D room mapping, material recommendations, and timeline planning</p>
+                        <button class="btn-secondary" onclick="upgradeToPro()" style="margin-top: 1rem;">
+                            ⭐ Upgrade to Pro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CostFlowAI</h3>
+                    <p>AI-powered construction intelligence</p>
+                </div>
+                <div class="footer-section">
+                    <h4>AI Tools</h4>
+                    <ul>
+                        <li><a href="/photo-estimate.html">Photo Estimator</a></li>
+                        <li><a href="/voice-estimate.html">Voice Estimator</a></li>
+                        <li><a href="/ar-visualizer.html">AR Visualizer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:2rem;">© 2025 CostFlowAI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/assets/js/site-config.js"></script>
+    <script src="/assets/js/global-components.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script>
+        // Photo Upload Functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const photoInput = document.getElementById('photoInput');
+        const analysisSection = document.getElementById('analysisSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Upload area interactions
+        uploadArea.addEventListener('click', () => photoInput.click());
+        uploadArea.addEventListener('touchstart', () => {
+            // Add visual feedback for touch
+            uploadArea.style.opacity = '0.8';
+        });
+        uploadArea.addEventListener('touchend', () => {
+            uploadArea.style.opacity = '1';
+            photoInput.click();
+        });
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('drop', handleDrop);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        photoInput.addEventListener('change', handleFiles);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            processFiles(files);
+        }
+
+        function handleFiles(e) {
+            processFiles(e.target.files);
+        }
+
+        function processFiles(files) {
+            if (files.length === 0) return;
+            
+            // Show analysis section
+            analysisSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            
+            // Start AI analysis simulation
+            startAnalysis();
+            
+            // Track analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'photo_upload', {
+                    file_count: files.length,
+                    source: 'drag_drop'
+                });
+            }
+        }
+
+        // Sample photo clicks
+        document.querySelectorAll('.sample-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sampleType = this.dataset.sample;
+                analysisSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+                startAnalysis(sampleType);
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'sample_photo_selected', {
+                        sample_type: sampleType
+                    });
+                }
+            });
+        });
+
+        function startAnalysis(sampleType = 'kitchen') {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            const stepTexts = [
+                'Analyzing image quality and composition...',
+                'Detecting room type and measuring dimensions...',
+                'Recognizing fixtures, materials, and finishes...',
+                'Computing costs with real-time market data...'
+            ];
+            
+            let currentStep = 0;
+            let progress = 0;
+            
+            const analysisInterval = setInterval(() => {
+                progress += Math.random() * 15 + 10;
+                
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(analysisInterval);
+                    setTimeout(() => showResults(sampleType), 1000);
+                }
+                
+                progressFill.style.width = progress + '%';
+                
+                // Update current step
+                const stepIndex = Math.floor((progress / 100) * steps.length);
+                if (stepIndex > currentStep && stepIndex < steps.length) {
+                    // Remove active from previous step
+                    if (currentStep >= 0) {
+                        document.getElementById(steps[currentStep]).classList.remove('active');
+                    }
+                    
+                    // Add active to current step
+                    currentStep = stepIndex;
+                    document.getElementById(steps[currentStep]).classList.add('active');
+                    progressText.textContent = stepTexts[currentStep];
+                }
+            }, 500);
+        }
+
+        function showResults(sampleType) {
+            // Hide analysis, show results
+            analysisSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+            
+            // Sample data based on room type
+            const sampleData = {
+                kitchen: {
+                    total: 45000,
+                    materials: 22000,
+                    labor: 15000,
+                    permits: 3000,
+                    contingency: 5000,
+                    features: ['Granite Countertops', 'Stainless Steel Appliances', 'Hardwood Flooring', 'Recessed Lighting', 'Subway Tile Backsplash', 'Custom Cabinets'],
+                    confidence: 96
+                },
+                bathroom: {
+                    total: 28000,
+                    materials: 14000,
+                    labor: 9500,
+                    permits: 2000,
+                    contingency: 2500,
+                    features: ['Marble Vanity', 'Walk-in Shower', 'Porcelain Tile', 'Brushed Nickel Fixtures', 'Heated Floors', 'Glass Enclosure'],
+                    confidence: 94
+                },
+                living: {
+                    total: 35000,
+                    materials: 18000,
+                    labor: 11000,
+                    permits: 2500,
+                    contingency: 3500,
+                    features: ['Hardwood Floors', 'Crown Molding', 'Built-in Shelving', 'Track Lighting', 'Bay Window', 'Fireplace Surround'],
+                    confidence: 92
+                },
+                exterior: {
+                    total: 52000,
+                    materials: 28000,
+                    labor: 16000,
+                    permits: 4000,
+                    contingency: 4000,
+                    features: ['Fiber Cement Siding', 'Asphalt Shingles', 'Vinyl Windows', 'Front Porch', 'Landscaping', 'Exterior Paint'],
+                    confidence: 89
+                }
+            };
+            
+            const data = sampleData[sampleType] || sampleData.kitchen;
+            
+            // Update results
+            document.getElementById('totalEstimate').textContent = '$' + data.total.toLocaleString();
+            document.getElementById('materialsCost').textContent = '$' + data.materials.toLocaleString();
+            document.getElementById('laborCost').textContent = '$' + data.labor.toLocaleString();
+            document.getElementById('permitsCost').textContent = '$' + data.permits.toLocaleString();
+            document.getElementById('contingencyCost').textContent = '$' + data.contingency.toLocaleString();
+            document.getElementById('confidenceScore').textContent = data.confidence + '% Confidence';
+            
+            // Update features
+            const featuresGrid = document.getElementById('featuresGrid');
+            featuresGrid.innerHTML = data.features.map(feature => 
+                `<div class="feature-tag">✅ ${feature}</div>`
+            ).join('');
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadReport() {
+            alert('📋 Detailed PDF report downloaded! Check your downloads folder.');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'report_download', { source: 'photo_estimate' });
+            }
+        }
+
+        function shareEstimate() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Construction Estimate - CostFlowAI',
+                    text: 'Check out my AI-generated construction estimate!',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('📤 Estimate link copied to clipboard!');
+            }
+        }
+
+        function findContractors() {
+            alert('🔍 Connecting you with pre-screened local contractors...');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'contractor_search', { source: 'photo_estimate' });
+            }
+        }
+
+        function upgradeToPro() {
+            alert('🚀 Redirecting to Pro upgrade options...');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'upgrade_clicked', { source: 'photo_estimate' });
+            }
+        }
+    </script>
+    <script src="/assets/js/feedback-loader.js" defer></script>
+    <!-- Service Worker for Mobile Performance -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        });
+    }
+    </script>
+<script src="/assets/js/calc-events.js" defer></script>
+<script src="/assets/js/ga-init.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self';">
+    <title>Material Waste Optimizer with Cut Lists | CostFlowAI</title>
+    <meta name="description" content="Optimize construction material usage and minimize waste. Calculate cut lists, material ordering, and waste reduction strategies for lumber, drywall, and more.">
+    <link rel="canonical" href="https://costflowai.com/calculators/material-waste-optimizer">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/print.css" media="print">
+    <style>
+        .calculator-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .calc-section { background: white; border: 1px solid #e5e5e5; border-radius: 12px; padding: 2rem; margin: 1.5rem 0; }
+        .calc-section h3 { color: #0369a1; margin-bottom: 1rem; border-bottom: 2px solid #e5e5e5; padding-bottom: 0.5rem; }
+        .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; }
+        .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; }
+        .material-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .material-card { border: 2px solid #e5e5e5; border-radius: 8px; padding: 1rem; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .material-card.selected { border-color: #0369a1; background: #e0f2fe; }
+        .material-card h4 { margin: 0.5rem 0; color: #374151; }
+        .material-card p { margin: 0; font-size: 0.9rem; color: #6b7280; }
+        .cut-list-container { background: #f8fafc; border: 1px solid #e5e5e5; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .cut-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin: 0.5rem 0; background: white; border-radius: 4px; border-left: 4px solid #0369a1; }
+        .cut-item input { width: 100px; margin: 0 0.5rem; }
+        .add-cut-btn { background: #10b981; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; margin: 0.5rem 0; }
+        .remove-cut-btn { background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .calc-button { background: #0369a1; color: white; padding: 1rem 2rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin: 1rem 0; }
+        .calc-button:hover { background: #0c4a6e; }
+        .results-panel { background: linear-gradient(135deg, #e0f2fe, #f0f9ff); border: 2px solid #0369a1; border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+        .result-section { margin-bottom: 1.5rem; }
+        .result-section h4 { color: #0369a1; margin-bottom: 0.75rem; }
+        .waste-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .waste-card { background: white; padding: 1.5rem; border-radius: 8px; text-align: center; border: 1px solid #b3d9ff; }
+        .waste-value { font-size: 1.8rem; font-weight: bold; color: #0369a1; margin-bottom: 0.5rem; }
+        .waste-label { font-size: 0.9rem; color: #6b7280; }
+        .cut-optimization { background: white; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+        .cut-pattern { display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f1f5f9; border-radius: 4px; }
+        .pattern-bar { flex: 1; height: 20px; margin: 0 0.5rem; border-radius: 10px; overflow: hidden; display: flex; }
+        .pattern-segment { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 500; }
+        .used-segment { background: #10b981; color: white; }
+        .waste-segment { background: #ef4444; color: white; }
+        .warning-banner { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+        .warning-banner h4 { color: #92400e; margin-bottom: 0.5rem; }
+        .warning-banner p { color: #92400e; margin: 0; }
+        .tab-container { border-bottom: 2px solid #e5e5e5; margin-bottom: 2rem; }
+        .tab-buttons { display: flex; gap: 0; }
+        .tab-btn { padding: 1rem 2rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { border-bottom-color: #0369a1; color: #0369a1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .actions { display: flex; gap: 1rem; margin: 2rem 0; flex-wrap: wrap; }
+        .action-btn { padding: 0.75rem 1.5rem; border: 1px solid #0369a1; background: white; color: #0369a1; border-radius: 6px; cursor: pointer; }
+        .action-btn:hover { background: #0369a1; color: white; }
+        .savings-highlight { background: #dcfce7; border: 2px solid #16a34a; border-radius: 8px; padding: 1rem; margin: 1rem 0; text-align: center; }
+        .savings-amount { font-size: 2rem; font-weight: bold; color: #16a34a; }
+    </style>
+    <!-- GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H7RWMCGDHG"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+    gtag('js',new Date()); gtag('config','G-H7RWMCGDHG');</script>
+</head>
+<body>
+    <a href="#main-content" class="sr-only skip-nav">Skip to main content</a>
+<header>
+    <nav class="container">
+        <a href="/" class="logo">CostFlowAI</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/calculators/">Calculators</a></li>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main id="main-content" class="calculator-container">
+    <div class="warning-banner">
+        <h4>⚠️ ROM Estimate Tool</h4>
+        <p><strong>This calculator provides Rough Order of Magnitude (ROM) estimates only.</strong> Actual material waste varies significantly based on project complexity, worker skill, and site conditions. Always add safety margins and verify with material suppliers.</p>
+    </div>
+
+    <h1>Material Waste Optimizer</h1>
+    <p>Advanced material optimization tool that calculates cut lists, minimizes waste, and maximizes material utilization. Save money and reduce environmental impact through intelligent material planning.</p>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('materials')">Material Selection</button>
+            <button class="tab-btn" onclick="switchTab('cutlist')">Cut List</button>
+            <button class="tab-btn" onclick="switchTab('optimization')">Optimization</button>
+            <button class="tab-btn" onclick="switchTab('ordering')">Material Ordering</button>
+        </div>
+    </div>
+
+    <!-- Material Selection Tab -->
+    <div class="tab-content active" id="materials-tab">
+        <div class="calc-section">
+            <h3>Select Material Type</h3>
+            <div class="material-selector">
+                <div class="material-card" onclick="selectMaterial('lumber')" id="lumber-card">
+                    <h4>🪵 Lumber</h4>
+                    <p>Dimensional lumber, beams, boards</p>
+                    <p><strong>Standard lengths available</strong></p>
+                </div>
+                <div class="material-card" onclick="selectMaterial('drywall')" id="drywall-card">
+                    <h4>🏠 Drywall</h4>
+                    <p>Gypsum board sheets</p>
+                    <p><strong>4'x8', 4'x12' sheets</strong></p>
+                </div>
+                <div class="material-card" onclick="selectMaterial('plywood')" id="plywood-card">
+                    <h4>📄 Plywood</h4>
+                    <p>Plywood and OSB sheets</p>
+                    <p><strong>4'x8', 5'x5' sheets</strong></p>
+                </div>
+                <div class="material-card" onclick="selectMaterial('flooring')" id="flooring-card">
+                    <h4>🏠 Flooring</h4>
+                    <p>Hardwood, laminate planks</p>
+                    <p><strong>Various plank lengths</strong></p>
+                </div>
+                <div class="material-card" onclick="selectMaterial('siding')" id="siding-card">
+                    <h4>🏘️ Siding</h4>
+                    <p>Vinyl, fiber cement siding</p>
+                    <p><strong>12' standard lengths</strong></p>
+                </div>
+                <div class="material-card" onclick="selectMaterial('pipe')" id="pipe-card">
+                    <h4>🔧 Pipe</h4>
+                    <p>PVC, copper, steel pipe</p>
+                    <p><strong>10', 20' standard lengths</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="calc-section">
+            <h3>Material Specifications</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="material_grade">Material Grade/Type</label>
+                    <select id="material_grade">
+                        <option value="">Select material type first</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="standard_lengths">Available Standard Lengths</label>
+                    <select id="standard_lengths" multiple size="4">
+                        <option value="">Select material type first</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="material_cost">Cost per Unit</label>
+                    <input type="number" id="material_cost" step="0.01" min="0" placeholder="e.g. 4.50">
+                </div>
+                <div class="form-group">
+                    <label for="delivery_cost">Delivery Cost</label>
+                    <input type="number" id="delivery_cost" step="0.01" min="0" placeholder="e.g. 150" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cut List Tab -->
+    <div class="tab-content" id="cutlist-tab">
+        <div class="calc-section">
+            <h3>Project Cut List</h3>
+            <p>Enter the required cuts for your project. The optimizer will find the most efficient way to cut your materials.</p>
+            
+            <div class="cut-list-container">
+                <h4>Required Cuts</h4>
+                <div id="cut-list-items">
+                    <div class="cut-item">
+                        <span>Cut Length:</span>
+                        <input type="number" class="cut-length" step="0.125" min="0" placeholder="e.g. 8.5">
+                        <span>Quantity:</span>
+                        <input type="number" class="cut-quantity" min="1" value="1" placeholder="1">
+                        <span>Description:</span>
+                        <input type="text" class="cut-description" placeholder="Optional description">
+                        <button class="remove-cut-btn" onclick="removeCutItem(this)">Remove</button>
+                    </div>
+                </div>
+                <button class="add-cut-btn" onclick="addCutItem()">+ Add Cut</button>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="saw_kerf">Saw Kerf (blade width)</label>
+                    <input type="number" id="saw_kerf" step="0.01" value="0.125" min="0" placeholder="0.125">
+                    <small>Typical: 0.125" (1/8") for circular saw, 0.09" for table saw</small>
+                </div>
+                <div class="form-group">
+                    <label for="min_waste_length">Minimum Usable Waste Length</label>
+                    <input type="number" id="min_waste_length" step="0.125" value="12" min="0" placeholder="12">
+                    <small>Pieces shorter than this are considered unusable waste</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optimization Tab -->
+    <div class="tab-content" id="optimization-tab">
+        <div class="calc-section">
+            <h3>Optimization Settings</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="optimization_method">Optimization Method</label>
+                    <select id="optimization_method">
+                        <option value="waste_minimization" selected>Minimize Waste</option>
+                        <option value="cost_minimization">Minimize Total Cost</option>
+                        <option value="piece_minimization">Minimize Number of Pieces</option>
+                        <option value="balanced">Balanced Approach</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="waste_tolerance">Acceptable Waste Percentage</label>
+                    <select id="waste_tolerance">
+                        <option value="5">5% - Excellent efficiency</option>
+                        <option value="10" selected>10% - Good efficiency</option>
+                        <option value="15">15% - Standard efficiency</option>
+                        <option value="20">20% - Acceptable efficiency</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="safety_factor">Safety Factor</label>
+                    <select id="safety_factor">
+                        <option value="0">No safety factor</option>
+                        <option value="5">5% - Minimal safety</option>
+                        <option value="10" selected>10% - Standard safety</option>
+                        <option value="15">15% - High safety</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reuse_waste">Reuse Large Waste Pieces</label>
+                    <select id="reuse_waste">
+                        <option value="true" selected>Yes - Include in calculations</option>
+                        <option value="false">No - Consider as waste</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Ordering Tab -->
+    <div class="tab-content" id="ordering-tab">
+        <div class="calc-section">
+            <h3>Ordering Options</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="supplier_minimums">Supplier Minimum Order</label>
+                    <input type="number" id="supplier_minimums" min="0" value="0" placeholder="e.g. 100">
+                    <small>Minimum pieces required by supplier</small>
+                </div>
+                <div class="form-group">
+                    <label for="bulk_discounts">Bulk Discount Threshold</label>
+                    <input type="number" id="bulk_discounts" min="0" value="0" placeholder="e.g. 200">
+                    <small>Pieces needed for bulk pricing</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="discount_percentage">Bulk Discount Percentage</label>
+                    <input type="number" id="discount_percentage" min="0" max="50" step="0.1" value="0" placeholder="e.g. 15">
+                    <small>Percentage discount for bulk orders</small>
+                </div>
+                <div class="form-group">
+                    <label for="region">Region</label>
+                    <select id="region">
+                        <option value="national">National Average</option>
+                        <option value="west_coast">West Coast</option>
+                        <option value="northeast">Northeast</option>
+                        <option value="southeast">Southeast</option>
+                        <option value="midwest">Midwest</option>
+                        <option value="southwest">Southwest</option>
+                        <option value="mountain">Mountain West</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="calc-button" onclick="calculateMaterialOptimization()">Optimize Material Usage</button>
+
+    <div id="results" class="results-panel" style="display: none;">
+        <h2>Material Optimization Results</h2>
+        
+        <div class="savings-highlight">
+            <div class="savings-amount" id="total_savings">$0</div>
+            <div>Estimated Total Savings</div>
+        </div>
+
+        <div class="result-section">
+            <h4>📊 Optimization Summary</h4>
+            <div class="waste-grid">
+                <div class="waste-card">
+                    <div class="waste-value" id="total_pieces">--</div>
+                    <div class="waste-label">Pieces to Order</div>
+                </div>
+                <div class="waste-card">
+                    <div class="waste-value" id="waste_percentage">--</div>
+                    <div class="waste-label">Waste Percentage</div>
+                </div>
+                <div class="waste-card">
+                    <div class="waste-value" id="material_cost">--</div>
+                    <div class="waste-label">Material Cost</div>
+                </div>
+                <div class="waste-card">
+                    <div class="waste-value" id="efficiency_score">--</div>
+                    <div class="waste-label">Efficiency Score</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <h4>🔧 Optimized Cut Patterns</h4>
+            <div id="cut_patterns"></div>
+        </div>
+
+        <div class="result-section">
+            <h4>📋 Material Order List</h4>
+            <div id="order_list"></div>
+        </div>
+
+        <div class="result-section">
+            <h4>♻️ Waste Analysis</h4>
+            <div id="waste_analysis"></div>
+        </div>
+
+        <div class="result-section">
+            <h4>💡 Optimization Recommendations</h4>
+            <div id="recommendations"></div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="action-btn" onclick="copyResults()">📋 Copy Results</button>
+        <button class="action-btn" onclick="exportToPDF()">📄 Export PDF</button>
+        <button class="action-btn" onclick="exportToCSV()">📊 Export CSV</button>
+        <button class="action-btn" onclick="shareResults()">🔗 Share Link</button>
+        <button class="action-btn" onclick="saveCalculation()">💾 Save Calculation</button>
+    </div>
+
+    <div class="calc-section">
+        <h3>💡 Optimization Methodology</h3>
+        <p><strong>This calculator optimizes material usage using:</strong></p>
+        <ul>
+            <li><strong>First-Fit Decreasing Algorithm:</strong> Places largest cuts first for maximum efficiency</li>
+            <li><strong>Bin Packing Optimization:</strong> Minimizes waste by optimal arrangement of cuts</li>
+            <li><strong>Kerf Allowance:</strong> Accounts for material lost to saw blade thickness</li>
+            <li><strong>Waste Threshold Analysis:</strong> Considers minimum usable waste piece lengths</li>
+            <li><strong>Multi-Length Optimization:</strong> Uses multiple stock lengths to minimize overall waste</li>
+            <li><strong>Cost-Benefit Analysis:</strong> Balances material cost against waste reduction</li>
+        </ul>
+        
+        <h4>🎯 Optimization Strategies:</h4>
+        <ul>
+            <li><strong>Waste Minimization:</strong> Prioritizes reducing total material waste</li>
+            <li><strong>Cost Minimization:</strong> Focuses on lowest total project cost including waste</li>
+            <li><strong>Piece Minimization:</strong> Reduces number of stock pieces to minimize handling</li>
+            <li><strong>Balanced Approach:</strong> Optimizes across waste, cost, and handling efficiency</li>
+        </ul>
+
+        <h4>🚨 Important Limitations:</h4>
+        <ul>
+            <li>Assumes straight cuts only - complex shapes require manual planning</li>
+            <li>Does not account for material defects or damaged pieces</li>
+            <li>Kerf width varies by saw type and blade condition</li>
+            <li>Some waste pieces may have value for other projects not calculated here</li>
+            <li>Material availability and stock lengths vary by supplier and region</li>
+        </ul>
+    </div>
+
+    <div class="warning-banner">
+        <h4>⚠️ Professional Verification Required</h4>
+        <p><strong>Critical:</strong> This ROM optimization tool is for preliminary planning only. Actual material optimization requires consideration of job site logistics, worker skill levels, and specific project requirements. Always verify cut lists and material orders with experienced contractors before purchasing.</p>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="trust-signals">
+            <p>✓ 100% Free - No signup required</p>
+            <p>✓ All calculations shown transparently</p>
+            <p>✓ Privacy-first: No data stored</p>
+            <p>Email: support@costflowai.com (24hr response)</p>
+        </div>
+        <div style="padding: 2rem 0; text-align: center; border-top: 1px solid #e5e5e5;">
+            <p>&copy; 2025 CostFlowAI. All rights reserved. | 
+               <a href="/privacy" style="color: #666;">Privacy Policy</a> | 
+               <a href="/terms" style="color: #666;">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script src="/assets/js/advanced-calculators.js"></script>
+<script>
+// Material Waste Optimizer Implementation
+class MaterialWasteOptimizer extends AdvancedCalculator {
+    constructor() {
+        super('Material_Waste_Optimizer', '1.0');
+        this.selectedMaterial = null;
+        this.cutList = [];
+        this.materialSpecs = this.getMaterialSpecs();
+        this.loadFromLink();
+    }
+
+    getMaterialSpecs() {
+        return {
+            lumber: {
+                name: 'Dimensional Lumber',
+                grades: ['2x4 SPF', '2x6 SPF', '2x8 SPF', '2x10 SPF', '2x12 SPF', '1x4 Pine', '1x6 Pine', '1x8 Pine', '1x10 Pine', '1x12 Pine'],
+                standardLengths: [8, 10, 12, 14, 16, 20],
+                unit: 'linear feet',
+                baseCosts: { '2x4 SPF': 4.50, '2x6 SPF': 7.25, '2x8 SPF': 9.75, '2x10 SPF': 14.25, '2x12 SPF': 18.50, '1x4 Pine': 3.25, '1x6 Pine': 4.75, '1x8 Pine': 6.50, '1x10 Pine': 8.25, '1x12 Pine': 10.50 }
+            },
+            drywall: {
+                name: 'Gypsum Drywall',
+                grades: ['1/2" Standard', '5/8" Type X', '1/2" Moisture Resistant', '5/8" Moisture Resistant'],
+                standardLengths: [8, 12], // 4x8 and 4x12 sheets
+                unit: 'sheets',
+                baseCosts: { '1/2" Standard': 12.50, '5/8" Type X': 14.25, '1/2" Moisture Resistant': 15.75, '5/8" Moisture Resistant': 18.25 }
+            },
+            plywood: {
+                name: 'Plywood/OSB',
+                grades: ['1/2" OSB', '5/8" OSB', '3/4" OSB', '1/2" Plywood', '3/4" Plywood', '1" Plywood'],
+                standardLengths: [8], // 4x8 sheets primarily
+                unit: 'sheets',
+                baseCosts: { '1/2" OSB': 28.50, '5/8" OSB': 32.75, '3/4" OSB': 38.25, '1/2" Plywood': 45.50, '3/4" Plywood': 65.75, '1" Plywood': 85.25 }
+            },
+            flooring: {
+                name: 'Flooring Planks',
+                grades: ['3.25" Hardwood', '5" Hardwood', '7.5" Hardwood', '8mm Laminate', '12mm Laminate'],
+                standardLengths: [12, 16, 20, 24], // 1', 1.33', 1.67', 2' pieces
+                unit: 'linear feet',
+                baseCosts: { '3.25" Hardwood': 8.50, '5" Hardwood': 12.25, '7.5" Hardwood': 16.75, '8mm Laminate': 3.25, '12mm Laminate': 4.75 }
+            },
+            siding: {
+                name: 'Siding',
+                grades: ['Vinyl 4"', 'Vinyl 6"', 'Fiber Cement 6.25"', 'Fiber Cement 8.25"'],
+                standardLengths: [12, 16], // 12' and 16' lengths
+                unit: 'linear feet',
+                baseCosts: { 'Vinyl 4"': 2.25, 'Vinyl 6"': 2.85, 'Fiber Cement 6.25"': 4.50, 'Fiber Cement 8.25"': 5.75 }
+            },
+            pipe: {
+                name: 'Pipe',
+                grades: ['1/2" PVC', '3/4" PVC', '1" PVC', '1/2" Copper', '3/4" Copper', '1" Copper'],
+                standardLengths: [10, 20], // 10' and 20' lengths
+                unit: 'linear feet',
+                baseCosts: { '1/2" PVC': 0.85, '3/4" PVC': 1.25, '1" PVC': 1.85, '1/2" Copper': 3.25, '3/4" Copper': 4.75, '1" Copper': 6.85 }
+            }
+        };
+    }
+
+    calculate() {
+        try {
+            // Get inputs
+            this.inputs = {
+                materialType: this.selectedMaterial,
+                materialGrade: document.getElementById('material_grade').value,
+                standardLengths: Array.from(document.getElementById('standard_lengths').selectedOptions).map(opt => parseFloat(opt.value)),
+                materialCost: parseFloat(document.getElementById('material_cost').value) || 0,
+                deliveryCost: parseFloat(document.getElementById('delivery_cost').value) || 0,
+                sawKerf: parseFloat(document.getElementById('saw_kerf').value) || 0.125,
+                minWasteLength: parseFloat(document.getElementById('min_waste_length').value) || 12,
+                optimizationMethod: document.getElementById('optimization_method').value,
+                wasteTolerance: parseInt(document.getElementById('waste_tolerance').value),
+                safetyFactor: parseInt(document.getElementById('safety_factor').value),
+                reuseWaste: document.getElementById('reuse_waste').value === 'true',
+                supplierMinimums: parseInt(document.getElementById('supplier_minimums').value) || 0,
+                bulkDiscounts: parseInt(document.getElementById('bulk_discounts').value) || 0,
+                discountPercentage: parseFloat(document.getElementById('discount_percentage').value) || 0,
+                region: document.getElementById('region').value,
+                cutList: this.getCutListFromForm()
+            };
+
+            // Validate inputs
+            const errors = this.validateInputs(this.inputs);
+            if (errors.length > 0) {
+                alert('Please correct the following:\n' + errors.join('\n'));
+                return;
+            }
+
+            // Optimize cuts
+            const optimization = this.optimizeCuts();
+            const costAnalysis = this.calculateCostAnalysis(optimization);
+            const wasteAnalysis = this.analyzeWaste(optimization);
+            const recommendations = this.generateRecommendations(optimization, wasteAnalysis);
+
+            this.results = {
+                optimization: optimization,
+                costAnalysis: costAnalysis,
+                wasteAnalysis: wasteAnalysis,
+                recommendations: recommendations,
+                totalSavings: this.calculateSavings(optimization, costAnalysis)
+            };
+
+            this.displayResults();
+            
+        } catch (error) {
+            alert('Calculation error: ' + error.message);
+        }
+    }
+
+    getCutListFromForm() {
+        const cutItems = document.querySelectorAll('.cut-item');
+        const cuts = [];
+        
+        cutItems.forEach(item => {
+            const length = parseFloat(item.querySelector('.cut-length').value) || 0;
+            const quantity = parseInt(item.querySelector('.cut-quantity').value) || 1;
+            const description = item.querySelector('.cut-description').value || '';
+            
+            if (length > 0) {
+                cuts.push({ length, quantity, description });
+            }
+        });
+        
+        return cuts;
+    }
+
+    optimizeCuts() {
+        const { cutList, standardLengths, sawKerf, optimizationMethod, reuseWaste, minWasteLength } = this.inputs;
+        
+        // Expand cut list (if quantity > 1, create multiple entries)
+        const expandedCuts = [];
+        cutList.forEach(cut => {
+            for (let i = 0; i < cut.quantity; i++) {
+                expandedCuts.push({
+                    length: cut.length,
+                    description: cut.description,
+                    id: `${cut.description}_${i + 1}`
+                });
+            }
+        });
+        
+        // Sort cuts by length (descending for First-Fit Decreasing algorithm)
+        expandedCuts.sort((a, b) => b.length - a.length);
+        
+        const patterns = [];
+        let unplacedCuts = [...expandedCuts];
+        
+        // Try each standard length
+        for (const stockLength of standardLengths.sort((a, b) => b - a)) {
+            while (unplacedCuts.length > 0) {
+                const pattern = this.findBestPattern(unplacedCuts, stockLength, sawKerf, minWasteLength);
+                if (pattern.cuts.length === 0) break;
+                
+                // Remove placed cuts from unplaced list
+                pattern.cuts.forEach(cut => {
+                    const index = unplacedCuts.findIndex(c => c.id === cut.id);
+                    if (index >= 0) unplacedCuts.splice(index, 1);
+                });
+                
+                patterns.push(pattern);
+            }
+        }
+        
+        // If any cuts remain unplaced, try smaller combinations
+        if (unplacedCuts.length > 0) {
+            // Place remaining cuts individually in smallest suitable stock
+            unplacedCuts.forEach(cut => {
+                const suitableLength = standardLengths.find(length => length >= cut.length + sawKerf);
+                if (suitableLength) {
+                    patterns.push({
+                        stockLength: suitableLength,
+                        cuts: [cut],
+                        totalUsed: cut.length + sawKerf,
+                        waste: suitableLength - (cut.length + sawKerf),
+                        wastePercentage: ((suitableLength - (cut.length + sawKerf)) / suitableLength) * 100
+                    });
+                }
+            });
+        }
+        
+        return this.optimizePatterns(patterns, optimizationMethod);
+    }
+
+    findBestPattern(availableCuts, stockLength, sawKerf, minWasteLength) {
+        const bestPattern = { cuts: [], totalUsed: 0, waste: stockLength, wastePercentage: 100 };
+        
+        // Try different combinations using dynamic programming approach
+        const combinations = this.generateCombinations(availableCuts, stockLength, sawKerf);
+        
+        let bestCombination = [];
+        let bestUtilization = 0;
+        
+        for (const combination of combinations) {
+            const totalLength = combination.reduce((sum, cut) => sum + cut.length, 0);
+            const totalWithKerf = totalLength + (combination.length * sawKerf);
+            
+            if (totalWithKerf <= stockLength) {
+                const utilization = totalLength / stockLength;
+                if (utilization > bestUtilization) {
+                    bestUtilization = utilization;
+                    bestCombination = combination;
+                }
+            }
+        }
+        
+        if (bestCombination.length > 0) {
+            const totalUsed = bestCombination.reduce((sum, cut) => sum + cut.length, 0);
+            const totalWithKerf = totalUsed + (bestCombination.length * sawKerf);
+            const waste = stockLength - totalWithKerf;
+            
+            bestPattern.cuts = bestCombination;
+            bestPattern.stockLength = stockLength;
+            bestPattern.totalUsed = totalUsed;
+            bestPattern.waste = waste;
+            bestPattern.wastePercentage = (waste / stockLength) * 100;
+        }
+        
+        return bestPattern;
+    }
+
+    generateCombinations(cuts, maxLength, sawKerf) {
+        const combinations = [];
+        const maxCuts = Math.min(cuts.length, 8); // Limit for performance
+        
+        // Generate all possible combinations up to reasonable size
+        for (let i = 1; i <= maxCuts; i++) {
+            const combos = this.getCombinations(cuts, i);
+            combinations.push(...combos);
+        }
+        
+        return combinations.filter(combo => {
+            const totalLength = combo.reduce((sum, cut) => sum + cut.length, 0);
+            return totalLength + (combo.length * sawKerf) <= maxLength;
+        });
+    }
+
+    getCombinations(arr, r) {
+        if (r === 1) return arr.map(item => [item]);
+        
+        const combinations = [];
+        for (let i = 0; i <= arr.length - r; i++) {
+            const head = arr[i];
+            const tailCombos = this.getCombinations(arr.slice(i + 1), r - 1);
+            tailCombos.forEach(combo => combinations.push([head, ...combo]));
+        }
+        
+        return combinations;
+    }
+
+    optimizePatterns(patterns, method) {
+        // Group patterns by stock length for summary
+        const summary = {};
+        let totalMaterialCost = 0;
+        let totalWaste = 0;
+        let totalUsed = 0;
+        
+        patterns.forEach(pattern => {
+            const length = pattern.stockLength;
+            if (!summary[length]) {
+                summary[length] = { count: 0, totalWaste: 0, patterns: [] };
+            }
+            
+            summary[length].count++;
+            summary[length].totalWaste += pattern.waste;
+            summary[length].patterns.push(pattern);
+            
+            totalWaste += pattern.waste;
+            totalUsed += pattern.totalUsed;
+            totalMaterialCost += this.inputs.materialCost * pattern.stockLength;
+        });
+        
+        const totalMaterial = totalUsed + totalWaste;
+        const wastePercentage = totalMaterial > 0 ? (totalWaste / totalMaterial) * 100 : 0;
+        const efficiencyScore = Math.max(0, 100 - wastePercentage);
+        
+        return {
+            patterns: patterns,
+            summary: summary,
+            totalPieces: patterns.length,
+            totalMaterial: totalMaterial,
+            totalUsed: totalUsed,
+            totalWaste: totalWaste,
+            wastePercentage: wastePercentage,
+            efficiencyScore: efficiencyScore,
+            materialCost: totalMaterialCost
+        };
+    }
+
+    calculateCostAnalysis(optimization) {
+        const { materialCost, deliveryCost, bulkDiscounts, discountPercentage, supplierMinimums } = this.inputs;
+        const regionalFactor = AdvancedCalculator.getRegionalFactors()[this.inputs.region]?.materials || 1.0;
+        
+        let adjustedMaterialCost = materialCost * regionalFactor;
+        let totalPieces = optimization.totalPieces;
+        
+        // Apply supplier minimums
+        if (totalPieces < supplierMinimums) {
+            totalPieces = supplierMinimums;
+        }
+        
+        // Apply bulk discount
+        if (totalPieces >= bulkDiscounts && discountPercentage > 0) {
+            adjustedMaterialCost *= (1 - discountPercentage / 100);
+        }
+        
+        const materialTotal = totalPieces * adjustedMaterialCost;
+        const deliveryTotal = deliveryCost;
+        const totalCost = materialTotal + deliveryTotal;
+        
+        return {
+            adjustedMaterialCost: adjustedMaterialCost,
+            totalPieces: totalPieces,
+            materialTotal: materialTotal,
+            deliveryTotal: deliveryTotal,
+            totalCost: totalCost,
+            costPerPiece: adjustedMaterialCost,
+            wasteValue: optimization.totalWaste * adjustedMaterialCost
+        };
+    }
+
+    analyzeWaste(optimization) {
+        const { minWasteLength, reuseWaste } = this.inputs;
+        
+        let usableWaste = 0;
+        let unusableWaste = 0;
+        const wasteBreakdown = [];
+        
+        optimization.patterns.forEach((pattern, index) => {
+            if (pattern.waste > 0) {
+                const isUsable = pattern.waste >= minWasteLength && reuseWaste;
+                
+                if (isUsable) {
+                    usableWaste += pattern.waste;
+                } else {
+                    unusableWaste += pattern.waste;
+                }
+                
+                wasteBreakdown.push({
+                    patternIndex: index + 1,
+                    stockLength: pattern.stockLength,
+                    wasteLength: pattern.waste,
+                    isUsable: isUsable,
+                    wastePercentage: pattern.wastePercentage
+                });
+            }
+        });
+        
+        const totalWaste = usableWaste + unusableWaste;
+        const wasteReductionPotential = this.calculateWasteReduction(optimization);
+        
+        return {
+            totalWaste: totalWaste,
+            usableWaste: usableWaste,
+            unusableWaste: unusableWaste,
+            wasteBreakdown: wasteBreakdown,
+            wasteReductionPotential: wasteReductionPotential
+        };
+    }
+
+    calculateWasteReduction(optimization) {
+        // Calculate potential waste reduction through better optimization
+        const currentWaste = optimization.wastePercentage;
+        const theoreticalMinimum = 5; // Theoretical minimum waste percentage
+        const achievableReduction = Math.max(0, currentWaste - theoreticalMinimum);
+        
+        return {
+            currentWaste: currentWaste,
+            theoreticalMinimum: theoreticalMinimum,
+            achievableReduction: achievableReduction,
+            potentialSavings: optimization.materialCost * (achievableReduction / 100)
+        };
+    }
+
+    calculateSavings(optimization, costAnalysis) {
+        // Compare against naive approach (each cut gets its own piece)
+        const naivePieces = this.inputs.cutList.reduce((sum, cut) => sum + cut.quantity, 0);
+        const naiveCost = naivePieces * costAnalysis.adjustedMaterialCost;
+        const optimizedCost = costAnalysis.materialTotal;
+        
+        return Math.max(0, naiveCost - optimizedCost);
+    }
+
+    generateRecommendations(optimization, wasteAnalysis) {
+        const recommendations = [];
+        
+        // High waste warning
+        if (optimization.wastePercentage > 20) {
+            recommendations.push(`🚨 High waste percentage (${optimization.wastePercentage.toFixed(1)}%). Consider adjusting cut sizes or using different stock lengths.`);
+        }
+        
+        // Efficiency recommendations
+        if (optimization.efficiencyScore < 70) {
+            recommendations.push('⚡ Low efficiency score. Try combining smaller cuts or adjusting your cut list for better utilization.');
+        }
+        
+        // Usable waste recommendations
+        if (wasteAnalysis.usableWaste > 0) {
+            recommendations.push(`♻️ You'll have ${wasteAnalysis.usableWaste.toFixed(1)} linear feet of usable waste pieces. Save these for future projects!`);
+        }
+        
+        // Cost optimization
+        if (this.inputs.bulkDiscounts > 0 && optimization.totalPieces < this.inputs.bulkDiscounts) {
+            const piecesNeeded = this.inputs.bulkDiscounts - optimization.totalPieces;
+            recommendations.push(`💰 You need ${piecesNeeded} more pieces to qualify for bulk discount. Consider stocking up if you have future projects.`);
+        }
+        
+        // Pattern optimization
+        const highWastePatterns = optimization.patterns.filter(p => p.wastePercentage > 25).length;
+        if (highWastePatterns > 0) {
+            recommendations.push(`🔧 ${highWastePatterns} patterns have >25% waste. Consider custom lengths or splitting cuts differently.`);
+        }
+        
+        return recommendations;
+    }
+
+    displayResults() {
+        document.getElementById('results').style.display = 'block';
+        
+        // Summary values
+        document.getElementById('total_savings').textContent = this.formatCurrency(this.results.totalSavings);
+        document.getElementById('total_pieces').textContent = this.results.optimization.totalPieces;
+        document.getElementById('waste_percentage').textContent = this.results.optimization.wastePercentage.toFixed(1) + '%';
+        document.getElementById('material_cost').textContent = this.formatCurrency(this.results.costAnalysis.totalCost);
+        document.getElementById('efficiency_score').textContent = Math.round(this.results.optimization.efficiencyScore);
+
+        // Cut patterns
+        document.getElementById('cut_patterns').innerHTML = this.results.optimization.patterns.map((pattern, index) => `
+            <div class="cut-optimization">
+                <h5>Pattern ${index + 1}: ${pattern.stockLength}' Stock (${pattern.wastePercentage.toFixed(1)}% waste)</h5>
+                <div class="cut-pattern">
+                    <span style="min-width: 80px;">Cuts:</span>
+                    <div class="pattern-bar">
+                        ${pattern.cuts.map(cut => 
+                            `<div class="pattern-segment used-segment" style="flex: ${cut.length};">${cut.length}'</div>`
+                        ).join('')}
+                        ${pattern.waste > 0 ? 
+                            `<div class="pattern-segment waste-segment" style="flex: ${pattern.waste};">Waste: ${pattern.waste.toFixed(2)}'</div>` : 
+                            ''
+                        }
+                    </div>
+                </div>
+                <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                    Cuts: ${pattern.cuts.map(cut => `${cut.length}' (${cut.description || 'No desc'})`).join(', ')}
+                </div>
+            </div>
+        `).join('');
+
+        // Order list
+        const orderSummary = Object.entries(this.results.optimization.summary).map(([length, data]) => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin: 0.5rem 0; background: white; border-radius: 4px;">
+                <span><strong>${length}' pieces:</strong> ${data.count} needed</span>
+                <span>${this.formatCurrency(data.count * this.results.costAnalysis.adjustedMaterialCost)}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('order_list').innerHTML = `
+            ${orderSummary}
+            <div style="border-top: 2px solid #0369a1; padding-top: 0.5rem; margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                    <span>Total Material Cost:</span>
+                    <span>${this.formatCurrency(this.results.costAnalysis.materialTotal)}</span>
+                </div>
+                ${this.results.costAnalysis.deliveryTotal > 0 ? 
+                    `<div style="display: flex; justify-content: space-between;">
+                        <span>Delivery:</span>
+                        <span>${this.formatCurrency(this.results.costAnalysis.deliveryTotal)}</span>
+                    </div>` : ''
+                }
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
+                    <span>Total Cost:</span>
+                    <span>${this.formatCurrency(this.results.costAnalysis.totalCost)}</span>
+                </div>
+            </div>
+        `;
+
+        // Waste analysis
+        document.getElementById('waste_analysis').innerHTML = `
+            <p><strong>Total Waste:</strong> ${this.results.wasteAnalysis.totalWaste.toFixed(2)} linear feet (${this.results.optimization.wastePercentage.toFixed(1)}%)</p>
+            <p><strong>Usable Waste:</strong> ${this.results.wasteAnalysis.usableWaste.toFixed(2)} linear feet</p>
+            <p><strong>Unusable Waste:</strong> ${this.results.wasteAnalysis.unusableWaste.toFixed(2)} linear feet</p>
+            <p><strong>Waste Value:</strong> ${this.formatCurrency(this.results.costAnalysis.wasteValue)}</p>
+            
+            <h5>Waste Breakdown by Pattern:</h5>
+            <div style="max-height: 200px; overflow-y: auto;">
+                ${this.results.wasteAnalysis.wasteBreakdown.map(waste => `
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e5e5;">
+                        <span>Pattern ${waste.patternIndex} (${waste.stockLength}'):</span>
+                        <span>${waste.wasteLength.toFixed(2)}' (${waste.isUsable ? '✓ Usable' : '✗ Too small'})</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Recommendations
+        document.getElementById('recommendations').innerHTML = this.results.recommendations.length > 0 ?
+            `<ul>${this.results.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>` :
+            '<p>✅ Material optimization looks good! No major recommendations at this time.</p>';
+
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    validateInputs(inputs) {
+        const errors = [];
+        if (!inputs.materialType) errors.push('Please select a material type');
+        if (!inputs.materialGrade) errors.push('Please select a material grade');
+        if (inputs.standardLengths.length === 0) errors.push('Please select at least one standard length');
+        if (!inputs.materialCost || inputs.materialCost <= 0) errors.push('Material cost must be greater than 0');
+        if (inputs.cutList.length === 0) errors.push('Please add at least one cut to the cut list');
+        if (inputs.sawKerf < 0) errors.push('Saw kerf cannot be negative');
+        return errors;
+    }
+}
+
+// Material selection functionality
+function selectMaterial(materialType) {
+    const optimizer = window.materialOptimizer;
+    
+    // Clear previous selection
+    document.querySelectorAll('.material-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Select new material
+    document.getElementById(materialType + '-card').classList.add('selected');
+    optimizer.selectedMaterial = materialType;
+    
+    // Update material grade options
+    const gradeSelect = document.getElementById('material_grade');
+    const lengthSelect = document.getElementById('standard_lengths');
+    const costInput = document.getElementById('material_cost');
+    
+    const materialSpec = optimizer.materialSpecs[materialType];
+    
+    // Update grades
+    gradeSelect.innerHTML = materialSpec.grades.map(grade => 
+        `<option value="${grade}">${grade}</option>`
+    ).join('');
+    
+    // Update standard lengths
+    lengthSelect.innerHTML = materialSpec.standardLengths.map(length => 
+        `<option value="${length}">${length}' ${materialSpec.unit === 'sheets' ? 'length' : ''}</option>`
+    ).join('');
+    
+    // Select all lengths by default
+    Array.from(lengthSelect.options).forEach(option => option.selected = true);
+    
+    // Update cost with default value
+    if (materialSpec.baseCosts[materialSpec.grades[0]]) {
+        costInput.value = materialSpec.baseCosts[materialSpec.grades[0]];
+    }
+    
+    // Update cost when grade changes
+    gradeSelect.addEventListener('change', function() {
+        if (materialSpec.baseCosts[this.value]) {
+            costInput.value = materialSpec.baseCosts[this.value];
+        }
+    });
+}
+
+// Cut list management
+function addCutItem() {
+    const container = document.getElementById('cut-list-items');
+    const newItem = document.createElement('div');
+    newItem.className = 'cut-item';
+    newItem.innerHTML = `
+        <span>Cut Length:</span>
+        <input type="number" class="cut-length" step="0.125" min="0" placeholder="e.g. 8.5">
+        <span>Quantity:</span>
+        <input type="number" class="cut-quantity" min="1" value="1" placeholder="1">
+        <span>Description:</span>
+        <input type="text" class="cut-description" placeholder="Optional description">
+        <button class="remove-cut-btn" onclick="removeCutItem(this)">Remove</button>
+    `;
+    container.appendChild(newItem);
+}
+
+function removeCutItem(button) {
+    const cutItems = document.querySelectorAll('.cut-item');
+    if (cutItems.length > 1) {
+        button.parentElement.remove();
+    } else {
+        alert('You must have at least one cut item');
+    }
+}
+
+// Tab switching functionality
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    document.getElementById(tabName + '-tab').classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Initialize calculator
+let materialOptimizer;
+document.addEventListener('DOMContentLoaded', function() {
+    materialOptimizer = new MaterialWasteOptimizer();
+    window.materialOptimizer = materialOptimizer;
+});
+
+// Calculate function
+function calculateMaterialOptimization() {
+    materialOptimizer.calculate();
+}
+
+// Action button functions
+function copyResults() {
+    if (!materialOptimizer.results) {
+        alert('Calculate first to copy results');
+        return;
+    }
+    
+    const resultsText = `
+Material Waste Optimization Results
+Generated: ${new Date().toLocaleString()}
+
+OPTIMIZATION SUMMARY:
+- Total Pieces to Order: ${materialOptimizer.results.optimization.totalPieces}
+- Waste Percentage: ${materialOptimizer.results.optimization.wastePercentage.toFixed(1)}%
+- Total Cost: ${materialOptimizer.formatCurrency(materialOptimizer.results.costAnalysis.totalCost)}
+- Total Savings: ${materialOptimizer.formatCurrency(materialOptimizer.results.totalSavings)}
+
+MATERIAL ORDER:
+${Object.entries(materialOptimizer.results.optimization.summary).map(([length, data]) => 
+    `${length}' pieces: ${data.count} needed`
+).join('\n')}
+
+WASTE ANALYSIS:
+- Total Waste: ${materialOptimizer.results.wasteAnalysis.totalWaste.toFixed(2)} linear feet
+- Usable Waste: ${materialOptimizer.results.wasteAnalysis.usableWaste.toFixed(2)} linear feet
+
+ROM DISCLAIMER: These are rough estimates only. Verify with material suppliers.
+    `;
+    
+    navigator.clipboard.writeText(resultsText).then(() => {
+        materialOptimizer.showNotification('Results copied to clipboard!', 'success');
+    });
+}
+
+function exportToPDF() { materialOptimizer.generatePDF(); }
+function exportToCSV() { materialOptimizer.exportToCSV(); }
+function shareResults() { materialOptimizer.shareableLink(); }
+function saveCalculation() {
+    const notes = prompt('Add notes for this calculation (optional):') || '';
+    materialOptimizer.saveCalculation(notes);
+}
+</script>
+
+<script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body>
+</html>

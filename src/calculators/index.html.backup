@@ -1,0 +1,2918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Calculators - CostFlowAI</title>
+    <meta name="description" content="Professional construction calculators for contractors. Concrete, framing, drywall, roofing, and more.">
+    <link rel="canonical" href="https://costflowai.com/calculators/">
+<style>
+/* EMBEDDED CSS - ZERO EXTERNAL DEPENDENCIES */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f7fafc;color:#2d3748;line-height:1.6}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#1e3a5f,#0f1f33);color:white;padding:3rem 20px;text-align:center;margin-bottom:20px}
+.header h1{font-size:2.5rem;margin-bottom:0.5rem}
+.header p{font-size:1.1rem;opacity:0.9}
+.nav-home{margin-bottom:20px}
+.nav-home a{color:#ff6b35;text-decoration:none;font-weight:600;font-size:1.1rem}
+.nav-home a:hover{text-decoration:underline}
+.nav-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0;padding:20px;background:white;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.tab-btn{padding:12px 20px;background:#e2e8f0;border:none;border-radius:6px;cursor:pointer;font-weight:600;transition:all 0.3s;font-size:14px;min-height:44px}
+.tab-btn:hover{background:#cbd5e0;transform:translateY(-1px)}
+.tab-btn.active{background:#ff6b35;color:white;box-shadow:0 2px 8px rgba(255,107,53,0.3)}
+.calculator-panel{display:none;background:white;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-top:20px}
+.calculator-panel.active{display:block}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:20px}
+.input-section{background:#f7fafc;padding:25px;border-radius:8px}
+.results-section{background:#fff;border:2px solid #e2e8f0;padding:25px;border-radius:8px}
+.input-group{margin-bottom:15px}
+.input-group label{display:block;font-weight:600;margin-bottom:8px;color:#1e3a5f}
+.input-group input,.input-group select{width:100%;padding:12px;border:2px solid #cbd5e0;border-radius:6px;font-size:16px;transition:border-color 0.2s}
+.input-group input:focus,.input-group select:focus{outline:2px solid #ff6b35;outline-offset:2px;border-color:#ff6b35}
+.input-hint{display:block;color:#6b7280;font-size:14px;margin-top:4px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.btn{padding:12px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.3s;font-size:14px;min-height:44px}
+.btn-primary{background:#ff6b35;color:white}
+.btn-primary:hover{background:#e55a2b;transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,107,53,0.3)}
+.btn-secondary{background:#e2e8f0;color:#2d3748;margin-left:10px}
+.btn-secondary:hover{background:#cbd5e0}
+.result-box{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);padding:25px;border-radius:8px;margin-top:20px;text-align:center;border:2px solid #0369a1}
+.result-main{font-size:2.2rem;font-weight:700;color:#0369a1;margin:10px 0}
+.result-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #e2e8f0}
+.result-row:last-child{border-bottom:none;font-weight:600;font-size:1.1rem;color:#1e3a5f}
+.disclaimer{background:#fff5f5;border-left:4px solid #ff6b35;padding:20px;margin-top:25px;color:#666;border-radius:0 8px 8px 0}
+.actions{display:flex;gap:10px;margin-top:25px;flex-wrap:wrap}
+.calc-intro{margin-bottom:20px;color:#4a5568}
+.calc-intro h2{color:#1e3a5f;margin-bottom:10px;font-size:1.8rem}
+@media(max-width:768px){
+  .calc-grid{grid-template-columns:1fr}
+  .nav-tabs{gap:8px;padding:15px;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}
+  .tab-btn{font-size:13px;padding:10px 15px;flex-shrink:0;min-width:auto}
+  .header h1{font-size:2rem}
+  .header p{font-size:1rem}
+  .container{padding:15px}
+  .actions{flex-direction:column;gap:10px}
+  .btn{width:100%;margin-left:0}
+  .input-section{padding:20px}
+  .results-section{padding:20px}
+  .calc-grid{gap:20px;margin-top:15px}
+  .result-row{flex-direction:column;text-align:left;gap:5px}
+  .result-main{font-size:1.8rem}
+}
+.notification{position:fixed;top:20px;right:20px;padding:15px 25px;background:#10b981;color:white;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);animation:slideIn 0.3s ease;z-index:1000;font-weight:600}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.stats{background:white;padding:25px;border-radius:8px;margin-bottom:20px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.stats h3{color:#1e3a5f;margin-bottom:10px}
+.progress-indicator{position:absolute;top:0;left:0;height:3px;background:#ff6b35;transition:width 0.3s ease;border-radius:3px}
+.input-group-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.tooltip{position:relative;display:inline-block;margin-left:5px;color:#6b7280;cursor:help}
+.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:125%;left:50%;transform:translateX(-50%);background:#1f2937;color:white;padding:8px 12px;border-radius:6px;white-space:nowrap;font-size:12px;font-weight:normal;z-index:1001}
+.floating-feedback{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:12px 20px;border-radius:50px;box-shadow:0 4px 20px rgba(16,185,129,0.4);cursor:pointer;font-weight:600;z-index:1000;transition:all 0.3s ease;font-size:14px}
+.floating-feedback:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(16,185,129,0.5);background:linear-gradient(135deg,#059669,#047857)}
+.floating-feedback:active{transform:translateY(0)}
+.calc-progress{background:#f0f9ff;border:2px solid #0369a1;border-radius:8px;padding:15px;margin:15px 0;color:#0369a1}
+.calc-progress strong{color:#0c4a6e}
+</style>
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CostFlowAI Construction Calculator Suite",
+  "description": "Professional construction calculators for contractors. Concrete, framing, drywall, roofing, electrical, HVAC, plumbing, flooring, insulation, excavation, and labor calculators.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web Browser",
+  "url": "https://costflowai.com/calculators/",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "CostFlowAI",
+    "url": "https://costflowai.com"
+  },
+  "hasPart": [
+    {"@type": "SoftwareApplication", "name": "Concrete Calculator", "url": "https://costflowai.com/calculators/#concrete-calc"},
+    {"@type": "SoftwareApplication", "name": "Framing Calculator", "url": "https://costflowai.com/calculators/#framing-calc"},
+    {"@type": "SoftwareApplication", "name": "Paint Calculator", "url": "https://costflowai.com/calculators/#paint-calc"},
+    {"@type": "SoftwareApplication", "name": "Roofing Calculator", "url": "https://costflowai.com/calculators/#roofing-calc"},
+    {"@type": "SoftwareApplication", "name": "Electrical Calculator", "url": "https://costflowai.com/calculators/#electrical-calc"},
+    {"@type": "SoftwareApplication", "name": "Drywall Calculator", "url": "https://costflowai.com/calculators/#drywall-calc"},
+    {"@type": "SoftwareApplication", "name": "Flooring Calculator", "url": "https://costflowai.com/calculators/#flooring-calc"},
+    {"@type": "SoftwareApplication", "name": "Plumbing Calculator", "url": "https://costflowai.com/calculators/#plumbing-calc"},
+    {"@type": "SoftwareApplication", "name": "HVAC Calculator", "url": "https://costflowai.com/calculators/#hvac-calc"},
+    {"@type": "SoftwareApplication", "name": "Insulation Calculator", "url": "https://costflowai.com/calculators/#insulation-calc"},
+    {"@type": "SoftwareApplication", "name": "Excavation Calculator", "url": "https://costflowai.com/calculators/#excavation-calc"},
+    {"@type": "SoftwareApplication", "name": "Labor Calculator", "url": "https://costflowai.com/calculators/#labor-calc"}
+  ]
+}
+</script>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>🏗️ Professional Construction Calculators</h1>
+  <p>All-in-One Calculator Suite • Save • Export • Share • 100% Free</p>
+</div>
+
+<div class="container">
+  <div class="nav-home">
+    <a href="/">← Back to Home</a>
+  </div>
+
+  <div class="stats">
+    <h3>✨ 12 Professional Calculators • No Registration Required • ROM Estimates</h3>
+  </div>
+
+  <!-- PROFESSIONAL TAB NAVIGATION -->
+  <div id="calc-tabs" class="nav-tabs" role="tablist" aria-label="Construction Calculators">
+    <button role="tab" id="tab-concrete" class="tab-btn active" data-tab="concrete" aria-controls="concrete-calc" aria-selected="true" tabindex="0">🏗️ Concrete</button>
+    <button role="tab" id="tab-framing" class="tab-btn" data-tab="framing" aria-controls="framing-calc" aria-selected="false" tabindex="-1">🔨 Framing</button>
+    <button role="tab" id="tab-paint" class="tab-btn" data-tab="paint" aria-controls="paint-calc" aria-selected="false" tabindex="-1">🎨 Paint</button>
+    <button role="tab" id="tab-roofing" class="tab-btn" data-tab="roofing" aria-controls="roofing-calc" aria-selected="false" tabindex="-1">🏠 Roofing</button>
+    <button role="tab" id="tab-electrical" class="tab-btn" data-tab="electrical" aria-controls="electrical-calc" aria-selected="false" tabindex="-1">⚡ Electrical</button>
+    <button role="tab" id="tab-drywall" class="tab-btn" data-tab="drywall" aria-controls="drywall-calc" aria-selected="false" tabindex="-1">📐 Drywall</button>
+    <button role="tab" id="tab-flooring" class="tab-btn" data-tab="flooring" aria-controls="flooring-calc" aria-selected="false" tabindex="-1">⬛ Flooring</button>
+    <button role="tab" id="tab-plumbing" class="tab-btn" data-tab="plumbing" aria-controls="plumbing-calc" aria-selected="false" tabindex="-1">🚿 Plumbing</button>
+    <button role="tab" id="tab-hvac" class="tab-btn" data-tab="hvac" aria-controls="hvac-calc" aria-selected="false" tabindex="-1">❄️ HVAC</button>
+    <button role="tab" id="tab-insulation" class="tab-btn" data-tab="insulation" aria-controls="insulation-calc" aria-selected="false" tabindex="-1">🔥 Insulation</button>
+    <button role="tab" id="tab-excavation" class="tab-btn" data-tab="excavation" aria-controls="excavation-calc" aria-selected="false" tabindex="-1">⛏️ Excavation</button>
+    <button role="tab" id="tab-labor" class="tab-btn" data-tab="labor" aria-controls="labor-calc" aria-selected="false" tabindex="-1">👷 Labor</button>
+  </div>
+
+  <!-- CONCRETE CALCULATOR -->
+  <section id="concrete-calc" class="calculator-panel active" role="tabpanel" aria-labelledby="tab-concrete" data-calc="concrete">
+    <div class="calc-intro">
+      <h2>🏗️ Advanced Concrete Calculator</h2>
+      <p>Professional concrete estimation with rebar calculations, waste factors, and regional pricing.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Specifications</h3>
+        
+        <div class="input-group">
+          <label for="concrete-type">Pour Type <span class="tooltip" data-tip="Different pour types have different waste factors">ℹ️</span></label>
+          <select id="concrete-type" aria-describedby="concrete-type-hint">
+            <option value="slab">Slab on Grade (5% waste)</option>
+            <option value="footing">Footing (8% waste)</option>
+            <option value="wall">Wall (10% waste)</option>
+            <option value="stairs">Stairs (15% waste)</option>
+            <option value="driveway">Driveway (7% waste)</option>
+          </select>
+          <small id="concrete-type-hint" class="input-hint">Different pour types have varying waste factors</small>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label for="concrete-length">Length (feet)</label>
+            <input type="number" id="concrete-length" value="30" min="0" step="0.1" aria-describedby="concrete-length-hint">
+            <small id="concrete-length-hint" class="input-hint">Enter the length of your concrete pour</small>
+          </div>
+          <div class="input-group">
+            <label for="concrete-width">Width (feet)</label>
+            <input type="number" id="concrete-width" value="20" min="0" step="0.1" aria-describedby="concrete-width-hint">
+            <small id="concrete-width-hint" class="input-hint">Enter the width of your concrete pour</small>
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label for="concrete-thickness">Thickness (inches)</label>
+          <input type="number" id="concrete-thickness" value="4" min="1" max="24" step="0.5" aria-describedby="concrete-thickness-hint">
+          <small id="concrete-thickness-hint" class="input-hint">Typical residential slab is 4 inches thick</small>
+        </div>
+        
+        <div class="input-group">
+          <label for="concrete-psi">PSI Strength</label>
+          <select id="concrete-psi" aria-describedby="concrete-psi-hint">
+            <option value="2500">2500 PSI - $125/yard</option>
+            <option value="3000">3000 PSI - $130/yard</option>
+            <option value="3500" selected>3500 PSI - $135/yard</option>
+            <option value="4000">4000 PSI - $145/yard</option>
+            <option value="4500">4500 PSI - $155/yard</option>
+            <option value="5000">5000 PSI - $165/yard</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Rebar Reinforcement</label>
+          <select id="concrete-rebar">
+            <option value="none">No Rebar</option>
+            <option value="light">Light Grid (#3 @ 18") +$0.65/sq ft</option>
+            <option value="standard">Standard (#4 @ 12") +$0.85/sq ft</option>
+            <option value="heavy">Heavy (#5 @ 12") +$1.25/sq ft</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Delivery Method</label>
+          <select id="concrete-delivery">
+            <option value="truck">Ready-Mix Truck</option>
+            <option value="pump">Concrete Pump (+$150)</option>
+            <option value="crane">Crane Bucket (+$200)</option>
+          </select>
+        </div>
+        
+        <button type="button" class="btn btn-primary" aria-describedby="concrete-calc-description" data-action="calculate">
+          🧮 Calculate Concrete
+        </button>
+        <small id="concrete-calc-description" class="input-hint">Click to calculate your concrete project estimate</small>
+      </div>
+      
+      <div class="results-section" aria-live="polite" aria-label="Calculation Results">
+        <h3>📊 Project Results</h3>
+        <div class="result-box">
+          <div>Concrete Volume Needed:</div>
+          <div class="result-main" id="concrete-volume">0.00 cu yd</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including waste factor</div>
+        </div>
+        
+        <div class="result-row">
+          <span>Square Footage:</span>
+          <span id="concrete-sqft">0 sq ft</span>
+        </div>
+        <div class="result-row">
+          <span>Material Cost:</span>
+          <span id="concrete-material">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Rebar Cost:</span>
+          <span id="concrete-rebar-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor Estimate:</span>
+          <span id="concrete-labor">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Forms/Equipment:</span>
+          <span id="concrete-forms">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Delivery Cost:</span>
+          <span id="concrete-delivery-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="concrete-total">$0</strong>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export CSV</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong>⚠️ Important ROM Disclaimer:</strong> This provides rough order of magnitude (ROM) estimates only. Actual costs vary significantly by location, site conditions, material availability, and specific project requirements. Always obtain detailed quotes from licensed contractors and verify with local building codes.
+    </div>
+  </div>
+
+  <!-- FRAMING CALCULATOR -->
+  <section id="framing-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-framing" data-calc="framing" hidden>
+    <div class="calc-intro">
+      <h2>🔨 Advanced Framing Calculator</h2>
+      <p>Calculate lumber requirements, stud counts, and material costs for wall framing projects.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Wall Specifications</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Wall Length (feet)</label>
+            <input type="number" id="framing-length" value="20" min="0" step="0.5">
+          </div>
+          <div class="input-group">
+            <label>Wall Height (feet)</label>
+            <input type="number" id="framing-height" value="8" min="0" step="0.5">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Stud Spacing</label>
+          <select id="framing-spacing">
+            <option value="16">16" on center (stronger)</option>
+            <option value="24">24" on center (economical)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Lumber Grade & Size</label>
+          <select id="framing-grade">
+            <option value="standard">2x4 Standard - $8/stud</option>
+            <option value="premium">2x4 Premium - $12/stud</option>
+            <option value="standard6">2x6 Standard - $12/stud</option>
+            <option value="premium6">2x6 Premium - $18/stud</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Openings</label>
+          <input type="number" id="framing-openings" value="2" min="0" max="10">
+        </div>
+        
+        <div class="input-group">
+          <label>Include Headers?</label>
+          <select id="framing-headers">
+            <option value="no">No Headers</option>
+            <option value="yes">Yes, Include Headers (+$25 ea)</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Framing</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Materials Needed</h3>
+        <div class="result-box">
+          <div>Total Studs Required:</div>
+          <div class="result-main" id="framing-studs">0</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including waste allowance</div>
+        </div>
+        
+        <div class="result-row">
+          <span>Top/Bottom Plates:</span>
+          <span id="framing-plates">0 pieces</span>
+        </div>
+        <div class="result-row">
+          <span>Headers Needed:</span>
+          <span id="framing-headers-count">0</span>
+        </div>
+        <div class="result-row">
+          <span>Total Linear Feet:</span>
+          <span id="framing-linear">0 ft</span>
+        </div>
+        <div class="result-row">
+          <span>Material Cost:</span>
+          <span id="framing-material">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor Estimate:</span>
+          <span id="framing-labor">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="framing-total">$0</strong>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">⚠️ ROM estimate only. Add 10% for waste. Verify with local building codes for structural requirements.</div>
+  </div>
+
+  <!-- PAINT CALCULATOR -->
+  <section id="paint-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-paint" data-calc="paint" hidden>
+    <div class="calc-intro">
+      <h2>🎨 Professional Paint Calculator</h2>
+      <p>Calculate paint quantities, primer needs, and project costs with coverage adjustments.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Surface Details</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Total Wall Area (sq ft)</label>
+            <input type="number" id="paint-area" data-field="wall-area" value="400" min="0">
+          </div>
+          <div class="input-group">
+            <label>Doors & Windows (sq ft)</label>
+            <input type="number" id="paint-openings" data-field="openings" value="80" min="0">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Surface Texture</label>
+          <select id="paint-texture" data-field="texture">
+            <option value="smooth">Smooth (400 sq ft/gallon)</option>
+            <option value="light">Light Texture (350 sq ft/gallon)</option>
+            <option value="medium">Medium Texture (300 sq ft/gallon)</option>
+            <option value="heavy">Heavy Texture (250 sq ft/gallon)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Coats</label>
+          <select id="paint-coats" data-field="coats">
+            <option value="1">1 Coat</option>
+            <option value="2" selected>2 Coats (recommended)</option>
+            <option value="3">3 Coats (full coverage)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Paint Quality</label>
+          <select id="paint-quality" data-field="quality">
+            <option value="basic">Basic - $35/gallon</option>
+            <option value="premium">Premium - $55/gallon</option>
+            <option value="ultra">Ultra Premium - $75/gallon</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Primer Needed?</label>
+          <select id="paint-primer" data-field="primer">
+            <option value="no">No Primer</option>
+            <option value="yes">Yes, Primer Required (+$45/gal)</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Paint</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Paint Requirements</h3>
+        <div class="result-box">
+          <div>Paint Needed:</div>
+          <div class="result-main" id="paint-gallons" data-out="paint-gal">0.00 gallons</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including 10% waste factor</div>
+        </div>
+        
+        <div class="result-row">
+          <span>Paintable Area:</span>
+          <span id="paint-net-area" data-out="paintable">0 sq ft</span>
+        </div>
+        <div class="result-row">
+          <span>Primer Needed:</span>
+          <span id="paint-primer-gallons" data-out="primer-gal">0 gallons</span>
+        </div>
+        <div class="result-row">
+          <span>Paint Cost:</span>
+          <span id="paint-cost" data-out="paint-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Primer Cost:</span>
+          <span id="paint-primer-cost" data-out="primer-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor Estimate:</span>
+          <span id="paint-labor" data-out="labor">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="paint-total" data-out="total">$0</strong>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+        
+        <!-- Email Form -->
+        <div class="form-row email-send" data-email style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 6px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">📧 Email results to:</label>
+          <div style="display: flex; gap: 8px; align-items: stretch;">
+            <input type="email" placeholder="your@email.com" aria-label="Email results" data-field="email" style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;" required>
+            <button type="button" class="btn btn-secondary" data-action="email" style="padding: 8px 16px; white-space: nowrap; font-size: 14px;">Send</button>
+            <input type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" data-field="hp">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">⚠️ Coverage varies by surface porosity, application method, and paint viscosity. Always purchase 10-15% extra for touch-ups.</div>
+  </div>
+
+  <!-- ROOFING CALCULATOR -->
+  <section id="roofing-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-roofing" data-calc="roofing" hidden>
+    <div class="calc-intro">
+      <h2>🏠 Professional Roofing Calculator</h2>
+      <p>Advanced IRC/IBC compliant roofing analysis with wind load calculations, ASCE 7 standards, and comprehensive material specifications.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Building Information</h3>
+        
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="roof-building-type">
+            <option value="residential">Residential (IRC)</option>
+            <option value="commercial">Commercial (IBC)</option>
+            <option value="industrial">Industrial</option>
+            <option value="institutional">Institutional</option>
+          </select>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Roof Length (feet)</label>
+            <input type="number" id="roof-length" value="40" min="0">
+          </div>
+          <div class="input-group">
+            <label>Roof Width (feet)</label>
+            <input type="number" id="roof-width" value="25" min="0">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Climate Zone</label>
+          <select id="roof-climate-zone">
+            <option value="1">Zone 1 (Extreme Cold)</option>
+            <option value="2">Zone 2 (Very Cold)</option>
+            <option value="3">Zone 3 (Cold)</option>
+            <option value="4" selected>Zone 4 (Mixed-Humid)</option>
+            <option value="5">Zone 5 (Warm-Humid)</option>
+            <option value="6">Zone 6 (Hot-Humid)</option>
+            <option value="7">Zone 7 (Very Hot-Humid)</option>
+          </select>
+        </div>
+        
+        <h3>Roof System Design</h3>
+        
+        <div class="input-group">
+          <label>Roof Pitch (Rise/Run)</label>
+          <select id="roof-pitch">
+            <option value="0.25">1/4:12 (Flat) - 1.0x multiplier</option>
+            <option value="1">1:12 (Low Slope) - 1.05x multiplier</option>
+            <option value="2">2:12 - 1.06x multiplier</option>
+            <option value="4">4:12 (Standard) - 1.15x multiplier</option>
+            <option value="6" selected>6:12 (Steep) - 1.25x multiplier</option>
+            <option value="8">8:12 (Very Steep) - 1.35x multiplier</option>
+            <option value="12">12:12 (45°) - 1.41x multiplier</option>
+            <option value="18">18:12+ (Extreme) - 1.60x multiplier</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Roofing System</label>
+          <select id="roof-system">
+            <option value="asphalt-3tab">3-Tab Asphalt Shingles</option>
+            <option value="asphalt-arch" selected>Architectural Shingles</option>
+            <option value="asphalt-premium">Premium Designer Shingles</option>
+            <option value="metal-panel">Metal Panel System</option>
+            <option value="metal-shingle">Metal Shingle System</option>
+            <option value="tpo">TPO Single Ply Membrane</option>
+            <option value="epdm">EPDM Membrane</option>
+            <option value="modified-bitumen">Modified Bitumen</option>
+            <option value="built-up">Built-Up Roof (BUR)</option>
+            <option value="tile-clay">Clay Tile</option>
+            <option value="tile-concrete">Concrete Tile</option>
+            <option value="slate">Natural Slate</option>
+            <option value="wood-shake">Wood Shake/Shingle</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Wind Speed (ASCE 7)</label>
+          <select id="roof-wind-speed">
+            <option value="90">90 mph (Low Risk)</option>
+            <option value="100">100 mph (Moderate Risk)</option>
+            <option value="110" selected>110 mph (Standard)</option>
+            <option value="120">120 mph (High Risk)</option>
+            <option value="130">130 mph (Very High Risk)</option>
+            <option value="140">140 mph (Extreme Risk)</option>
+            <option value="150">150 mph+ (Hurricane Zone)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Snow Load (psf)</label>
+          <input type="number" id="roof-snow-load" value="20" min="0" max="100">
+        </div>
+        
+        <div class="input-group">
+          <label>Exposure Category</label>
+          <select id="roof-exposure">
+            <option value="B">Category B (Urban/Suburban)</option>
+            <option value="C" selected>Category C (Open Terrain)</option>
+            <option value="D">Category D (Flat/Water)</option>
+          </select>
+        </div>
+        
+        <h3>Project Specifications</h3>
+        
+        <div class="input-group">
+          <label>Existing Condition</label>
+          <select id="roof-condition">
+            <option value="new">New Construction</option>
+            <option value="overlay">Overlay (1 Layer)</option>
+            <option value="tearoff-1" selected>Tear-Off (1 Layer)</option>
+            <option value="tearoff-2">Tear-Off (2 Layers)</option>
+            <option value="tearoff-3">Tear-Off (3+ Layers)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Deck Type</label>
+          <select id="roof-deck">
+            <option value="osb" selected>OSB Sheathing</option>
+            <option value="plywood">Plywood Sheathing</option>
+            <option value="planking">Wood Planking</option>
+            <option value="concrete">Concrete Deck</option>
+            <option value="metal">Metal Deck</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Complexity Factor</label>
+          <select id="roof-complexity">
+            <option value="simple">Simple (Rectangle, few penetrations)</option>
+            <option value="moderate" selected>Moderate (Some angles, dormers)</option>
+            <option value="complex">Complex (Multiple angles, many penetrations)</option>
+            <option value="very-complex">Very Complex (Irregular shape, many features)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Access Difficulty</label>
+          <select id="roof-access">
+            <option value="easy">Easy (1-story, good access)</option>
+            <option value="moderate" selected>Moderate (2-story, standard)</option>
+            <option value="difficult">Difficult (3+ story, steep)</option>
+            <option value="extreme">Extreme (High-rise, complex)</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Professional Roof</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Professional Roof Analysis</h3>
+        <div class="result-box">
+          <div>Total Roof Area:</div>
+          <div class="result-main" id="roof-total-area">0 sq ft</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Includes pitch and waste factors</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Design Wind Load:</div>
+          <div class="result-main" id="roof-wind-load">0 psf</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Per ASCE 7 calculations</div>
+        </div>
+        
+        <h4>📋 System Requirements</h4>
+        <div class="result-row">
+          <span>Roof Squares:</span>
+          <span id="roof-squares">0.00</span>
+        </div>
+        <div class="result-row">
+          <span>Underlayment Area:</span>
+          <span id="roof-underlayment-area">0 sq ft</span>
+        </div>
+        <div class="result-row">
+          <span>Ridge Length:</span>
+          <span id="roof-ridge-length">0 LF</span>
+        </div>
+        <div class="result-row">
+          <span>Eave Length:</span>
+          <span id="roof-eave-length">0 LF</span>
+        </div>
+        <div class="result-row">
+          <span>Rake Length:</span>
+          <span id="roof-rake-length">0 LF</span>
+        </div>
+        
+        <h4>💰 Professional Cost Analysis</h4>
+        <div class="result-row">
+          <span>Primary Materials:</span>
+          <span id="roof-material-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Underlayment System:</span>
+          <span id="roof-underlayment-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Flashing & Trim:</span>
+          <span id="roof-flashing-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Ventilation System:</span>
+          <span id="roof-ventilation-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Tear-Off & Disposal:</span>
+          <span id="roof-tearoff-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Equipment & Tools:</span>
+          <span id="roof-equipment-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor (Installation):</span>
+          <span id="roof-labor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Permits & Inspection:</span>
+          <span id="roof-permit-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="roof-total-cost">$0</strong>
+        </div>
+        
+        <h4>🔧 Technical Specifications</h4>
+        <div class="result-row">
+          <span>Fastener Requirements:</span>
+          <span id="roof-fasteners">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Attachment Method:</span>
+          <span id="roof-attachment">Mechanical</span>
+        </div>
+        <div class="result-row">
+          <span>Warranty Period:</span>
+          <span id="roof-warranty">25 years</span>
+        </div>
+        <div class="result-row">
+          <span>Fire Rating:</span>
+          <span id="roof-fire-rating">Class A</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong>⚖️ Professional Disclaimer:</strong> This calculator provides ROM estimates based on IRC/IBC standards and ASCE 7 wind load calculations. Calculations are for preliminary planning only and do not substitute for professional engineering analysis. Wind loads, snow loads, and structural requirements must be verified by a licensed professional engineer. Local building codes, permits, and inspections may require additional considerations. Material specifications should be verified with manufacturer requirements for specific climate zones and exposure conditions.
+    </div>
+  </div>
+
+  <!-- ADVANCED ELECTRICAL LOAD CALCULATOR -->
+  <section id="electrical-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-electrical" data-calc="electrical" hidden>
+    <div class="calc-intro">
+      <h2>⚡ Professional Electrical Load Calculator</h2>
+      <p>Advanced NEC Article 220 compliant load calculations with service sizing, conductor selection, and comprehensive cost analysis.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Building Information</h3>
+        
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="elec-building">
+            <option value="dwelling">Single/Multi-Family Dwelling</option>
+            <option value="office">Office Building</option>
+            <option value="retail">Retail Store</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="warehouse">Warehouse</option>
+            <option value="school">School</option>
+            <option value="hospital">Hospital</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Floor Area (sq ft)</label>
+          <input type="number" id="elec-sqft" value="2000" min="100" max="100000">
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Units (Multi-Family)</label>
+          <input type="number" id="elec-units" value="1" min="1" max="500">
+        </div>
+        
+        <h3>Specific Loads (NEC 220)</h3>
+        
+        <div class="input-group">
+          <label>Small Appliance Circuits</label>
+          <select id="elec-small-appliance">
+            <option value="2">2 Circuits (3000W)</option>
+            <option value="3">3 Circuits (4500W)</option>
+            <option value="4">4 Circuits (6000W)</option>
+            <option value="6">6 Circuits (9000W)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Laundry Circuit</label>
+          <select id="elec-laundry">
+            <option value="1">Required (1500W)</option>
+            <option value="0">Not Required</option>
+          </select>
+        </div>
+        
+        <h3>Major Appliances</h3>
+        
+        <div class="input-group">
+          <label>Electric Range/Cooktop (kW)</label>
+          <input type="number" id="elec-range" value="0" min="0" max="50" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Electric Dryer (kW)</label>
+          <input type="number" id="elec-dryer" value="0" min="0" max="10" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Electric Water Heater (kW)</label>
+          <input type="number" id="elec-water-heater" value="0" min="0" max="20" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Air Conditioning (tons)</label>
+          <input type="number" id="elec-ac-tons" value="0" min="0" max="20" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Heat Pump (tons)</label>
+          <input type="number" id="elec-heat-pump" value="0" min="0" max="20" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Electric Heating (kW)</label>
+          <input type="number" id="elec-heat" value="0" min="0" max="100" step="1">
+        </div>
+        
+        <div class="input-group">
+          <label>Motor Loads (HP)</label>
+          <input type="number" id="elec-motors" value="0" min="0" max="50" step="0.25">
+        </div>
+        
+        <h3>System Configuration</h3>
+        
+        <div class="input-group">
+          <label>Voltage System</label>
+          <select id="elec-voltage">
+            <option value="120240">120/240V Single Phase</option>
+            <option value="120208">120/208V Three Phase</option>
+            <option value="277480">277/480V Three Phase</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Service Entrance Cable</label>
+          <select id="elec-service-type">
+            <option value="overhead">Overhead Service</option>
+            <option value="underground">Underground Service</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Distance to Panel (feet)</label>
+          <input type="number" id="elec-distance" value="10" min="5" max="500">
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Load</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Load Calculation Results</h3>
+        <div class="result-box">
+          <div>Required Service:</div>
+          <div class="result-main" id="elec-service">0 Amps</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Per NEC 220.87 / 220.40</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Service Conductor:</div>
+          <div class="result-main" id="elec-conductor">0 AWG</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Per NEC Table 310.15(B)(16)</div>
+        </div>
+        
+        <h4>📋 Load Breakdown</h4>
+        <div class="result-row">
+          <span>General Lighting:</span>
+          <span id="elec-lighting-load">0W</span>
+        </div>
+        <div class="result-row">
+          <span>Small Appliance:</span>
+          <span id="elec-appliance-load">0W</span>
+        </div>
+        <div class="result-row">
+          <span>Laundry Load:</span>
+          <span id="elec-laundry-load">0W</span>
+        </div>
+        <div class="result-row">
+          <span>Range Load:</span>
+          <span id="elec-range-load">0W</span>
+        </div>
+        <div class="result-row">
+          <span>HVAC Load:</span>
+          <span id="elec-hvac-load">0W</span>
+        </div>
+        <div class="result-row">
+          <span>Other Appliances:</span>
+          <span id="elec-other-load">0W</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Connected Load:</strong>
+          <strong id="elec-total-load">0W</strong>
+        </div>
+        <div class="result-row">
+          <strong>Calculated Load:</strong>
+          <strong id="elec-calc-load">0W</strong>
+        </div>
+        
+        <h4>💰 Cost Analysis</h4>
+        <div class="result-row">
+          <span>Service Panel:</span>
+          <span id="elec-panel-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Service Conductors:</span>
+          <span id="elec-conductor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Grounding System:</span>
+          <span id="elec-ground-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor (Installation):</span>
+          <span id="elec-labor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Permit & Inspection:</span>
+          <span id="elec-permit-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="elec-total-cost">$0</strong>
+        </div>
+        
+        <h4>🔧 Technical Specifications</h4>
+        <div class="result-row">
+          <span>Service Conduit:</span>
+          <span id="elec-conduit-size">0"</span>
+        </div>
+        <div class="result-row">
+          <span>Grounding Conductor:</span>
+          <span id="elec-ground-conductor">#0</span>
+        </div>
+        <div class="result-row">
+          <span>Main Breaker:</span>
+          <span id="elec-main-breaker">0A</span>
+        </div>
+        <div class="result-row">
+          <span>Available Fault Current:</span>
+          <span id="elec-fault-current">0 kA</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      ⚠️ <strong>Professional Disclaimer:</strong> Electrical load calculations performed per NEC Article 220. 
+      Results are for preliminary planning only. Licensed electrical engineer or electrician must verify all calculations, 
+      conductor sizing (NEC 310.15), and local code compliance. Permit and inspection required by authority having jurisdiction (AHJ). 
+      Actual installation costs vary by location, complexity, and market conditions. Not valid for emergency systems or special occupancies.
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL DRYWALL CALCULATOR -->
+  <section id="drywall-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-drywall" data-calc="drywall" hidden>
+    <div class="calc-intro">
+      <h2>📐 Professional Drywall Calculator</h2>
+      <p>Advanced drywall estimation following GA-214 standards with finish level analysis, material optimization, and comprehensive cost breakdown.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Information</h3>
+        
+        <div class="input-group">
+          <label>Project Type</label>
+          <select id="drywall-project-type">
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="institutional">Institutional</option>
+            <option value="healthcare">Healthcare</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Construction Type</label>
+          <select id="drywall-construction">
+            <option value="new">New Construction</option>
+            <option value="remodel">Remodel/Renovation</option>
+            <option value="repair">Repair Work</option>
+          </select>
+        </div>
+        
+        <h3>Room Dimensions</h3>
+        
+        <div class="input-group">
+          <label for="drywall-length">Length (feet)</label>
+          <input type="number" id="drywall-length" value="12" min="1" max="500">
+        </div>
+        
+        <div class="input-group">
+          <label for="drywall-width">Width (feet)</label>
+          <input type="number" id="drywall-width" value="12" min="1" max="500">
+        </div>
+        
+        <div class="input-group">
+          <label for="drywall-height">Height (feet)</label>
+          <input type="number" id="drywall-height" value="8" min="7" max="20" step="0.5">
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Rooms</label>
+          <input type="number" id="drywall-rooms" value="1" min="1" max="50">
+        </div>
+        
+        <h3>Opening Deductions</h3>
+        
+        <div class="input-group">
+          <label>Standard Doors (3'0" x 6'8")</label>
+          <input type="number" id="drywall-doors" value="2" min="0" max="20">
+        </div>
+        
+        <div class="input-group">
+          <label>Windows (3' x 4' average)</label>
+          <input type="number" id="drywall-windows" value="4" min="0" max="50">
+        </div>
+        
+        <div class="input-group">
+          <label>Custom Opening Area (sq ft)</label>
+          <input type="number" id="drywall-custom-openings" value="0" min="0" max="1000">
+        </div>
+        
+        <h3>Material Specifications</h3>
+        
+        <div class="input-group">
+          <label>Gypsum Board Thickness</label>
+          <select id="drywall-thickness">
+            <option value="3/8">3/8" Light Weight</option>
+            <option value="1/2" selected>1/2" Regular</option>
+            <option value="5/8">5/8" Fire-Rated</option>
+            <option value="1/4">1/4" Flexible</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Board Type (ASTM C1396)</label>
+          <select id="drywall-board-type">
+            <option value="regular">Regular Gypsum</option>
+            <option value="moisture">Moisture Resistant</option>
+            <option value="fire">Fire Resistant (Type X)</option>
+            <option value="impact">Impact Resistant</option>
+            <option value="soundproof">Sound Dampening</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Finish Level (GA-214)</label>
+          <select id="drywall-finish-level">
+            <option value="0">Level 0 - No Finishing</option>
+            <option value="1">Level 1 - Basic Tape & Fill</option>
+            <option value="2">Level 2 - Embed & Spot</option>
+            <option value="3">Level 3 - Two Coats</option>
+            <option value="4" selected>Level 4 - Premium</option>
+            <option value="5">Level 5 - Highest Quality</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Joint Treatment</label>
+          <select id="drywall-joint-treatment">
+            <option value="paper">Paper Tape</option>
+            <option value="mesh" selected>Fiberglass Mesh</option>
+            <option value="pre-fab">Pre-fabricated</option>
+          </select>
+        </div>
+        
+        <h3>Installation Factors</h3>
+        
+        <div class="input-group">
+          <label>Ceiling Installation</label>
+          <select id="drywall-ceiling">
+            <option value="none">No Ceiling Work</option>
+            <option value="flat" selected>Flat Ceiling</option>
+            <option value="sloped">Sloped/Vaulted</option>
+            <option value="coffered">Coffered Design</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Installation Complexity</label>
+          <select id="drywall-complexity">
+            <option value="simple">Simple (Straight walls)</option>
+            <option value="standard" selected>Standard</option>
+            <option value="complex">Complex (Angles/Curves)</option>
+            <option value="intricate">Intricate Details</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Access Conditions</label>
+          <select id="drywall-access">
+            <option value="good" selected>Good Access</option>
+            <option value="limited">Limited Access</option>
+            <option value="difficult">Difficult Access</option>
+          </select>
+        </div>
+        
+        <button type="button" class="btn btn-primary" data-action="calculate" aria-describedby="drywall-calc-description">
+          🧮 Calculate Professional Drywall Estimate
+        </button>
+        <small id="drywall-calc-description" class="input-hint">GA-214 compliant calculation methodology</small>
+      </div>
+      
+      <div class="results-section" aria-live="polite" aria-label="Drywall Calculation Results">
+        <h3>📊 Professional Estimation Report</h3>
+        
+        <div class="result-box">
+          <div>Wall Area Analysis:</div>
+          <div class="result-main" id="drywall-wall-area">0 sq ft</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Net wall area after openings</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Material Requirements:</div>
+          <div class="result-main" id="drywall-sheets-required">0 Sheets</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including waste factor</div>
+        </div>
+        
+        <h4>📋 Material Breakdown</h4>
+        <div class="result-row">
+          <span>Gypsum Board Sheets:</span>
+          <span id="drywall-sheets-qty">0 sheets</span>
+        </div>
+        <div class="result-row">
+          <span>Joint Compound:</span>
+          <span id="drywall-compound-qty">0 gallons</span>
+        </div>
+        <div class="result-row">
+          <span>Joint Tape:</span>
+          <span id="drywall-tape-qty">0 linear ft</span>
+        </div>
+        <div class="result-row">
+          <span>Corner Bead:</span>
+          <span id="drywall-corner-qty">0 linear ft</span>
+        </div>
+        <div class="result-row">
+          <span>Screws/Fasteners:</span>
+          <span id="drywall-screws-qty">0 lbs</span>
+        </div>
+        <div class="result-row">
+          <span>Primer/Sealer:</span>
+          <span id="drywall-primer-qty">0 gallons</span>
+        </div>
+        
+        <h4>⏱️ Labor Analysis</h4>
+        <div class="result-row">
+          <span>Installation Hours:</span>
+          <span id="drywall-install-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Finishing Hours:</span>
+          <span id="drywall-finish-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Total Labor Hours:</span>
+          <span id="drywall-total-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Recommended Crew Size:</span>
+          <span id="drywall-crew-size">2 people</span>
+        </div>
+        
+        <h4>💰 Cost Analysis</h4>
+        <div class="result-row">
+          <span>Materials Cost:</span>
+          <span id="drywall-material-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Labor Cost:</span>
+          <span id="drywall-labor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Equipment/Tools:</span>
+          <span id="drywall-equipment-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Waste Allowance:</span>
+          <span id="drywall-waste-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="drywall-total-cost">$0</strong>
+        </div>
+        
+        <h4>🔧 Technical Specifications</h4>
+        <div class="result-row">
+          <span>Board Specification:</span>
+          <span id="drywall-board-spec">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Fastener Pattern:</span>
+          <span id="drywall-fastener-pattern">16" O.C.</span>
+        </div>
+        <div class="result-row">
+          <span>Joint Treatment:</span>
+          <span id="drywall-joint-spec">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Estimated Duration:</span>
+          <span id="drywall-duration">0 days</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      ⚠️ <strong>Professional Disclaimer:</strong> Drywall estimation performed per GA-214 standards and ASTM C1396 specifications. 
+      Results are for preliminary planning only. Licensed contractor must verify all calculations, material selections, 
+      and local building code compliance. Finish level requirements vary by application and must be specified in project documents. 
+      Actual costs vary by location, market conditions, and project complexity. Permits may be required for structural modifications.
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL FLOORING CALCULATOR -->
+  <section id="flooring-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-flooring" data-calc="flooring" hidden>
+    <div class="calc-intro">
+      <h2>⬛ Professional Flooring Calculator</h2>
+      <p>Advanced flooring analysis with subfloor preparation, moisture barriers, installation complexity, and comprehensive material optimization.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Information</h3>
+        
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="flooring-building-type">
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="retail">Retail</option>
+            <option value="hospitality">Hospitality</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="education">Educational</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Room Type</label>
+          <select id="flooring-room-type">
+            <option value="living">Living Area</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="bathroom">Bathroom</option>
+            <option value="bedroom">Bedroom</option>
+            <option value="basement">Basement</option>
+            <option value="office">Office Space</option>
+            <option value="retail-floor">Retail Floor</option>
+            <option value="warehouse">Warehouse</option>
+          </select>
+        </div>
+        
+        <h3>Floor Area & Layout</h3>
+        
+        <div class="input-group">
+          <label for="flooring-sqft">Total Square Feet</label>
+          <input type="number" id="flooring-sqft" value="500" min="1" max="50000">
+        </div>
+        
+        <div class="input-group">
+          <label>Room Shape Complexity</label>
+          <select id="flooring-complexity">
+            <option value="simple">Simple Rectangle</option>
+            <option value="standard" selected>Standard Layout</option>
+            <option value="complex">Complex (L-shape, angles)</option>
+            <option value="intricate">Intricate (curves, patterns)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Transitions</label>
+          <input type="number" id="flooring-transitions" value="2" min="0" max="20">
+        </div>
+        
+        <h3>Flooring Material</h3>
+        
+        <div class="input-group">
+          <label>Primary Flooring Type</label>
+          <select id="flooring-type">
+            <option value="luxury-vinyl">Luxury Vinyl Plank (LVP)</option>
+            <option value="engineered-hardwood">Engineered Hardwood</option>
+            <option value="solid-hardwood">Solid Hardwood</option>
+            <option value="laminate">Laminate</option>
+            <option value="tile-ceramic">Ceramic Tile</option>
+            <option value="tile-porcelain">Porcelain Tile</option>
+            <option value="tile-natural">Natural Stone</option>
+            <option value="carpet">Carpet</option>
+            <option value="polished-concrete">Polished Concrete</option>
+            <option value="epoxy">Epoxy Coating</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Material Grade</label>
+          <select id="flooring-grade">
+            <option value="economy">Economy Grade</option>
+            <option value="standard" selected>Standard Grade</option>
+            <option value="premium">Premium Grade</option>
+            <option value="luxury">Luxury Grade</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Plank/Tile Size</label>
+          <select id="flooring-size">
+            <option value="standard">Standard Size</option>
+            <option value="wide">Wide Plank/Large Format</option>
+            <option value="narrow">Narrow/Small Format</option>
+            <option value="mixed">Mixed Sizes</option>
+          </select>
+        </div>
+        
+        <h3>Subfloor Conditions</h3>
+        
+        <div class="input-group">
+          <label>Existing Subfloor</label>
+          <select id="flooring-subfloor">
+            <option value="good-plywood">Good Plywood/OSB</option>
+            <option value="concrete-good" selected>Concrete (Good)</option>
+            <option value="concrete-poor">Concrete (Needs Repair)</option>
+            <option value="old-flooring">Over Existing Flooring</option>
+            <option value="poor-condition">Poor Condition (Repair Needed)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Moisture Conditions</label>
+          <select id="flooring-moisture">
+            <option value="dry" selected>Dry Environment</option>
+            <option value="moderate">Moderate Moisture</option>
+            <option value="high">High Moisture Risk</option>
+            <option value="wet">Wet Environment</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Subfloor Preparation</label>
+          <select id="flooring-prep">
+            <option value="minimal">Minimal Prep Required</option>
+            <option value="standard" selected>Standard Preparation</option>
+            <option value="extensive">Extensive Prep Needed</option>
+            <option value="replacement">Subfloor Replacement</option>
+          </select>
+        </div>
+        
+        <h3>Installation Requirements</h3>
+        
+        <div class="input-group">
+          <label>Installation Method</label>
+          <select id="flooring-install-method">
+            <option value="floating">Floating Floor</option>
+            <option value="glue-down">Glue Down</option>
+            <option value="nail-down">Nail/Staple Down</option>
+            <option value="click-lock" selected>Click-Lock System</option>
+            <option value="thinset">Thinset Mortar</option>
+            <option value="stretch-in">Stretch-in (Carpet)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Underlayment Required</label>
+          <select id="flooring-underlayment">
+            <option value="none">None Required</option>
+            <option value="basic" selected>Basic Foam</option>
+            <option value="premium">Premium Acoustic</option>
+            <option value="moisture-barrier">Moisture Barrier</option>
+            <option value="radiant-heat">Radiant Heat Compatible</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Baseboards/Trim</label>
+          <select id="flooring-trim">
+            <option value="none">No Trim Work</option>
+            <option value="remove-reinstall" selected>Remove & Reinstall</option>
+            <option value="new-baseboard">New Baseboards</option>
+            <option value="quarter-round">Add Quarter Round</option>
+            <option value="custom">Custom Trim Work</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Access & Working Conditions</label>
+          <select id="flooring-access">
+            <option value="easy" selected>Easy Access</option>
+            <option value="moderate">Moderate Difficulty</option>
+            <option value="difficult">Difficult Access</option>
+            <option value="stairs">Stairs Included</option>
+          </select>
+        </div>
+        
+        <button type="button" class="btn btn-primary" data-action="calculate" aria-describedby="flooring-calc-description">
+          🧮 Calculate Professional Flooring Estimate
+        </button>
+        <small id="flooring-calc-description" class="input-hint">Comprehensive flooring analysis with industry standards</small>
+      </div>
+      
+      <div class="results-section" aria-live="polite" aria-label="Flooring Calculation Results">
+        <h3>📊 Professional Flooring Analysis</h3>
+        
+        <div class="result-box">
+          <div>Total Floor Area:</div>
+          <div class="result-main" id="flooring-total-area">0 sq ft</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including waste allowance</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Project Duration:</div>
+          <div class="result-main" id="flooring-duration">0 days</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Estimated completion time</div>
+        </div>
+        
+        <h4>📋 Material Requirements</h4>
+        <div class="result-row">
+          <span>Primary Flooring:</span>
+          <span id="flooring-primary-qty">0 sq ft</span>
+        </div>
+        <div class="result-row">
+          <span>Underlayment:</span>
+          <span id="flooring-underlayment-qty">0 sq ft</span>
+        </div>
+        <div class="result-row">
+          <span>Transition Strips:</span>
+          <span id="flooring-transition-qty">0 linear ft</span>
+        </div>
+        <div class="result-row">
+          <span>Baseboards/Trim:</span>
+          <span id="flooring-trim-qty">0 linear ft</span>
+        </div>
+        <div class="result-row">
+          <span>Adhesive/Fasteners:</span>
+          <span id="flooring-adhesive-qty">0 units</span>
+        </div>
+        <div class="result-row">
+          <span>Moisture Barrier:</span>
+          <span id="flooring-moisture-qty">0 sq ft</span>
+        </div>
+        
+        <h4>🔧 Subfloor Preparation</h4>
+        <div class="result-row">
+          <span>Prep Requirements:</span>
+          <span id="flooring-prep-description">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Prep Labor Hours:</span>
+          <span id="flooring-prep-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Prep Material Cost:</span>
+          <span id="flooring-prep-cost">$0</span>
+        </div>
+        
+        <h4>⏱️ Labor Analysis</h4>
+        <div class="result-row">
+          <span>Installation Hours:</span>
+          <span id="flooring-install-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Finishing Hours:</span>
+          <span id="flooring-finish-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Total Labor Hours:</span>
+          <span id="flooring-total-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Recommended Crew Size:</span>
+          <span id="flooring-crew-size">2 people</span>
+        </div>
+        
+        <h4>💰 Cost Breakdown</h4>
+        <div class="result-row">
+          <span>Flooring Materials:</span>
+          <span id="flooring-material-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Subfloor Preparation:</span>
+          <span id="flooring-subfloor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Installation Labor:</span>
+          <span id="flooring-labor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Trim & Finishing:</span>
+          <span id="flooring-trim-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Disposal & Cleanup:</span>
+          <span id="flooring-disposal-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="flooring-total-cost">$0</strong>
+        </div>
+        
+        <h4>🔧 Technical Specifications</h4>
+        <div class="result-row">
+          <span>Installation Method:</span>
+          <span id="flooring-install-spec">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Acclimation Time:</span>
+          <span id="flooring-acclimation">24-48 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Environmental Controls:</span>
+          <span id="flooring-environment">Standard HVAC</span>
+        </div>
+        <div class="result-row">
+          <span>Warranty Period:</span>
+          <span id="flooring-warranty">Varies by manufacturer</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      ⚠️ <strong>Professional Disclaimer:</strong> Flooring calculations based on industry standards and manufacturer specifications. 
+      Results are for preliminary planning only. Licensed contractor must verify all subfloor conditions, moisture levels, 
+      and building code compliance. Acclimation requirements, environmental controls, and installation methods vary by material type. 
+      Actual costs vary by location, market conditions, and site-specific requirements. Permits may be required for structural modifications.
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL PLUMBING CALCULATOR -->
+  <section id="plumbing-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-plumbing" data-calc="plumbing" hidden>
+    <div class="calc-intro">
+      <h2>🚿 Professional Plumbing Calculator</h2>
+      <p>Advanced IPC compliant plumbing analysis with fixture unit calculations, pipe sizing, water pressure analysis, and comprehensive cost breakdown.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Information</h3>
+        
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="plumb-building-type">
+            <option value="residential">Single Family Residential</option>
+            <option value="multi-family">Multi-Family Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="office">Office Building</option>
+            <option value="retail">Retail</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="healthcare">Healthcare Facility</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Project Scope</label>
+          <select id="plumb-scope">
+            <option value="new">New Construction</option>
+            <option value="renovation" selected>Renovation</option>
+            <option value="addition">Addition</option>
+            <option value="remodel">Full Remodel</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Number of Stories</label>
+          <input type="number" id="plumb-stories" value="1" min="1" max="10">
+        </div>
+        
+        <h3>Water Supply System</h3>
+        
+        <div class="input-group">
+          <label>Water Service Size</label>
+          <select id="plumb-service-size">
+            <option value="3/4">3/4 inch</option>
+            <option value="1" selected>1 inch</option>
+            <option value="1.25">1-1/4 inch</option>
+            <option value="1.5">1-1/2 inch</option>
+            <option value="2">2 inch</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Water Pressure (PSI)</label>
+          <input type="number" id="plumb-pressure" value="50" min="20" max="80">
+        </div>
+        
+        <div class="input-group">
+          <label>Supply Piping Material</label>
+          <select id="plumb-supply-material">
+            <option value="pex" selected>PEX (Cross-linked Polyethylene)</option>
+            <option value="copper">Copper Type L</option>
+            <option value="cpvc">CPVC</option>
+            <option value="pvc">PVC (Cold water only)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Drain/Waste Material</label>
+          <select id="plumb-drain-material">
+            <option value="pvc" selected>PVC Schedule 40</option>
+            <option value="abs">ABS</option>
+            <option value="cast-iron">Cast Iron</option>
+            <option value="pvc-sch80">PVC Schedule 80</option>
+          </select>
+        </div>
+        
+        <h3>Fixture Count (IPC Table 604.3)</h3>
+        
+        <div class="input-group">
+          <label>Water Closets (Toilets)</label>
+          <input type="number" id="plumb-toilets" value="2" min="0" max="20">
+          <small>4.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Lavatories (Bathroom Sinks)</label>
+          <input type="number" id="plumb-lavatories" value="2" min="0" max="10">
+          <small>1.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Kitchen Sinks</label>
+          <input type="number" id="plumb-kitchen-sinks" value="1" min="0" max="5">
+          <small>1.5 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Bathtubs</label>
+          <input type="number" id="plumb-bathtubs" value="1" min="0" max="5">
+          <small>2.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Shower Stalls</label>
+          <input type="number" id="plumb-showers" value="1" min="0" max="10">
+          <small>2.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Clothes Washers</label>
+          <input type="number" id="plumb-washers" value="1" min="0" max="3">
+          <small>2.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Dishwashers</label>
+          <input type="number" id="plumb-dishwashers" value="1" min="0" max="3">
+          <small>1.5 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Utility Sinks</label>
+          <input type="number" id="plumb-utility-sinks" value="1" min="0" max="5">
+          <small>2.0 WSFU each</small>
+        </div>
+        
+        <div class="input-group">
+          <label>Hose Bibs (Exterior)</label>
+          <input type="number" id="plumb-hose-bibs" value="2" min="0" max="10">
+          <small>2.5 WSFU each</small>
+        </div>
+        
+        <h3>Installation Factors</h3>
+        
+        <div class="input-group">
+          <label>Installation Complexity</label>
+          <select id="plumb-complexity">
+            <option value="simple">Simple - Open access, standard layout</option>
+            <option value="moderate" selected>Moderate - Some obstacles, typical</option>
+            <option value="complex">Complex - Difficult access, many obstacles</option>
+            <option value="very-complex">Very Complex - Extensive rework required</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Access Conditions</label>
+          <select id="plumb-access">
+            <option value="good" selected>Good - Easy access to run pipes</option>
+            <option value="limited">Limited - Some tight spaces</option>
+            <option value="difficult">Difficult - Extensive demolition required</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Professional Plumbing</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Professional Plumbing Analysis</h3>
+        
+        <div class="result-box">
+          <div>Total Water Supply Fixture Units:</div>
+          <div class="result-main" id="plumb-total-wsfu">0 WSFU</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Per IPC Table 604.3</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Required Service Size:</div>
+          <div class="result-main" id="plumb-required-service">1 inch</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Minimum recommendation</div>
+        </div>
+        
+        <h4>💧 Water System Analysis</h4>
+        <div class="result-row">
+          <span>Peak Flow Demand:</span>
+          <span id="plumb-peak-flow">0 GPM</span>
+        </div>
+        <div class="result-row">
+          <span>Pressure Loss Estimate:</span>
+          <span id="plumb-pressure-loss">0 PSI</span>
+        </div>
+        <div class="result-row">
+          <span>Available Working Pressure:</span>
+          <span id="plumb-working-pressure">0 PSI</span>
+        </div>
+        
+        <h4>🔧 Pipe Sizing Requirements</h4>
+        <div class="result-row">
+          <span>Main Supply Line:</span>
+          <span id="plumb-main-size">1"</span>
+        </div>
+        <div class="result-row">
+          <span>Branch Lines:</span>
+          <span id="plumb-branch-size">3/4"</span>
+        </div>
+        <div class="result-row">
+          <span>Fixture Connections:</span>
+          <span id="plumb-fixture-size">1/2"</span>
+        </div>
+        
+        <h4>📎 Material Requirements</h4>
+        <div class="result-row">
+          <span>Supply Piping:</span>
+          <span id="plumb-supply-length">0 linear feet</span>
+        </div>
+        <div class="result-row">
+          <span>Drain/Waste Piping:</span>
+          <span id="plumb-drain-length">0 linear feet</span>
+        </div>
+        <div class="result-row">
+          <span>Vent Piping:</span>
+          <span id="plumb-vent-length">0 linear feet</span>
+        </div>
+        <div class="result-row">
+          <span>Fittings & Valves:</span>
+          <span id="plumb-fittings-count">0 units</span>
+        </div>
+        
+        <h4>⏱️ Labor Analysis</h4>
+        <div class="result-row">
+          <span>Rough-in Labor:</span>
+          <span id="plumb-roughin-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Fixture Installation:</span>
+          <span id="plumb-fixture-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Total Labor Hours:</span>
+          <span id="plumb-total-hours">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Recommended Crew:</span>
+          <span id="plumb-crew-size">2 plumbers</span>
+        </div>
+        
+        <h4>💰 Professional Cost Breakdown</h4>
+        <div class="result-row">
+          <span>Fixtures & Equipment:</span>
+          <span id="plumb-fixtures-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Supply Materials:</span>
+          <span id="plumb-supply-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Drain/Waste Materials:</span>
+          <span id="plumb-drain-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Fittings & Valves:</span>
+          <span id="plumb-fittings-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Installation Labor:</span>
+          <span id="plumb-labor-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Permits & Inspection:</span>
+          <span id="plumb-permit-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="plumb-total-cost">$0</strong>
+        </div>
+        
+        <h4>🔍 Code Compliance</h4>
+        <div class="result-row">
+          <span>IPC Table 604.3:</span>
+          <span id="plumb-ipc-compliance">Compliant</span>
+        </div>
+        <div class="result-row">
+          <span>Pipe Sizing:</span>
+          <span id="plumb-sizing-compliance">Per Code</span>
+        </div>
+        <div class="result-row">
+          <span>Venting System:</span>
+          <span id="plumb-vent-compliance">Code Compliant</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    <div class="disclaimer">
+      ⚠️ <strong>Professional Disclaimer:</strong> Plumbing calculations performed per International Plumbing Code (IPC) standards including fixture unit analysis per Table 604.3 and pipe sizing requirements. 
+      Results are for preliminary planning only. Licensed plumber must verify all calculations, fixture spacing, pipe sizing, venting requirements, and local code compliance. 
+      Permits and inspections required by local authority having jurisdiction. Water pressure testing and backflow prevention may be required. 
+      Actual costs vary by location, complexity, and local code requirements.
+    </div>
+  </div>
+
+  <!-- ADVANCED HVAC LOAD CALCULATOR -->
+  <section id="hvac-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-hvac" data-calc="hvac" hidden>
+    <div class="calc-intro">
+      <h2>❄️ Professional HVAC Load Calculator</h2>
+      <p>Advanced Manual J load calculation methodology with equipment sizing, ductwork design, and comprehensive cost analysis.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Building Specifications</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label for="hvac-sqft">Conditioned Area (sq ft) <span class="tooltip" data-tip="Total heated/cooled square footage">ℹ️</span></label>
+            <input type="number" id="hvac-sqft" value="2000" min="200" max="10000" step="50" aria-describedby="hvac-sqft-hint">
+            <small id="hvac-sqft-hint" class="input-hint">Enter total conditioned space area</small>
+          </div>
+          <div class="input-group">
+            <label for="hvac-ceiling-height">Ceiling Height (ft)</label>
+            <select id="hvac-ceiling-height">
+              <option value="8">8 feet (Standard)</option>
+              <option value="9" selected>9 feet (Common)</option>
+              <option value="10">10 feet (High)</option>
+              <option value="12">12 feet (Vaulted)</option>
+              <option value="14">14+ feet (Cathedral)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="input-group">
+            <label for="hvac-climate-zone">Climate Zone <span class="tooltip" data-tip="ASHRAE climate zones affect load calculations">ℹ️</span></label>
+            <select id="hvac-climate-zone">
+              <option value="1A">1A - Very Hot, Humid (Miami)</option>
+              <option value="2A">2A - Hot, Humid (Houston)</option>
+              <option value="2B">2B - Hot, Dry (Phoenix)</option>
+              <option value="3A">3A - Warm, Humid (Atlanta)</option>
+              <option value="3B">3B - Warm, Dry (Las Vegas)</option>
+              <option value="3C">3C - Warm, Marine (San Diego)</option>
+              <option value="4A" selected>4A - Mixed, Humid (Washington DC)</option>
+              <option value="4B">4B - Mixed, Dry (Denver)</option>
+              <option value="4C">4C - Mixed, Marine (Seattle)</option>
+              <option value="5A">5A - Cool, Humid (Chicago)</option>
+              <option value="5B">5B - Cool, Dry (Boise)</option>
+              <option value="6A">6A - Cold, Humid (Minneapolis)</option>
+              <option value="6B">6B - Cold, Dry (Helena)</option>
+              <option value="7">7 - Very Cold (Duluth)</option>
+              <option value="8">8 - Subarctic (Fairbanks)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="hvac-building-type">Building Type</label>
+            <select id="hvac-building-type">
+              <option value="residential">Residential Home</option>
+              <option value="apartment">Apartment/Condo</option>
+              <option value="office">Office Building</option>
+              <option value="retail">Retail Space</option>
+              <option value="warehouse">Warehouse</option>
+              <option value="restaurant">Restaurant</option>
+              <option value="medical">Medical Facility</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="hvac-insulation">Insulation Level</label>
+          <select id="hvac-insulation">
+            <option value="poor">Poor (R-11 walls, R-19 attic)</option>
+            <option value="fair">Fair (R-13 walls, R-30 attic)</option>
+            <option value="good" selected>Good (R-15 walls, R-38 attic)</option>
+            <option value="excellent">Excellent (R-21 walls, R-49 attic)</option>
+            <option value="superinsulated">Super Insulated (R-25+ walls, R-60+ attic)</option>
+          </select>
+        </div>
+
+        <div class="input-group-row">
+          <div class="input-group">
+            <label for="hvac-windows">Window Area (% of wall area)</label>
+            <select id="hvac-windows">
+              <option value="10">10% - Minimal windows</option>
+              <option value="15" selected>15% - Standard residential</option>
+              <option value="20">20% - Above average</option>
+              <option value="30">30% - Large windows</option>
+              <option value="40">40% - Floor-to-ceiling</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="hvac-window-type">Window Type</label>
+            <select id="hvac-window-type">
+              <option value="single">Single Pane (U=1.0)</option>
+              <option value="double">Double Pane (U=0.5)</option>
+              <option value="double-low-e" selected>Double Low-E (U=0.35)</option>
+              <option value="triple">Triple Pane (U=0.2)</option>
+              <option value="high-performance">High Performance (U=0.15)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <div class="input-group">
+            <label for="hvac-orientation">Primary Orientation</label>
+            <select id="hvac-orientation">
+              <option value="north">North Facing</option>
+              <option value="south" selected>South Facing</option>
+              <option value="east">East Facing</option>
+              <option value="west">West Facing</option>
+              <option value="mixed">Mixed Orientation</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="hvac-occupancy">Occupancy (people)</label>
+            <input type="number" id="hvac-occupancy" value="4" min="1" max="50" step="1">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="hvac-system-type">System Type & Efficiency</label>
+          <select id="hvac-system-type">
+            <option value="gas-furnace-ac">Gas Furnace + AC (80% AFUE, 14 SEER) - $4,500</option>
+            <option value="high-eff-gas-ac">High-Eff Gas + AC (95% AFUE, 16 SEER) - $6,200</option>
+            <option value="heat-pump-standard">Heat Pump Standard (14 SEER, 8.2 HSPF) - $5,800</option>
+            <option value="heat-pump-high-eff" selected>Heat Pump High-Eff (18 SEER, 9.5 HSPF) - $7,500</option>
+            <option value="mini-split-single">Mini-Split Single Zone (22 SEER) - $3,200</option>
+            <option value="mini-split-multi">Mini-Split Multi Zone (20 SEER) - $8,500</option>
+            <option value="geothermal">Geothermal Heat Pump (17 EER, 3.6 COP) - $15,000</option>
+            <option value="dual-fuel">Dual Fuel System (Gas/Heat Pump) - $8,800</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="hvac-ductwork">Ductwork Condition</label>
+          <select id="hvac-ductwork">
+            <option value="new">New Installation - Perfect sealing</option>
+            <option value="good" selected>Good - Minor leakage (5-10%)</option>
+            <option value="fair">Fair - Moderate leakage (10-15%)</option>
+            <option value="poor">Poor - Significant leakage (15-25%)</option>
+            <option value="replacement">Needs Full Replacement</option>
+          </select>
+        </div>
+        
+        <button type="button" class="btn btn-primary" data-action="calculate" aria-describedby="hvac-calc-description">
+          🧮 Calculate HVAC Load & Costs
+        </button>
+        <small id="hvac-calc-description" class="input-hint">Professional Manual J methodology calculation</small>
+      </div>
+      
+      <div class="results-section" aria-live="polite" aria-label="HVAC Calculation Results">
+        <h3>📊 Professional Load Analysis</h3>
+        
+        <div class="result-box">
+          <div>System Capacity Required:</div>
+          <div class="result-main" id="hvac-tonnage">0.0 Tons</div>
+          <div style="font-size:0.9rem;color:#6b7280;" id="hvac-btus">0 BTU/hr heating, 0 BTU/hr cooling</div>
+        </div>
+        
+        <div class="result-row">
+          <span>Cooling Load (Manual J):</span>
+          <span id="hvac-cooling-load">0 BTU/hr</span>
+        </div>
+        <div class="result-row">
+          <span>Heating Load (Manual J):</span>
+          <span id="hvac-heating-load">0 BTU/hr</span>
+        </div>
+        <div class="result-row">
+          <span>Load per Sq Ft:</span>
+          <span id="hvac-load-per-sqft">0 BTU/hr/sqft</span>
+        </div>
+        <div class="result-row">
+          <span>Recommended System:</span>
+          <span id="hvac-recommended-system">-</span>
+        </div>
+        
+        <h4 style="margin-top:1.5rem;margin-bottom:0.5rem;color:#1e3a5f;">💰 Cost Breakdown</h4>
+        <div class="result-row">
+          <span>Equipment Cost:</span>
+          <span id="hvac-equipment-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Installation Labor:</span>
+          <span id="hvac-install-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Ductwork (if needed):</span>
+          <span id="hvac-ductwork-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Permits & Inspections:</span>
+          <span id="hvac-permits-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Electrical Upgrades:</span>
+          <span id="hvac-electrical-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="hvac-total-cost">$0</strong>
+        </div>
+        
+        <h4 style="margin-top:1.5rem;margin-bottom:0.5rem;color:#1e3a5f;">⚡ Operating Costs</h4>
+        <div class="result-row">
+          <span>Annual Heating Cost:</span>
+          <span id="hvac-heating-annual">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Annual Cooling Cost:</span>
+          <span id="hvac-cooling-annual">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Total Annual Energy:</span>
+          <span id="hvac-total-annual">$0</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save Calculation</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export Report</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share Results</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print Report</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong>⚠️ Professional Manual J Load Calculation:</strong> This calculator uses ACCA Manual J methodology for load calculations. Results are ROM estimates based on industry standards. Actual installation requires professional Manual J, S, T, and D calculations by licensed HVAC contractors. Equipment sizing must account for local codes, altitude adjustments, and specific equipment performance data. Always verify with local contractors and obtain multiple quotes.
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL INSULATION CALCULATOR -->
+  <section id="insulation-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-insulation" data-calc="insulation" hidden>
+    <div class="calc-intro">
+      <h2>🏠 Professional Insulation Calculator</h2>
+      <p>Advanced IECC energy code compliant insulation analysis with R-value optimization, thermal bridging calculations, energy modeling, and 25-year cost projections per ASHRAE 90.1 standards.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Building Information</h3>
+        
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="insul-building-type">
+            <option value="residential" selected>Residential (IECC)</option>
+            <option value="commercial">Commercial (ASHRAE 90.1)</option>
+            <option value="industrial">Industrial Facility</option>
+            <option value="warehouse">Warehouse/Storage</option>
+            <option value="school">Educational Facility</option>
+            <option value="hospital">Healthcare Facility</option>
+            <option value="office">Office Building</option>
+            <option value="retail">Retail/Commercial</option>
+          </select>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Climate Zone</label>
+            <select id="insul-climate-zone">
+              <option value="1A">Zone 1A (Hot-Humid)</option>
+              <option value="2A">Zone 2A (Hot-Humid)</option>
+              <option value="2B">Zone 2B (Hot-Dry)</option>
+              <option value="3A" selected>Zone 3A (Warm-Humid)</option>
+              <option value="3B">Zone 3B (Warm-Dry)</option>
+              <option value="3C">Zone 3C (Warm-Marine)</option>
+              <option value="4A">Zone 4A (Mixed-Humid)</option>
+              <option value="4B">Zone 4B (Mixed-Dry)</option>
+              <option value="4C">Zone 4C (Mixed-Marine)</option>
+              <option value="5A">Zone 5A (Cool-Humid)</option>
+              <option value="5B">Zone 5B (Cool-Dry)</option>
+              <option value="6A">Zone 6A (Cold-Humid)</option>
+              <option value="6B">Zone 6B (Cold-Dry)</option>
+              <option value="7">Zone 7 (Very Cold)</option>
+              <option value="8">Zone 8 (Subarctic)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>IECC Code Version</label>
+            <select id="insul-iecc-version">
+              <option value="2021" selected>2021 IECC</option>
+              <option value="2018">2018 IECC</option>
+              <option value="2015">2015 IECC</option>
+              <option value="2012">2012 IECC</option>
+            </select>
+          </div>
+        </div>
+        
+        <h3>Insulation Areas</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Wall Area (sqft)</label>
+            <input type="number" id="insul-wall-area" value="2400" min="0">
+          </div>
+          <div class="input-group">
+            <label>Ceiling Area (sqft)</label>
+            <input type="number" id="insul-ceiling-area" value="1800" min="0">
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Floor Area (sqft)</label>
+            <input type="number" id="insul-floor-area" value="0" min="0">
+          </div>
+          <div class="input-group">
+            <label>Basement Wall (sqft)</label>
+            <input type="number" id="insul-basement-area" value="0" min="0">
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Rim/Band Joist (linft)</label>
+            <input type="number" id="insul-rimjoist" value="140" min="0">
+          </div>
+          <div class="input-group">
+            <label>Ductwork Area (sqft)</label>
+            <input type="number" id="insul-ductwork" value="300" min="0">
+          </div>
+        </div>
+        
+        <h3>Construction Details</h3>
+        
+        <div class="input-group">
+          <label>Wall Construction</label>
+          <select id="insul-wall-construction">
+            <option value="2x4-16">2x4 @ 16" OC</option>
+            <option value="2x4-24">2x4 @ 24" OC</option>
+            <option value="2x6-16" selected>2x6 @ 16" OC</option>
+            <option value="2x6-24">2x6 @ 24" OC</option>
+            <option value="2x8-16">2x8 @ 16" OC</option>
+            <option value="steel-16">Steel Stud @ 16" OC</option>
+            <option value="steel-24">Steel Stud @ 24" OC</option>
+            <option value="block">CMU Block Wall</option>
+            <option value="sip">SIP Panel</option>
+            <option value="icf">ICF Foundation</option>
+          </select>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Exterior Sheathing</label>
+            <select id="insul-sheathing">
+              <option value="osb">OSB/Plywood</option>
+              <option value="foam-1" selected>1" Foam Board</option>
+              <option value="foam-2">2" Foam Board</option>
+              <option value="foam-3">3" Foam Board</option>
+              <option value="zip">ZIP System</option>
+              <option value="fiberboard">Fiberboard</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Air Sealing Level</label>
+            <select id="insul-air-sealing">
+              <option value="poor">Poor (>7 ACH50)</option>
+              <option value="average">Average (5-7 ACH50)</option>
+              <option value="good" selected>Good (3-5 ACH50)</option>
+              <option value="excellent">Excellent (<3 ACH50)</option>
+              <option value="passive">Passive House (<0.6 ACH50)</option>
+            </select>
+          </div>
+        </div>
+        
+        <h3>Insulation Specifications</h3>
+        
+        <div class="input-group">
+          <label>Wall Insulation Type</label>
+          <select id="insul-wall-type">
+            <option value="fiberglass">Fiberglass Batt</option>
+            <option value="rockwool">Mineral Wool</option>
+            <option value="cellulose">Blown Cellulose</option>
+            <option value="spray-foam" selected>Spray Foam</option>
+            <option value="rigid-foam">Rigid Foam Board</option>
+            <option value="hybrid">Hybrid System</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Ceiling/Attic Insulation</label>
+          <select id="insul-ceiling-type">
+            <option value="loose-fill">Loose-Fill Fiberglass</option>
+            <option value="blown-cellulose" selected>Blown Cellulose</option>
+            <option value="batt">Fiberglass Batt</option>
+            <option value="rockwool-blown">Blown Mineral Wool</option>
+            <option value="spray-foam">Spray Foam</option>
+          </select>
+        </div>
+        
+        <h3>Energy Analysis</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Heating Fuel</label>
+            <select id="insul-heating-fuel">
+              <option value="natural-gas" selected>Natural Gas</option>
+              <option value="electricity">Electric</option>
+              <option value="oil">Heating Oil</option>
+              <option value="propane">Propane</option>
+              <option value="geothermal">Geothermal</option>
+              <option value="heat-pump">Heat Pump</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Cooling System</label>
+            <select id="insul-cooling-system">
+              <option value="central-ac" selected>Central AC</option>
+              <option value="heat-pump">Heat Pump</option>
+              <option value="mini-split">Mini Split</option>
+              <option value="window-units">Window Units</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Gas Rate ($/therm)</label>
+            <input type="number" id="insul-gas-rate" value="1.25" step="0.01" min="0">
+          </div>
+          <div class="input-group">
+            <label>Electric Rate ($/kWh)</label>
+            <input type="number" id="insul-electric-rate" value="0.14" step="0.01" min="0">
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Professional Insulation</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Professional Insulation Analysis</h3>
+        
+        <div class="result-box">
+          <div id="insulation-total">$0 Total Project Cost</div>
+          <div id="insulation-payback" class="result-highlight">0 Year Payback Period</div>
+        </div>
+        
+        <h4>R-Value Analysis</h4>
+        <div class="result-row"><span>Wall R-Value (Required):</span> <span id="insul-wall-r-req">R-0</span></div>
+        <div class="result-row"><span>Wall R-Value (Achieved):</span> <span id="insul-wall-r-actual">R-0</span></div>
+        <div class="result-row"><span>Ceiling R-Value (Required):</span> <span id="insul-ceiling-r-req">R-0</span></div>
+        <div class="result-row"><span>Ceiling R-Value (Achieved):</span> <span id="insul-ceiling-r-actual">R-0</span></div>
+        <div class="result-row"><span>Overall Assembly U-Factor:</span> <span id="insul-u-factor">0.000</span></div>
+        
+        <h4>Material Costs</h4>
+        <div class="result-row"><span>Wall Insulation:</span> <span id="insul-wall-cost">$0</span></div>
+        <div class="result-row"><span>Ceiling Insulation:</span> <span id="insul-ceiling-cost">$0</span></div>
+        <div class="result-row"><span>Floor/Basement:</span> <span id="insul-floor-cost">$0</span></div>
+        <div class="result-row"><span>Air Sealing Materials:</span> <span id="insul-sealing-cost">$0</span></div>
+        <div class="result-row"><span>Vapor Barriers:</span> <span id="insul-barrier-cost">$0</span></div>
+        
+        <h4>Labor & Installation</h4>
+        <div class="result-row"><span>Installation Labor:</span> <span id="insul-labor-cost">$0</span></div>
+        <div class="result-row"><span>Air Sealing Labor:</span> <span id="insul-sealing-labor">$0</span></div>
+        <div class="result-row"><span>Blower Door Test:</span> <span id="insul-testing-cost">$0</span></div>
+        <div class="result-row"><span>Permits & Inspection:</span> <span id="insul-permit-cost">$0</span></div>
+        
+        <h4>Energy Savings Analysis</h4>
+        <div class="result-row"><span>Annual Heating Savings:</span> <span id="insul-heating-savings">$0</span></div>
+        <div class="result-row"><span>Annual Cooling Savings:</span> <span id="insul-cooling-savings">$0</span></div>
+        <div class="result-row"><span>Total Annual Savings:</span> <span id="insul-annual-savings">$0</span></div>
+        <div class="result-row"><span>25-Year Energy Savings:</span> <span id="insul-lifetime-savings">$0</span></div>
+        <div class="result-row"><span>Net Present Value (7%):</span> <span id="insul-npv">$0</span></div>
+        
+        <h4>Thermal Performance</h4>
+        <div class="result-row"><span>Heat Loss Reduction:</span> <span id="insul-heat-loss">0%</span></div>
+        <div class="result-row"><span>Thermal Bridging Factor:</span> <span id="insul-thermal-bridge">0%</span></div>
+        <div class="result-row"><span>Moisture Risk Assessment:</span> <span id="insul-moisture-risk">Low</span></div>
+        <div class="result-row"><span>IECC Compliance:</span> <span id="insul-code-compliance">✅ Compliant</span></div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save Report</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export Analysis</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print Report</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      ⚠️ <strong>Professional Insulation Analysis:</strong> Calculations based on IECC energy code requirements, ASHRAE 90.1 standards, and manufacturer specifications. R-values include thermal bridging effects. Energy savings estimates based on TMY3 weather data and building simulation models. Actual performance may vary based on installation quality, air leakage, and occupant behavior. Consult with certified energy auditor for detailed analysis.
+    </div>
+  </div>
+
+  <!-- EXCAVATION CALCULATOR -->
+  <section id="excavation-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-excavation" data-calc="excavation" hidden>
+    <div class="calc-intro">
+      <h2>🚜 Professional Excavation Calculator</h2>
+      <p>Advanced OSHA compliant excavation analysis with soil classification, equipment optimization, safety factors, and comprehensive risk assessment.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Information</h3>
+        
+        <div class="input-group">
+          <label>Project Type</label>
+          <select id="excav-project-type">
+            <option value="foundation">Foundation Excavation</option>
+            <option value="utility" selected>Utility Trench</option>
+            <option value="basement">Basement/Cellar</option>
+            <option value="septic">Septic System</option>
+            <option value="pool">Swimming Pool</option>
+            <option value="roadway">Roadway/Driveway</option>
+            <option value="sitework">General Sitework</option>
+            <option value="drainage">Drainage System</option>
+          </select>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Length (feet)</label>
+            <input type="number" id="excav-length" value="100" min="1">
+          </div>
+          <div class="input-group">
+            <label>Width (feet)</label>
+            <input type="number" id="excav-width" value="3" min="1">
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Average Depth (feet)</label>
+            <input type="number" id="excav-depth" value="5" min="1" max="25">
+          </div>
+          <div class="input-group">
+            <label>Slope Ratio (H:V)</label>
+            <select id="excav-slope">
+              <option value="0.75">3/4:1 (Type A Soil)</option>
+              <option value="1" selected>1:1 (Type B Soil)</option>
+              <option value="1.5">1.5:1 (Type C Soil)</option>
+              <option value="vertical">Vertical (Shored)</option>
+            </select>
+          </div>
+        </div>
+        
+        <h3>Soil & Site Conditions</h3>
+        
+        <div class="input-group">
+          <label>Soil Classification (OSHA)</label>
+          <select id="excav-soil-type">
+            <option value="type-a">Type A - Cohesive clay, cemented sand/gravel</option>
+            <option value="type-b" selected>Type B - Silt, sandy loam, medium clay</option>
+            <option value="type-c">Type C - Granular sand, gravel, submerged soil</option>
+            <option value="rock">Rock - Requires blasting/breaking</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Groundwater Conditions</label>
+          <select id="excav-groundwater">
+            <option value="none" selected>No Groundwater Issues</option>
+            <option value="seasonal">Seasonal Water Table</option>
+            <option value="high">High Water Table</option>
+            <option value="dewatering">Dewatering Required</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Access Conditions</label>
+          <select id="excav-access">
+            <option value="excellent">Excellent (Open site, easy access)</option>
+            <option value="good" selected>Good (Standard residential)</option>
+            <option value="restricted">Restricted (Tight spaces, obstacles)</option>
+            <option value="difficult">Difficult (Hand dig required)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Existing Utilities Present</label>
+          <select id="excav-utilities">
+            <option value="none">No Known Utilities</option>
+            <option value="marked" selected>Utilities Marked</option>
+            <option value="complex">Complex Utility Area</option>
+            <option value="conflict">Utility Conflicts Expected</option>
+          </select>
+        </div>
+        
+        <h3>Equipment & Method</h3>
+        
+        <div class="input-group">
+          <label>Primary Equipment</label>
+          <select id="excav-equipment">
+            <option value="mini-excavator">Mini Excavator (< 10k lbs)</option>
+            <option value="compact-excavator" selected>Compact Excavator (10-20k lbs)</option>
+            <option value="mid-excavator">Mid-size Excavator (20-45k lbs)</option>
+            <option value="large-excavator">Large Excavator (45k+ lbs)</option>
+            <option value="backhoe">Backhoe Loader</option>
+            <option value="trencher">Chain Trencher</option>
+            <option value="hand-dig">Hand Excavation</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Support System Required</label>
+          <select id="excav-support">
+            <option value="none">None (< 5 ft depth)</option>
+            <option value="sloping" selected>Sloping/Benching</option>
+            <option value="trench-box">Trench Box/Shield</option>
+            <option value="shoring">Hydraulic Shoring</option>
+            <option value="permanent">Permanent Shoring</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Spoil Management</label>
+          <select id="excav-spoil">
+            <option value="onsite" selected>Keep On-Site</option>
+            <option value="screening">Screen and Reuse</option>
+            <option value="partial-removal">Partial Removal</option>
+            <option value="full-removal">Full Removal</option>
+            <option value="hazmat">Hazardous Material</option>
+          </select>
+        </div>
+        
+        <h3>Project Schedule</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Season/Weather</label>
+            <select id="excav-season">
+              <option value="optimal" selected>Optimal Conditions</option>
+              <option value="winter">Winter/Cold</option>
+              <option value="wet">Wet Season</option>
+              <option value="emergency">Emergency Work</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Work Schedule</label>
+            <select id="excav-schedule">
+              <option value="normal" selected>Normal Hours</option>
+              <option value="overtime">Overtime Required</option>
+              <option value="weekend">Weekend Work</option>
+              <option value="night">Night Work</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Professional Excavation</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 OSHA Compliance Analysis</h3>
+        <div class="result-box">
+          <div>Total Excavation Volume:</div>
+          <div class="result-main" id="excav-total-volume">0 CY</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including slope requirements</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Safety Classification:</div>
+          <div class="result-main" id="excav-safety-class">Type B</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Per OSHA 29 CFR 1926.650</div>
+        </div>
+        
+        <h4>📋 Excavation Analysis</h4>
+        <div class="result-row">
+          <span>Cut Volume:</span>
+          <span id="excav-cut-volume">0 CY</span>
+        </div>
+        <div class="result-row">
+          <span>Slope/Bench Volume:</span>
+          <span id="excav-slope-volume">0 CY</span>
+        </div>
+        <div class="result-row">
+          <span>Production Rate:</span>
+          <span id="excav-production-rate">0 CY/hr</span>
+        </div>
+        <div class="result-row">
+          <span>Excavation Duration:</span>
+          <span id="excav-duration">0 hours</span>
+        </div>
+        <div class="result-row">
+          <span>Crew Size Required:</span>
+          <span id="excav-crew-size">0 workers</span>
+        </div>
+        
+        <h4>💰 Professional Cost Analysis</h4>
+        <div class="result-row">
+          <span>Equipment Rental:</span>
+          <span id="excav-equipment-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Operator Labor:</span>
+          <span id="excav-operator-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Ground Crew:</span>
+          <span id="excav-crew-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Support System:</span>
+          <span id="excav-support-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Dewatering:</span>
+          <span id="excav-dewatering-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Spoil Management:</span>
+          <span id="excav-spoil-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Utility Protection:</span>
+          <span id="excav-utility-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Permits & Inspection:</span>
+          <span id="excav-permit-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Project Cost:</strong>
+          <strong id="excav-total-cost">$0</strong>
+        </div>
+        
+        <h4>⚠️ Risk Assessment</h4>
+        <div class="result-row">
+          <span>Cave-in Risk:</span>
+          <span id="excav-cave-risk">Low</span>
+        </div>
+        <div class="result-row">
+          <span>Hazardous Atmosphere:</span>
+          <span id="excav-atmosphere-risk">None</span>
+        </div>
+        <div class="result-row">
+          <span>Water Hazards:</span>
+          <span id="excav-water-risk">None</span>
+        </div>
+        <div class="result-row">
+          <span>Equipment Hazards:</span>
+          <span id="excav-equipment-risk">Standard</span>
+        </div>
+        
+        <h4>🔧 Technical Specifications</h4>
+        <div class="result-row">
+          <span>Maximum Slope Angle:</span>
+          <span id="excav-slope-angle">45°</span>
+        </div>
+        <div class="result-row">
+          <span>Protective System:</span>
+          <span id="excav-protection">Sloping</span>
+        </div>
+        <div class="result-row">
+          <span>Competent Person Req:</span>
+          <span id="excav-competent-person">Yes</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong>⚖️ Professional Disclaimer:</strong> This calculator provides ROM estimates based on OSHA 29 CFR 1926 Subpart P (Excavations) safety standards and industry best practices. Calculations include soil classification requirements, protective systems, and safety factors. Calculations are for preliminary planning only and do not substitute for professional excavation engineering or competent person site assessment. All excavations 5+ feet deep require protective systems per OSHA regulations. Local utility marking (Call 811), permits, and soil testing may be required. A competent person must inspect excavations daily and after weather events. Actual soil conditions, groundwater, and site-specific hazards significantly affect costs and safety requirements.
+    </div>
+  </div>
+
+  <!-- LABOR CALCULATOR -->
+  <section id="labor-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-labor" data-calc="labor" hidden>
+    <div class="calc-intro">
+      <h2>👷 Professional Labor Calculator</h2>
+      <p>Advanced crew optimization algorithms with productivity factors, professional wage calculations, regional adjustments, and comprehensive risk assessment.</p>
+    </div>
+    
+    <div class="calc-grid">
+      <div class="input-section">
+        <h3>Project Information</h3>
+        
+        <div class="input-group">
+          <label>Project Type</label>
+          <select id="labor-project-type">
+            <option value="residential-new">Residential New Construction</option>
+            <option value="residential-remodel" selected>Residential Remodel</option>
+            <option value="commercial-new">Commercial New Construction</option>
+            <option value="commercial-tenant">Commercial Tenant Improvement</option>
+            <option value="industrial">Industrial Construction</option>
+            <option value="infrastructure">Infrastructure/Civil</option>
+            <option value="specialty">Specialty Construction</option>
+            <option value="maintenance">Maintenance/Service</option>
+          </select>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Project Value</label>
+            <select id="labor-project-value">
+              <option value="small">Small (< $50k)</option>
+              <option value="medium" selected>Medium ($50k - $500k)</option>
+              <option value="large">Large ($500k - $5M)</option>
+              <option value="major">Major (> $5M)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Geographic Region</label>
+            <select id="labor-region">
+              <option value="rural">Rural Area</option>
+              <option value="suburban" selected>Suburban</option>
+              <option value="urban">Urban Area</option>
+              <option value="metro">Major Metro Area</option>
+              <option value="high-cost">High-Cost Area (SF, NY, etc.)</option>
+            </select>
+          </div>
+        </div>
+        
+        <h3>Crew Composition</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Project Manager</label>
+            <input type="number" id="labor-pm" value="0.5" min="0" max="2" step="0.5">
+          </div>
+          <div class="input-group">
+            <label>Foreman/Supervisor</label>
+            <input type="number" id="labor-foreman" value="1" min="0" max="3" step="0.5">
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Skilled Tradesmen</label>
+            <input type="number" id="labor-skilled" value="4" min="0" max="20">
+          </div>
+          <div class="input-group">
+            <label>Semi-Skilled Workers</label>
+            <input type="number" id="labor-semi-skilled" value="2" min="0" max="15">
+          </div>
+        </div>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>General Laborers</label>
+            <input type="number" id="labor-laborers" value="2" min="0" max="20">
+          </div>
+          <div class="input-group">
+            <label>Apprentices</label>
+            <input type="number" id="labor-apprentices" value="1" min="0" max="10">
+          </div>
+        </div>
+        
+        <h3>Schedule & Productivity</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Estimated Hours</label>
+            <input type="number" id="labor-base-hours" value="320" min="1">
+          </div>
+          <div class="input-group">
+            <label>Work Schedule</label>
+            <select id="labor-schedule">
+              <option value="normal" selected>Normal (8 hrs/day)</option>
+              <option value="extended">Extended (10 hrs/day)</option>
+              <option value="overtime">Overtime (50+ hrs/week)</option>
+              <option value="double-shift">Double Shift</option>
+              <option value="weekend">Weekend Work</option>
+              <option value="night">Night Shift</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Productivity Factors</label>
+          <select id="labor-productivity">
+            <option value="excellent">Excellent (20% above average)</option>
+            <option value="good">Good (10% above average)</option>
+            <option value="average" selected>Average (baseline)</option>
+            <option value="below">Below Average (15% below)</option>
+            <option value="poor">Poor (30% below average)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Seasonality</label>
+          <select id="labor-season">
+            <option value="peak">Peak Season (Spring/Summer)</option>
+            <option value="normal" selected>Normal Season</option>
+            <option value="slow">Slow Season (Winter)</option>
+            <option value="emergency">Emergency/Rush Work</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label>Project Complexity</label>
+          <select id="labor-complexity">
+            <option value="simple">Simple/Repetitive Work</option>
+            <option value="standard" selected>Standard Complexity</option>
+            <option value="complex">Complex/Technical Work</option>
+            <option value="specialty">Specialty/Custom Work</option>
+          </select>
+        </div>
+        
+        <h3>Risk & Quality Factors</h3>
+        
+        <div class="input-group-row">
+          <div class="input-group">
+            <label>Safety Requirements</label>
+            <select id="labor-safety">
+              <option value="standard">Standard Safety</option>
+              <option value="enhanced" selected>Enhanced Safety</option>
+              <option value="high-risk">High-Risk Work</option>
+              <option value="specialty">Specialty Safety (Confined Space, etc.)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Quality Level</label>
+            <select id="labor-quality">
+              <option value="basic">Basic/Minimum Quality</option>
+              <option value="standard" selected>Standard Quality</option>
+              <option value="high">High Quality/Custom</option>
+              <option value="premium">Premium/Luxury Quality</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Professional Labor</button>
+      </div>
+      
+      <div class="results-section">
+        <h3>📊 Professional Crew Analysis</h3>
+        <div class="result-box">
+          <div>Total Crew Size:</div>
+          <div class="result-main" id="labor-crew-size">0</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Full-time equivalent workers</div>
+        </div>
+        
+        <div class="result-box">
+          <div>Optimized Duration:</div>
+          <div class="result-main" id="labor-duration">0 days</div>
+          <div style="font-size:0.9rem;color:#6b7280;">Including productivity adjustments</div>
+        </div>
+        
+        <h4>📋 Crew Breakdown & Wages</h4>
+        <div class="result-row">
+          <span>Project Management:</span>
+          <span id="labor-pm-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Supervision:</span>
+          <span id="labor-supervision-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Skilled Trades:</span>
+          <span id="labor-skilled-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Semi-Skilled Workers:</span>
+          <span id="labor-semi-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>General Labor:</span>
+          <span id="labor-general-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Apprentices:</span>
+          <span id="labor-apprentice-cost">$0</span>
+        </div>
+        
+        <h4>💰 Professional Cost Analysis</h4>
+        <div class="result-row">
+          <span>Base Wages:</span>
+          <span id="labor-base-wages">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Overtime Premium:</span>
+          <span id="labor-overtime">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Payroll Taxes (FICA, FUTA, SUTA):</span>
+          <span id="labor-taxes">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Workers' Compensation:</span>
+          <span id="labor-workers-comp">$0</span>
+        </div>
+        <div class="result-row">
+          <span>General Liability:</span>
+          <span id="labor-liability">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Benefits & Health Insurance:</span>
+          <span id="labor-benefits">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Equipment & Tools:</span>
+          <span id="labor-equipment">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Safety & Training:</span>
+          <span id="labor-safety-cost">$0</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Labor Cost:</strong>
+          <strong id="labor-total-cost">$0</strong>
+        </div>
+        
+        <h4>📊 Productivity Analysis</h4>
+        <div class="result-row">
+          <span>Base Productivity:</span>
+          <span id="labor-base-productivity">100%</span>
+        </div>
+        <div class="result-row">
+          <span>Adjusted Productivity:</span>
+          <span id="labor-adj-productivity">100%</span>
+        </div>
+        <div class="result-row">
+          <span>Effective Hours:</span>
+          <span id="labor-effective-hours">0 hrs</span>
+        </div>
+        <div class="result-row">
+          <span>Schedule Risk:</span>
+          <span id="labor-schedule-risk">Low</span>
+        </div>
+        
+        <h4>🔧 Resource Optimization</h4>
+        <div class="result-row">
+          <span>Cost per Hour:</span>
+          <span id="labor-cost-per-hour">$0</span>
+        </div>
+        <div class="result-row">
+          <span>Crew Efficiency Rating:</span>
+          <span id="labor-efficiency">Standard</span>
+        </div>
+        <div class="result-row">
+          <span>Regional Cost Factor:</span>
+          <span id="labor-regional-factor">1.0x</span>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-secondary" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" data-action="export">📊 Export</button>
+          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
+          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="disclaimer">
+      <strong>⚖️ Professional Disclaimer:</strong> This calculator provides ROM estimates based on industry-standard labor productivity rates, regional wage data, and crew optimization algorithms. Calculations include professional wage scales, payroll burden, insurance costs, and productivity adjustments. Estimates are for preliminary planning only and do not substitute for professional construction management or detailed labor analysis. Actual wage rates, productivity, and project conditions vary significantly by location, season, project complexity, and market conditions. Union requirements, prevailing wage laws, and local labor market conditions significantly affect actual costs. Professional contractors should verify all calculations against current market rates and project-specific conditions.
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>⚠️ Disclaimer:</strong> All calculations provide rough order of magnitude (ROM) estimates for planning purposes only. Consult with licensed professionals for final project specifications and code compliance verification.
+  </div>
+</div>
+
+<!-- Floating Feedback Button -->
+<button class="floating-feedback" onclick="openFeedbackModal()" aria-label="Send Feedback">
+  💬 Feedback
+</button>
+
+<!-- Old script tags removed - using optimized loading order below -->
+
+<!-- Calculator Scripts - Optimized Loading Order -->
+<script src="/assets/js/calculators.js" defer></script>
+<script src="/assets/js/export-utilities.js" defer></script>
+<script src="/assets/js/calculators-hub.js" defer></script>
+<script src="/assets/js/calc-tabs.js" defer></script>
+
+<!-- GA4 External Scripts -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H7RWMCGDHG"></script>
+<script src="/assets/js/ga-init.js" defer></script>
+
+</body>
+</html>

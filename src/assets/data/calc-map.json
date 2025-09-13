@@ -1,0 +1,1363 @@
+{
+  "version": "2025-09-09",
+  "calculators": {
+    "paint-pro": {
+      "title": "Paint Pro Calculator Results",
+      "inputs": {
+        "wall-area": [
+          "[data-field='wall-area']",
+          "#paint-area",
+          "#wallArea",
+          "#area"
+        ],
+        "openings": [
+          "[data-field='openings']",
+          "#paint-openings",
+          "#openings"
+        ],
+        "coats": [
+          "[data-field='coats']",
+          "#paint-coats",
+          "#coats"
+        ],
+        "texture": [
+          "[data-field='texture']",
+          "#paint-texture",
+          "#texture"
+        ],
+        "quality": [
+          "[data-field='quality']",
+          "#paint-quality",
+          "#quality"
+        ],
+        "primer": [
+          "[data-field='primer']",
+          "#need-primer",
+          "#primer"
+        ]
+      },
+      "outputs": {
+        "paintable": [
+          "[data-out='paintable']",
+          "#paintableArea",
+          "#paintable-area"
+        ],
+        "paint-gal": [
+          "[data-out='paint-gal']",
+          "#paintGallons",
+          "#paint-gallons"
+        ],
+        "primer-gal": [
+          "[data-out='primer-gal']",
+          "#primerGallons",
+          "#primer-gallons"
+        ],
+        "paint-cost": [
+          "[data-out='paint-cost']",
+          "#paintCost",
+          "#paint-cost"
+        ],
+        "primer-cost": [
+          "[data-out='primer-cost']",
+          "#primerCost",
+          "#primer-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#paintLabor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#paintTotal",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "paint": {
+      "title": "Paint Calculator Results",
+      "inputs": {
+        "wall-area": [
+          "[data-field='wall-area']",
+          "#paint-area",
+          "#wallArea",
+          "#area"
+        ],
+        "openings": [
+          "[data-field='openings']",
+          "#paint-openings",
+          "#openings"
+        ],
+        "coats": [
+          "[data-field='coats']",
+          "#paint-coats",
+          "#coats"
+        ],
+        "texture": [
+          "[data-field='texture']",
+          "#paint-texture",
+          "#texture"
+        ],
+        "quality": [
+          "[data-field='quality']",
+          "#paint-quality",
+          "#quality"
+        ],
+        "primer": [
+          "[data-field='primer']",
+          "#need-primer",
+          "#primer"
+        ]
+      },
+      "outputs": {
+        "paintable": [
+          "[data-out='paintable']",
+          "#paintableArea",
+          "#paintable-area"
+        ],
+        "paint-gal": [
+          "[data-out='paint-gal']",
+          "#paintGallons",
+          "#paint-gallons"
+        ],
+        "primer-gal": [
+          "[data-out='primer-gal']",
+          "#primerGallons",
+          "#primer-gallons"
+        ],
+        "paint-cost": [
+          "[data-out='paint-cost']",
+          "#paintCost",
+          "#paint-cost"
+        ],
+        "primer-cost": [
+          "[data-out='primer-cost']",
+          "#primerCost",
+          "#primer-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#paintLabor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#paintTotal",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "framing-optimizer": {
+      "title": "Framing Optimizer Results",
+      "inputs": {
+        "wall-length": [
+          "[data-field='wall-length']",
+          "#framing-length",
+          "#length"
+        ],
+        "wall-height": [
+          "[data-field='wall-height']",
+          "#framing-height",
+          "#height"
+        ],
+        "spacing": [
+          "[data-field='spacing']",
+          "#framing-spacing",
+          "#spacing"
+        ],
+        "grade": [
+          "[data-field='grade']",
+          "#framing-grade",
+          "#grade"
+        ],
+        "openings": [
+          "[data-field='openings']",
+          "#framing-openings",
+          "#openings"
+        ],
+        "headers": [
+          "[data-field='headers']",
+          "#include-headers",
+          "#headers"
+        ]
+      },
+      "outputs": {
+        "studs": [
+          "[data-out='studs']",
+          "#framing-studs",
+          "#studs-count"
+        ],
+        "plates": [
+          "[data-out='plates']",
+          "#framing-plates",
+          "#plates-lf"
+        ],
+        "headers": [
+          "[data-out='headers']",
+          "#framing-headers",
+          "#header-count"
+        ],
+        "lf": [
+          "[data-out='lf']",
+          "#framing-lf",
+          "#total-lf"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#framing-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#framing-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#framing-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "concrete-advanced": {
+      "title": "Concrete Advanced Calculator Results",
+      "inputs": {
+        "length": [
+          "[data-field='length']",
+          "#concrete-length",
+          "#length"
+        ],
+        "width": [
+          "[data-field='width']",
+          "#concrete-width",
+          "#width"
+        ],
+        "thickness": [
+          "[data-field='thickness']",
+          "#concrete-thickness",
+          "#thickness"
+        ],
+        "psi": [
+          "[data-field='psi']",
+          "#concrete-psi",
+          "#psi"
+        ],
+        "reinforcement": [
+          "[data-field='reinforcement']",
+          "#reinforcement",
+          "#rebar"
+        ],
+        "finish": [
+          "[data-field='finish']",
+          "#finish",
+          "#concrete-finish"
+        ]
+      },
+      "outputs": {
+        "volume": [
+          "[data-out='volume']",
+          "#concrete-volume",
+          "#cubic-feet"
+        ],
+        "yards": [
+          "[data-out='yards']",
+          "#concrete-yards",
+          "#cubic-yards"
+        ],
+        "rebar": [
+          "[data-out='rebar']",
+          "#concrete-rebar",
+          "#rebar-tons"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#concrete-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#concrete-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#concrete-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "concrete": {
+      "title": "Concrete Calculator Results",
+      "inputs": {
+        "length": [
+          "[data-field='length']",
+          "#concrete-length",
+          "#length"
+        ],
+        "width": [
+          "[data-field='width']",
+          "#concrete-width",
+          "#width"
+        ],
+        "thickness": [
+          "[data-field='thickness']",
+          "#concrete-thickness",
+          "#thickness"
+        ],
+        "psi": [
+          "[data-field='psi']",
+          "#concrete-psi",
+          "#psi"
+        ],
+        "reinforcement": [
+          "[data-field='reinforcement']",
+          "#reinforcement",
+          "#rebar"
+        ],
+        "finish": [
+          "[data-field='finish']",
+          "#finish",
+          "#concrete-finish"
+        ]
+      },
+      "outputs": {
+        "volume": [
+          "[data-out='volume']",
+          "#concrete-volume",
+          "#cubic-feet"
+        ],
+        "yards": [
+          "[data-out='yards']",
+          "#concrete-yards",
+          "#cubic-yards"
+        ],
+        "rebar": [
+          "[data-out='rebar']",
+          "#concrete-rebar",
+          "#rebar-tons"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#concrete-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#concrete-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#concrete-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "roofing-advanced": {
+      "title": "Roofing Advanced Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#roof-area",
+          "#roofing-area"
+        ],
+        "pitch": [
+          "[data-field='pitch']",
+          "#roof-pitch",
+          "#pitch"
+        ],
+        "layers": [
+          "[data-field='layers']",
+          "#roof-layers",
+          "#layers"
+        ],
+        "material": [
+          "[data-field='material']",
+          "#material",
+          "#roof-material"
+        ]
+      },
+      "outputs": {
+        "squares": [
+          "[data-out='squares']",
+          "#roof-squares",
+          "#roofing-squares"
+        ],
+        "waste": [
+          "[data-out='waste']",
+          "#roof-waste",
+          "#waste-factor"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#roof-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#roof-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#roof-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "electrical-load": {
+      "title": "Electrical Load Calculator Results",
+      "inputs": {
+        "circuits": [
+          "[data-field='circuits']",
+          "#elec-circuits",
+          "#circuits"
+        ],
+        "fixtures": [
+          "[data-field='fixtures']",
+          "#elec-fixtures",
+          "#fixtures"
+        ],
+        "distance": [
+          "[data-field='distance']",
+          "#elec-distance",
+          "#distance"
+        ],
+        "amperage": [
+          "[data-field='amperage']",
+          "#amperage",
+          "#elec-amperage"
+        ]
+      },
+      "outputs": {
+        "load": [
+          "[data-out='load']",
+          "#elec-load",
+          "#electrical-load"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#elec-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#elec-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#elec-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "plumbing-system": {
+      "title": "Plumbing System Calculator Results",
+      "inputs": {
+        "fixtures": [
+          "[data-field='fixtures']",
+          "#plumb-fixtures",
+          "#fixtures"
+        ],
+        "runs": [
+          "[data-field='runs']",
+          "#plumb-runs",
+          "#runs"
+        ],
+        "pipe-size": [
+          "[data-field='pipe-size']",
+          "#pipe-size",
+          "#plumb-size"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#plumb-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#plumb-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#plumb-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "hvac-load": {
+      "title": "HVAC Load Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#hvac-area",
+          "#area"
+        ],
+        "zone": [
+          "[data-field='zone']",
+          "#hvac-zone",
+          "#zone"
+        ],
+        "insulation": [
+          "[data-field='insulation']",
+          "#insulation",
+          "#r-value"
+        ]
+      },
+      "outputs": {
+        "loadBTU": [
+          "[data-out='loadBTU']",
+          "#hvac-btu",
+          "#btu-load"
+        ],
+        "tons": [
+          "[data-out='tons']",
+          "#hvac-tons",
+          "#tonnage"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#hvac-equipment",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#hvac-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#hvac-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "flooring-optimizer": {
+      "title": "Flooring Optimizer Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#floor-area",
+          "#area"
+        ],
+        "material": [
+          "[data-field='material']",
+          "#floor-material-type",
+          "#material"
+        ],
+        "waste": [
+          "[data-field='waste']",
+          "#waste-factor",
+          "#waste"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#floor-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#floor-labor",
+          "#labor-cost"
+        ],
+        "waste": [
+          "[data-out='waste']",
+          "#floor-waste",
+          "#waste-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#floor-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "insulation-roi": {
+      "title": "Insulation ROI Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#insul-area",
+          "#area"
+        ],
+        "rvalue": [
+          "[data-field='rvalue']",
+          "#insul-r",
+          "#r-value"
+        ],
+        "utility-rate": [
+          "[data-field='utility-rate']",
+          "#utility-rate",
+          "#energy-rate"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#insul-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#insul-labor",
+          "#labor-cost"
+        ],
+        "savings": [
+          "[data-out='savings']",
+          "#insul-savings",
+          "#annual-savings"
+        ],
+        "roi": [
+          "[data-out='roi']",
+          "#insul-roi",
+          "#payback-years"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#insul-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "excavation": {
+      "title": "Excavation Calculator Results",
+      "inputs": {
+        "length": [
+          "[data-field='length']",
+          "#excav-length",
+          "#length"
+        ],
+        "width": [
+          "[data-field='width']",
+          "#excav-width",
+          "#width"
+        ],
+        "depth": [
+          "[data-field='depth']",
+          "#excav-depth",
+          "#depth"
+        ],
+        "soil-type": [
+          "[data-field='soil-type']",
+          "#soil-type",
+          "#soil"
+        ]
+      },
+      "outputs": {
+        "volume": [
+          "[data-out='volume']",
+          "#excav-volume",
+          "#cubic-yards"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#excav-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#excav-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#excav-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "drywall": {
+      "title": "Drywall Professional Estimate",
+      "inputs": {
+        "length": [
+          "[data-field='length']",
+          "#drywall-length",
+          "#length"
+        ],
+        "width": [
+          "[data-field='width']",
+          "#drywall-width",
+          "#width"
+        ],
+        "height": [
+          "[data-field='height']",
+          "#drywall-height",
+          "#height"
+        ],
+        "doors": [
+          "[data-field='doors']",
+          "#drywall-doors",
+          "#doors"
+        ],
+        "windows": [
+          "[data-field='windows']",
+          "#drywall-windows",
+          "#windows"
+        ]
+      },
+      "outputs": {
+        "wall-area": [
+          "[data-out='wall-area']",
+          "#drywall-wall-area",
+          "#wall-area"
+        ],
+        "sheets-required": [
+          "[data-out='sheets-required']",
+          "#drywall-sheets-required",
+          "#sheets-required"
+        ],
+        "sheets-qty": [
+          "[data-out='sheets-qty']",
+          "#drywall-sheets-qty",
+          "#sheets-qty"
+        ],
+        "compound-qty": [
+          "[data-out='compound-qty']",
+          "#drywall-compound-qty",
+          "#compound-qty"
+        ],
+        "tape-qty": [
+          "[data-out='tape-qty']",
+          "#drywall-tape-qty",
+          "#tape-qty"
+        ],
+        "corner-qty": [
+          "[data-out='corner-qty']",
+          "#drywall-corner-qty",
+          "#corner-qty"
+        ],
+        "material-cost": [
+          "[data-out='material-cost']",
+          "#drywall-material-cost",
+          "#material-cost"
+        ],
+        "labor-cost": [
+          "[data-out='labor-cost']",
+          "#drywall-labor-cost",
+          "#labor-cost"
+        ],
+        "total-cost": [
+          "[data-out='total-cost']",
+          "#drywall-total-cost",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total-cost"
+    },
+    "labor-crew": {
+      "title": "Labor Crew Calculator Results",
+      "inputs": {
+        "crew-size": [
+          "[data-field='crew-size']",
+          "#labor-crew",
+          "#crew-size"
+        ],
+        "hours": [
+          "[data-field='hours']",
+          "#labor-hours",
+          "#hours"
+        ],
+        "rate": [
+          "[data-field='rate']",
+          "#labor-rate",
+          "#hourly-rate"
+        ]
+      },
+      "outputs": {
+        "labor": [
+          "[data-out='labor']",
+          "#labor-cost",
+          "#total-labor"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#labor-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "retaining-wall": {
+      "title": "Retaining Wall Calculator Results",
+      "inputs": {
+        "length": [
+          "[data-field='length']",
+          "#rw-length",
+          "#length"
+        ],
+        "height": [
+          "[data-field='height']",
+          "#rw-height",
+          "#height"
+        ],
+        "thickness": [
+          "[data-field='thickness']",
+          "#rw-thickness",
+          "#thickness"
+        ],
+        "block-type": [
+          "[data-field='block-type']",
+          "#block-type",
+          "#material"
+        ]
+      },
+      "outputs": {
+        "blocks": [
+          "[data-out='blocks']",
+          "#rw-blocks",
+          "#block-count"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#rw-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#rw-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#rw-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "project-cash-flow": {
+      "title": "Project Cash Flow Results",
+      "inputs": {
+        "contract": [
+          "[data-field='contract']",
+          "#cf-contract",
+          "#contract-value"
+        ],
+        "duration": [
+          "[data-field='duration']",
+          "#cf-duration",
+          "#project-duration"
+        ]
+      },
+      "outputs": {
+        "curve": [
+          "[data-out='curve']",
+          "#cf-curve",
+          "#cash-flow-curve"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#cf-total",
+          "#total-cash-flow"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "material-waste": {
+      "title": "Material Waste Calculator Results",
+      "inputs": {
+        "base-qty": [
+          "[data-field='base-qty']",
+          "#mw-base",
+          "#base-quantity"
+        ],
+        "waste-percent": [
+          "[data-field='waste-percent']",
+          "#mw-waste",
+          "#waste-percentage"
+        ]
+      },
+      "outputs": {
+        "waste-qty": [
+          "[data-out='waste-qty']",
+          "#mw-qty",
+          "#waste-quantity"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#mw-total",
+          "#total-quantity"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "finish-carpentry": {
+      "title": "Finish Carpentry Calculator Results",
+      "inputs": {
+        "linear-feet": [
+          "[data-field='linear-feet']",
+          "#fc-linear-feet",
+          "#linear-feet"
+        ],
+        "trim-type": [
+          "[data-field='trim-type']",
+          "#trim-type",
+          "#fc-trim-type"
+        ],
+        "complexity": [
+          "[data-field='complexity']",
+          "#complexity",
+          "#job-complexity"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#fc-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#fc-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#fc-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "roi-maximizer": {
+      "title": "ROI Maximizer Results",
+      "inputs": {
+        "investment": [
+          "[data-field='investment']",
+          "#roi-investment",
+          "#investment-amount"
+        ],
+        "timeline": [
+          "[data-field='timeline']",
+          "#roi-timeline",
+          "#project-timeline"
+        ],
+        "risk-factor": [
+          "[data-field='risk-factor']",
+          "#risk-factor",
+          "#risk-level"
+        ]
+      },
+      "outputs": {
+        "roi": [
+          "[data-out='roi']",
+          "#roi-percentage",
+          "#return-percentage"
+        ],
+        "payback": [
+          "[data-out='payback']",
+          "#payback-period",
+          "#payback-time"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#roi-total",
+          "#total-return"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "framing": {
+      "title": "Framing Optimizer Results",
+      "inputs": {
+        "wall-length": [
+          "[data-field='wall-length']",
+          "#framing-length",
+          "#length"
+        ],
+        "wall-height": [
+          "[data-field='wall-height']",
+          "#framing-height",
+          "#height"
+        ],
+        "spacing": [
+          "[data-field='spacing']",
+          "#framing-spacing",
+          "#spacing"
+        ],
+        "grade": [
+          "[data-field='grade']",
+          "#framing-grade",
+          "#grade"
+        ],
+        "openings": [
+          "[data-field='openings']",
+          "#framing-openings",
+          "#openings"
+        ],
+        "headers": [
+          "[data-field='headers']",
+          "#include-headers",
+          "#headers"
+        ]
+      },
+      "outputs": {
+        "studs": [
+          "[data-out='studs']",
+          "#framing-studs",
+          "#studs-count"
+        ],
+        "plates": [
+          "[data-out='plates']",
+          "#framing-plates",
+          "#plates-lf"
+        ],
+        "headers": [
+          "[data-out='headers']",
+          "#framing-headers",
+          "#header-count"
+        ],
+        "lf": [
+          "[data-out='lf']",
+          "#framing-lf",
+          "#total-lf"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#framing-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#framing-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#framing-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "roofing": {
+      "title": "Roofing Advanced Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#roof-area",
+          "#roofing-area"
+        ],
+        "pitch": [
+          "[data-field='pitch']",
+          "#roof-pitch",
+          "#pitch"
+        ],
+        "layers": [
+          "[data-field='layers']",
+          "#roof-layers",
+          "#layers"
+        ],
+        "material": [
+          "[data-field='material']",
+          "#material",
+          "#roof-material"
+        ]
+      },
+      "outputs": {
+        "squares": [
+          "[data-out='squares']",
+          "#roof-squares",
+          "#roofing-squares"
+        ],
+        "waste": [
+          "[data-out='waste']",
+          "#roof-waste",
+          "#waste-factor"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#roof-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#roof-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#roof-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "electrical": {
+      "title": "Electrical Load Calculator Results",
+      "inputs": {
+        "circuits": [
+          "[data-field='circuits']",
+          "#elec-circuits",
+          "#circuits"
+        ],
+        "fixtures": [
+          "[data-field='fixtures']",
+          "#elec-fixtures",
+          "#fixtures"
+        ],
+        "distance": [
+          "[data-field='distance']",
+          "#elec-distance",
+          "#distance"
+        ],
+        "amperage": [
+          "[data-field='amperage']",
+          "#amperage",
+          "#elec-amperage"
+        ]
+      },
+      "outputs": {
+        "load": [
+          "[data-out='load']",
+          "#elec-load",
+          "#electrical-load"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#elec-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#elec-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#elec-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "plumbing": {
+      "title": "Plumbing System Calculator Results",
+      "inputs": {
+        "fixtures": [
+          "[data-field='fixtures']",
+          "#plumb-fixtures",
+          "#fixtures"
+        ],
+        "runs": [
+          "[data-field='runs']",
+          "#plumb-runs",
+          "#runs"
+        ],
+        "pipe-size": [
+          "[data-field='pipe-size']",
+          "#pipe-size",
+          "#plumb-size"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#plumb-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#plumb-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#plumb-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "hvac": {
+      "title": "HVAC Load Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#hvac-area",
+          "#area"
+        ],
+        "zone": [
+          "[data-field='zone']",
+          "#hvac-zone",
+          "#zone"
+        ],
+        "insulation": [
+          "[data-field='insulation']",
+          "#insulation",
+          "#r-value"
+        ]
+      },
+      "outputs": {
+        "loadBTU": [
+          "[data-out='loadBTU']",
+          "#hvac-btu",
+          "#btu-load"
+        ],
+        "tons": [
+          "[data-out='tons']",
+          "#hvac-tons",
+          "#tonnage"
+        ],
+        "mat": [
+          "[data-out='mat']",
+          "#hvac-equipment",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#hvac-labor",
+          "#labor-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#hvac-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "flooring": {
+      "title": "Flooring Optimizer Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#floor-area",
+          "#area"
+        ],
+        "material": [
+          "[data-field='material']",
+          "#floor-material-type",
+          "#material"
+        ],
+        "waste": [
+          "[data-field='waste']",
+          "#waste-factor",
+          "#waste"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#floor-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#floor-labor",
+          "#labor-cost"
+        ],
+        "waste": [
+          "[data-out='waste']",
+          "#floor-waste",
+          "#waste-cost"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#floor-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "insulation": {
+      "title": "Insulation ROI Calculator Results",
+      "inputs": {
+        "area": [
+          "[data-field='area']",
+          "#insul-area",
+          "#area"
+        ],
+        "rvalue": [
+          "[data-field='rvalue']",
+          "#insul-r",
+          "#r-value"
+        ],
+        "utility-rate": [
+          "[data-field='utility-rate']",
+          "#utility-rate",
+          "#energy-rate"
+        ]
+      },
+      "outputs": {
+        "mat": [
+          "[data-out='mat']",
+          "#insul-material",
+          "#material-cost"
+        ],
+        "labor": [
+          "[data-out='labor']",
+          "#insul-labor",
+          "#labor-cost"
+        ],
+        "savings": [
+          "[data-out='savings']",
+          "#insul-savings",
+          "#annual-savings"
+        ],
+        "roi": [
+          "[data-out='roi']",
+          "#insul-roi",
+          "#payback-years"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#insul-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    },
+    "labor": {
+      "title": "Labor Crew Calculator Results",
+      "inputs": {
+        "crew-size": [
+          "[data-field='crew-size']",
+          "#labor-crew",
+          "#crew-size"
+        ],
+        "hours": [
+          "[data-field='hours']",
+          "#labor-hours",
+          "#hours"
+        ],
+        "rate": [
+          "[data-field='rate']",
+          "#labor-rate",
+          "#hourly-rate"
+        ]
+      },
+      "outputs": {
+        "labor": [
+          "[data-out='labor']",
+          "#labor-cost",
+          "#total-labor"
+        ],
+        "total": [
+          "[data-out='total']",
+          "#labor-total",
+          "#total-cost"
+        ]
+      },
+      "primaryTotal": "total"
+    }
+  }
+}

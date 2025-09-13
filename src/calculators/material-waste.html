@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>Material Waste Calculator - Optimize & Reduce | CostFlowAI</title>
+  <meta name="description" content="Calculate material waste, optimize cut patterns, and reduce project costs. Professional construction material optimization tool.">
+  <link rel="canonical" href="https://costflowai.com/calculators/material-waste.html">
+  <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/print.css" media="print">
+  <!-- GA4 -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+  gtag('js',new Date()); gtag('config','G-H7RWMCGDHG');</script>
+  <style>
+    .calc-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .calc-header { text-align: center; margin-bottom: 2rem; }
+    .quick-actions { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
+    .calc-body { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .input-section { background: #f7fafc; padding: 1.5rem; border-radius: 8px; }
+    .results-section { background: white; border: 2px solid #e2e8f0; padding: 1.5rem; border-radius: 8px; }
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; margin: 0.25rem; }
+    .btn-primary { background: #ff6b35; color: white; }
+    .btn-secondary { background: #e2e8f0; }
+    .result-primary { font-size: 2rem; font-weight: bold; color: #1e3a5f; }
+    .breakdown-table { width: 100%; margin-top: 1rem; }
+    .breakdown-table td { padding: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+    .disclaimer { background: #fff5f5; border-left: 3px solid #ff6b35; padding: 1rem; margin-top: 2rem; }
+    .optimization-section { background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    .waste-alert { background: #fef2f2; border: 1px solid #fecaca; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    @media (max-width: 768px) { .calc-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<header>
+    <nav class="container">
+        <a href="/" class="logo">CostFlowAI</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/calculators/">Calculators</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/about.html">About</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+  <div class="calc-container" id="material-waste-calc" data-calc="material-waste">
+    <div class="calc-header">
+      <h1>Material Waste Optimizer</h1>
+      <p>Minimize waste, optimize cutting patterns, and calculate reorder points</p>
+      <div class="quick-actions">
+        <button class="btn btn-secondary" onclick="loadDefaults('lumber')">Lumber Project</button>
+        <button class="btn btn-secondary" onclick="loadDefaults('drywall')">Drywall Project</button>
+        <button class="btn btn-secondary" onclick="loadLastUsed()">Load Last Used</button>
+      </div>
+    </div>
+
+    <div class="calc-body">
+      <div class="input-section">
+        <h3>Material Specifications</h3>
+        
+        <!-- Material Selection -->
+        <div class="input-group">
+          <label>Material Type</label>
+          <select id="materialType" onchange="updateWasteFactors()">
+            <optgroup label="Lumber">
+              <option value="lumber_2x4">2x4 Lumber (5% waste)</option>
+              <option value="lumber_2x6">2x6 Lumber (5% waste)</option>
+              <option value="lumber_2x8">2x8 Lumber (7% waste)</option>
+              <option value="lumber_plywood">Plywood 4x8 (10% waste)</option>
+              <option value="lumber_osb">OSB Sheathing (8% waste)</option>
+            </optgroup>
+            <optgroup label="Drywall">
+              <option value="drywall_regular">Regular Drywall 4x8 (15% waste)</option>
+              <option value="drywall_moisture">Moisture Resistant (15% waste)</option>
+              <option value="drywall_fire">Fire Rated (12% waste)</option>
+            </optgroup>
+            <optgroup label="Flooring">
+              <option value="flooring_hardwood">Hardwood Flooring (8% waste)</option>
+              <option value="flooring_laminate">Laminate Flooring (5% waste)</option>
+              <option value="flooring_tile">Ceramic Tile (10% waste)</option>
+              <option value="flooring_carpet">Carpet (8% waste)</option>
+            </optgroup>
+            <optgroup label="Roofing">
+              <option value="roofing_shingles">Asphalt Shingles (10% waste)</option>
+              <option value="roofing_metal">Metal Roofing (5% waste)</option>
+              <option value="roofing_membrane">Membrane (15% waste)</option>
+            </optgroup>
+            <optgroup label="Insulation">
+              <option value="insulation_batt">Batt Insulation (3% waste)</option>
+              <option value="insulation_spray">Spray Foam (8% waste)</option>
+              <option value="insulation_rigid">Rigid Board (10% waste)</option>
+            </optgroup>
+            <optgroup label="Concrete">
+              <option value="concrete_ready">Ready Mix (5% waste)</option>
+              <option value="concrete_block">CMU Blocks (8% waste)</option>
+              <option value="concrete_brick">Brick (5% waste)</option>
+            </optgroup>
+            <optgroup label="Electrical">
+              <option value="electrical_wire">Electrical Wire (3% waste)</option>
+              <option value="electrical_conduit">Conduit (5% waste)</option>
+              <option value="electrical_cable">Cable (7% waste)</option>
+            </optgroup>
+            <optgroup label="Plumbing">
+              <option value="plumbing_pvc">PVC Pipe (8% waste)</option>
+              <option value="plumbing_copper">Copper Pipe (5% waste)</option>
+              <option value="plumbing_pex">PEX Tubing (3% waste)</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Quantity Inputs -->
+        <div class="input-group">
+          <label>Required Quantity</label>
+          <input type="number" id="requiredQuantity" value="100" min="0" step="0.1">
+        </div>
+        
+        <div class="input-group">
+          <label>Unit</label>
+          <select id="unit">
+            <option value="pieces">Pieces</option>
+            <option value="linear_feet">Linear Feet</option>
+            <option value="square_feet">Square Feet</option>
+            <option value="cubic_yards">Cubic Yards</option>
+            <option value="tons">Tons</option>
+            <option value="pounds">Pounds</option>
+          </select>
+        </div>
+
+        <!-- Cost Information -->
+        <div class="input-group">
+          <label>Unit Cost ($)</label>
+          <input type="number" id="unitCost" value="5.50" step="0.01" min="0">
+        </div>
+
+        <!-- Project Conditions -->
+        <div class="input-group">
+          <label>Project Complexity</label>
+          <select id="complexity" onchange="adjustWasteFactor()">
+            <option value="simple">Simple (Standard waste)</option>
+            <option value="moderate" selected>Moderate (+2% waste)</option>
+            <option value="complex">Complex (+5% waste)</option>
+            <option value="very_complex">Very Complex (+8% waste)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Storage Conditions</label>
+          <select id="storage">
+            <option value="excellent">Excellent (0% storage loss)</option>
+            <option value="good" selected>Good (1% storage loss)</option>
+            <option value="average">Average (2% storage loss)</option>
+            <option value="poor">Poor (5% storage loss)</option>
+          </select>
+        </div>
+
+        <!-- Cut Optimization -->
+        <div class="input-group">
+          <label>Standard Material Length (feet)</label>
+          <input type="number" id="standardLength" value="8" step="0.5" min="0">
+        </div>
+
+        <div class="input-group">
+          <label>Required Cut Lengths (comma separated, in feet)</label>
+          <input type="text" id="cutLengths" placeholder="6, 4, 3.5, 2" value="6, 4, 3.5, 2">
+        </div>
+
+        <!-- Reorder Parameters -->
+        <div class="input-group">
+          <label>Lead Time (days)</label>
+          <input type="number" id="leadTime" value="5" min="0">
+        </div>
+
+        <div class="input-group">
+          <label>Daily Usage Rate</label>
+          <input type="number" id="dailyUsage" value="10" min="0" step="0.1">
+        </div>
+
+        <button class="btn btn-primary" data-action="calculate" style="width: 100%; margin-top: 1rem;">Optimize Materials</button>
+      </div>
+
+      <div class="results-section">
+        <h3>Optimization Results</h3>
+        
+        <div style="text-align: center; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+          <div>Total Order Quantity</div>
+          <div class="result-primary" id="totalQuantity">0 units</div>
+          <div style="color: #718096;" id="quantityBreakdown">Including waste allowance</div>
+        </div>
+
+        <div style="text-align: center; padding: 1rem; margin-top: 1rem; background: #fff5f5; border-radius: 8px;">
+          <div>Total Material Cost</div>
+          <div class="result-primary" id="totalCost">$0</div>
+          <div style="color: #718096;" id="costBreakdown">Waste cost included</div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Waste Analysis</h4>
+        <table class="breakdown-table">
+          <tr><td>Required Quantity</td><td align="right" id="requiredQty">0</td></tr>
+          <tr><td>Base Waste Factor</td><td align="right" id="baseWaste">0%</td></tr>
+          <tr><td>Complexity Adjustment</td><td align="right" id="complexityWaste">+0%</td></tr>
+          <tr><td>Storage Loss</td><td align="right" id="storageLoss">0%</td></tr>
+          <tr><td>Total Waste Factor</td><td align="right" id="totalWaste">0%</td></tr>
+          <tr><td>Waste Quantity</td><td align="right" id="wasteQuantity">0</td></tr>
+          <tr><td>Waste Cost</td><td align="right" id="wasteCost">$0</td></tr>
+        </table>
+
+        <div class="optimization-section">
+          <h4>Cut Pattern Optimization</h4>
+          <div id="cutOptimization">
+            <div>Enter cut lengths to see optimization...</div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <strong>Cutting Efficiency: <span id="cuttingEfficiency">0%</span></strong>
+          </div>
+        </div>
+
+        <div class="optimization-section" style="background: #f6ffed;">
+          <h4>Reorder Point Calculation</h4>
+          <div>
+            <strong>Reorder Point: <span id="reorderPoint">0 units</span></strong><br>
+            <div style="color: #718096; margin-top: 0.5rem;">
+              Safety stock: <span id="safetyStock">0 units</span><br>
+              Lead time demand: <span id="leadTimeDemand">0 units</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="wasteAlert" class="waste-alert" style="display: none;">
+          <strong>⚠️ High Waste Alert!</strong>
+          <div id="wasteRecommendation"></div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="saveCalculation()" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" onclick="exportOptimization()" data-action="export">📊 Export Report</button>
+          <button class="btn btn-secondary" onclick="shareCalculation()">🔗 Share</button>
+          <button class="btn btn-secondary" onclick="window.print()" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Important:</strong> This provides rough order of magnitude (ROM) estimates only. Actual waste factors vary by project conditions, worker skill, and specific requirements. Always verify with suppliers and contractors.
+    </div>
+
+    <details style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+      <summary style="cursor: pointer; font-weight: bold;">📐 Calculation Methodology</summary>
+      <div style="margin-top: 1rem;">
+        <h4>Optimization Algorithms:</h4>
+        <ul>
+          <li><strong>Total Waste:</strong> Base Waste + Complexity + Storage Loss</li>
+          <li><strong>Order Quantity:</strong> Required Quantity ÷ (1 - Total Waste Factor)</li>
+          <li><strong>Cut Optimization:</strong> Best-fit algorithm to minimize material waste</li>
+          <li><strong>Reorder Point:</strong> (Daily Usage × Lead Time) + Safety Stock</li>
+          <li><strong>Safety Stock:</strong> 25% of lead time demand</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <script src="/assets/js/calculator-core.js"></script>
+  <script src="/assets/js/calculators.js" defer></script>
+  <script src="/assets/js/export-utilities.js" defer></script>
+  <script src="/assets/js/calculators-hub.js" defer></script>
+  <script>
+    const calc = new ProCalculator('material-waste');
+    
+    // Material data structure with waste factors
+    const materialData = {
+      wasteFactors: {
+        lumber_2x4: 0.05, lumber_2x6: 0.05, lumber_2x8: 0.07, lumber_plywood: 0.10, lumber_osb: 0.08,
+        drywall_regular: 0.15, drywall_moisture: 0.15, drywall_fire: 0.12,
+        flooring_hardwood: 0.08, flooring_laminate: 0.05, flooring_tile: 0.10, flooring_carpet: 0.08,
+        roofing_shingles: 0.10, roofing_metal: 0.05, roofing_membrane: 0.15,
+        insulation_batt: 0.03, insulation_spray: 0.08, insulation_rigid: 0.10,
+        concrete_ready: 0.05, concrete_block: 0.08, concrete_brick: 0.05,
+        electrical_wire: 0.03, electrical_conduit: 0.05, electrical_cable: 0.07,
+        plumbing_pvc: 0.08, plumbing_copper: 0.05, plumbing_pex: 0.03
+      },
+      complexityFactors: { simple: 0, moderate: 0.02, complex: 0.05, very_complex: 0.08 },
+      storageFactors: { excellent: 0, good: 0.01, average: 0.02, poor: 0.05 },
+      safetyStockFactor: 0.25
+    };
+
+    function calculate() {
+      // Get all inputs
+      const materialType = document.getElementById('materialType').value;
+      const requiredQuantity = parseFloat(document.getElementById('requiredQuantity').value) || 0;
+      const unitCost = parseFloat(document.getElementById('unitCost').value) || 0;
+      const complexity = document.getElementById('complexity').value;
+      const storage = document.getElementById('storage').value;
+      const standardLength = parseFloat(document.getElementById('standardLength').value) || 0;
+      const cutLengthsStr = document.getElementById('cutLengths').value;
+      const leadTime = parseFloat(document.getElementById('leadTime').value) || 0;
+      const dailyUsage = parseFloat(document.getElementById('dailyUsage').value) || 0;
+
+      // Calculate waste factors
+      const baseWaste = materialData.wasteFactors[materialType] || 0.05;
+      const complexityWaste = materialData.complexityFactors[complexity];
+      const storageLoss = materialData.storageFactors[storage];
+      const totalWasteFactor = baseWaste + complexityWaste + storageLoss;
+
+      // Calculate quantities
+      const totalQuantity = requiredQuantity / (1 - totalWasteFactor);
+      const wasteQuantity = totalQuantity - requiredQuantity;
+      const totalCost = totalQuantity * unitCost;
+      const wasteCost = wasteQuantity * unitCost;
+
+      // Cut pattern optimization
+      let cuttingEfficiency = 0;
+      let optimizedCuts = [];
+      
+      if (cutLengthsStr.trim() && standardLength > 0) {
+        const cutLengths = cutLengthsStr.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+        const result = optimizeCutting(cutLengths, standardLength);
+        cuttingEfficiency = result.efficiency;
+        optimizedCuts = result.patterns;
+      }
+
+      // Reorder point calculation
+      const leadTimeDemand = dailyUsage * leadTime;
+      const safetyStock = leadTimeDemand * materialData.safetyStockFactor;
+      const reorderPoint = leadTimeDemand + safetyStock;
+
+      // Update display
+      document.getElementById('totalQuantity').textContent = totalQuantity.toFixed(1) + ' units';
+      document.getElementById('quantityBreakdown').textContent = `${wasteQuantity.toFixed(1)} units waste allowance`;
+      document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+      document.getElementById('costBreakdown').textContent = `$${wasteCost.toFixed(2)} waste cost`;
+
+      // Waste breakdown
+      document.getElementById('requiredQty').textContent = requiredQuantity.toFixed(1);
+      document.getElementById('baseWaste').textContent = (baseWaste * 100).toFixed(1) + '%';
+      document.getElementById('complexityWaste').textContent = '+' + (complexityWaste * 100).toFixed(1) + '%';
+      document.getElementById('storageLoss').textContent = (storageLoss * 100).toFixed(1) + '%';
+      document.getElementById('totalWaste').textContent = (totalWasteFactor * 100).toFixed(1) + '%';
+      document.getElementById('wasteQuantity').textContent = wasteQuantity.toFixed(1);
+      document.getElementById('wasteCost').textContent = '$' + wasteCost.toFixed(2);
+
+      // Cut optimization display
+      if (optimizedCuts.length > 0) {
+        const cutDisplay = optimizedCuts.map((pattern, i) => 
+          `Pattern ${i + 1}: ${pattern.cuts.join(' + ')} ft (${pattern.waste.toFixed(1)} ft waste)`
+        ).join('<br>');
+        document.getElementById('cutOptimization').innerHTML = cutDisplay;
+      }
+      document.getElementById('cuttingEfficiency').textContent = cuttingEfficiency.toFixed(1) + '%';
+
+      // Reorder point display
+      document.getElementById('reorderPoint').textContent = reorderPoint.toFixed(0) + ' units';
+      document.getElementById('safetyStock').textContent = safetyStock.toFixed(0) + ' units';
+      document.getElementById('leadTimeDemand').textContent = leadTimeDemand.toFixed(0) + ' units';
+
+      // Waste alert
+      if (totalWasteFactor > 0.15) {
+        document.getElementById('wasteAlert').style.display = 'block';
+        document.getElementById('wasteRecommendation').innerHTML = `
+          Waste factor is ${(totalWasteFactor * 100).toFixed(1)}%. Consider:
+          <ul>
+            <li>Improving storage conditions</li>
+            <li>Simplifying design to reduce cuts</li>
+            <li>Using experienced crews</li>
+            <li>Better material handling procedures</li>
+          </ul>
+        `;
+      } else {
+        document.getElementById('wasteAlert').style.display = 'none';
+      }
+
+      // Save to calculator object
+      calc.inputs = { 
+        materialType, requiredQuantity, unitCost, complexity, storage, 
+        standardLength, cutLengths: cutLengthsStr, leadTime, dailyUsage 
+      };
+      calc.results = { 
+        totalQuantity: totalQuantity.toFixed(2), totalCost: totalCost.toFixed(2),
+        wasteFactor: (totalWasteFactor * 100).toFixed(1), reorderPoint: reorderPoint.toFixed(0)
+      };
+    }
+
+    function optimizeCutting(cutLengths, standardLength) {
+      // Simple best-fit decreasing algorithm
+      cutLengths.sort((a, b) => b - a);
+      const patterns = [];
+      const remainingCuts = [...cutLengths];
+      
+      while (remainingCuts.length > 0) {
+        const pattern = { cuts: [], waste: standardLength };
+        
+        for (let i = 0; i < remainingCuts.length; i++) {
+          if (remainingCuts[i] <= pattern.waste) {
+            pattern.cuts.push(remainingCuts[i]);
+            pattern.waste -= remainingCuts[i];
+            remainingCuts.splice(i, 1);
+            i--; // Adjust index after removal
+          }
+        }
+        
+        patterns.push(pattern);
+        
+        if (patterns.length > 20) break; // Prevent infinite loop
+      }
+      
+      const totalWaste = patterns.reduce((sum, p) => sum + p.waste, 0);
+      const totalMaterial = patterns.length * standardLength;
+      const efficiency = ((totalMaterial - totalWaste) / totalMaterial) * 100;
+      
+      return { patterns: patterns.slice(0, 5), efficiency }; // Show first 5 patterns
+    }
+
+    function updateWasteFactors() {
+      calculate();
+    }
+
+    function adjustWasteFactor() {
+      calculate();
+    }
+
+    function loadDefaults(type) {
+      if (type === 'lumber') {
+        document.getElementById('materialType').value = 'lumber_2x4';
+        document.getElementById('unitCost').value = '6.50';
+        document.getElementById('standardLength').value = '8';
+        document.getElementById('cutLengths').value = '7, 6, 5, 4';
+      } else if (type === 'drywall') {
+        document.getElementById('materialType').value = 'drywall_regular';
+        document.getElementById('unitCost').value = '12.50';
+        document.getElementById('standardLength').value = '8';
+        document.getElementById('cutLengths').value = '8, 6, 4';
+      }
+      calculate();
+    }
+
+    function loadLastUsed() {
+      if (calc.loadLastUsed()) {
+        Object.keys(calc.inputs).forEach(key => {
+          const element = document.getElementById(key);
+          if (element) element.value = calc.inputs[key];
+        });
+        calculate();
+      }
+    }
+
+    function saveCalculation() {
+      calc.saveCalculation();
+    }
+
+    function exportOptimization() {
+      calc.exportCSV();
+    }
+
+    function shareCalculation() {
+      calc.shareLink();
+    }
+
+    // Auto-calculate when inputs change
+    document.addEventListener('input', calculate);
+    document.addEventListener('change', calculate);
+
+    // Load from URL if shared
+    window.onload = function() {
+      if (calc.loadFromURL()) {
+        Object.keys(calc.inputs).forEach(key => {
+          const element = document.getElementById(key);
+          if (element) element.value = calc.inputs[key];
+        });
+      }
+      calculate();
+    };
+  </script>
+</main>
+<script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+<script src="/assets/js/ga-init.js" defer></script>
+</body>
+</html>

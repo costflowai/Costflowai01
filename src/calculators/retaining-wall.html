@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Retaining Wall Calculator - Design & Cost | CostFlowAI</title>
+    <meta name="description" content="Calculate retaining wall materials, analyze structural loads, and estimate construction costs. Professional retaining wall design calculator.">
+    <link rel="canonical" href="https://costflowai.com/calculators/retaining-wall.html">
+    <link rel="stylesheet" href="../assets/css/calculator.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html">
+                    <img src="../assets/images/logo.png" alt="CostFlow AI" class="logo">
+                </a>
+            </div>
+            <nav class="nav">
+                <a href="../index.html">Home</a>
+                <a href="../calculators/index.html">Calculators</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="calc-container" id="retaining-wall-calc" data-calc="retaining-wall">
+                <div class="calc-header">
+                    <h1><i class="fas fa-layer-group"></i> Retaining Wall Calculator</h1>
+                    <p>Wall stability analysis, drainage design, and comprehensive material cost estimation</p>
+                </div>
+
+                <div class="calc-content">
+                    <div class="input-section">
+                        <div class="card">
+                            <h3><i class="fas fa-ruler-combined"></i> Wall Dimensions</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="wallLength">Wall Length (ft)</label>
+                                    <input type="number" id="wallLength" value="100" min="5" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="wallHeight">Maximum Wall Height (ft)</label>
+                                    <input type="number" id="wallHeight" value="4" min="1" max="20" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="avgHeight">Average Wall Height (ft)</label>
+                                    <input type="number" id="avgHeight" value="3.5" min="1" max="20" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="batter">Wall Batter/Setback (inches)</label>
+                                    <input type="number" id="batter" value="0" min="0" max="12" step="0.5">
+                                    <small>Lean-back for stability</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-mountain"></i> Site Conditions</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="soilType">Soil Type</label>
+                                    <select id="soilType">
+                                        <option value="clay">Clay (Expansive)</option>
+                                        <option value="silty-clay">Silty Clay</option>
+                                        <option value="sandy-clay">Sandy Clay</option>
+                                        <option value="silt" selected>Silt</option>
+                                        <option value="sandy-silt">Sandy Silt</option>
+                                        <option value="sand">Sand (Well-Drained)</option>
+                                        <option value="gravel">Gravel</option>
+                                        <option value="rock">Rock/Bedrock</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="drainageConditions">Drainage Conditions</label>
+                                    <select id="drainageConditions">
+                                        <option value="poor">Poor (Standing Water)</option>
+                                        <option value="fair" selected>Fair (Seasonal Wet)</option>
+                                        <option value="good">Good (Well-Drained)</option>
+                                        <option value="excellent">Excellent (Sandy/Rocky)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="slope">Natural Slope Behind Wall (%)</label>
+                                    <input type="number" id="slope" value="10" min="0" max="45" step="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="surcharge">Surcharge Load (psf)</label>
+                                    <input type="number" id="surcharge" value="100" min="0" max="1000" step="50">
+                                    <small>Building, driveway, equipment loads</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-cubes"></i> Wall Type & Materials</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="wallType">Wall Type</label>
+                                    <select id="wallType">
+                                        <option value="gravity-stone" selected>Gravity Stone Wall</option>
+                                        <option value="gravity-concrete">Gravity Concrete Wall</option>
+                                        <option value="cantilever-concrete">Cantilever Concrete Wall</option>
+                                        <option value="segmental-block">Segmental Retaining Block</option>
+                                        <option value="modular-block">Modular Block System</option>
+                                        <option value="timber-crib">Timber Crib Wall</option>
+                                        <option value="gabion">Gabion Basket Wall</option>
+                                        <option value="sheet-pile">Sheet Pile Wall</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="materialGrade">Material Grade</label>
+                                    <select id="materialGrade">
+                                        <option value="standard" selected>Standard Grade</option>
+                                        <option value="premium">Premium Grade</option>
+                                        <option value="architectural">Architectural Grade</option>
+                                        <option value="engineered">Engineered System</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="finish">Wall Finish</label>
+                                    <select id="finish">
+                                        <option value="natural" selected>Natural/Unfinished</option>
+                                        <option value="textured">Textured Surface</option>
+                                        <option value="smooth">Smooth Finish</option>
+                                        <option value="decorative">Decorative Pattern</option>
+                                        <option value="stained">Stained/Colored</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reinforcement">Reinforcement Type</label>
+                                    <select id="reinforcement">
+                                        <option value="none">No Reinforcement</option>
+                                        <option value="geogrid" selected>Geogrid</option>
+                                        <option value="welded-wire">Welded Wire Mesh</option>
+                                        <option value="rebar">Steel Rebar</option>
+                                        <option value="fiber">Fiber Reinforcement</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-tint"></i> Drainage System</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="drainageType">Drainage Method</label>
+                                    <select id="drainageType">
+                                        <option value="none">No Drainage System</option>
+                                        <option value="weep-holes">Weep Holes Only</option>
+                                        <option value="french-drain" selected>French Drain</option>
+                                        <option value="geocomposite">Geocomposite Drain</option>
+                                        <option value="subsurface">Subsurface Drain System</option>
+                                        <option value="comprehensive">Comprehensive System</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="drainPipeSize">Drain Pipe Size (inches)</label>
+                                    <select id="drainPipeSize">
+                                        <option value="4" selected>4 inch</option>
+                                        <option value="6">6 inch</option>
+                                        <option value="8">8 inch</option>
+                                        <option value="10">10 inch</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="backfillMaterial">Backfill Material</label>
+                                    <select id="backfillMaterial">
+                                        <option value="native">Native Soil</option>
+                                        <option value="granular" selected>Granular (3/4" Stone)</option>
+                                        <option value="engineered">Engineered Fill</option>
+                                        <option value="lightweight">Lightweight Fill</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="filterFabric">Filter Fabric</label>
+                                    <select id="filterFabric">
+                                        <option value="none">No Filter Fabric</option>
+                                        <option value="standard" selected>Standard Geotextile</option>
+                                        <option value="non-woven">Non-Woven Fabric</option>
+                                        <option value="high-strength">High-Strength Fabric</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-tools"></i> Construction Details</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="excavationDepth">Excavation Depth (ft)</label>
+                                    <input type="number" id="excavationDepth" value="2" min="0.5" max="10" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="foundationWidth">Foundation Width (ft)</label>
+                                    <input type="number" id="foundationWidth" value="2" min="1" max="10" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="accessDifficulty">Site Access</label>
+                                    <select id="accessDifficulty">
+                                        <option value="easy" selected>Easy (Open Access)</option>
+                                        <option value="moderate">Moderate (Limited Access)</option>
+                                        <option value="difficult">Difficult (Tight Spaces)</option>
+                                        <option value="very-difficult">Very Difficult (Hand Work)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="permitRequired">Permits Required</label>
+                                    <select id="permitRequired">
+                                        <option value="none">No Permits</option>
+                                        <option value="basic" selected">Basic Building Permit</option>
+                                        <option value="engineering">Engineering Review</option>
+                                        <option value="comprehensive">Comprehensive Review</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-dollar-sign"></i> Cost Parameters</h3>
+                            <div class="input-grid">
+                                <div class="form-group">
+                                    <label for="materialCostUnit">Material Cost ($/unit)</label>
+                                    <input type="number" id="materialCostUnit" value="25" min="5" max="200" step="1">
+                                    <small id="materialUnit">per ton</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="laborRate">Labor Rate ($/hour)</label>
+                                    <input type="number" id="laborRate" value="55" min="25" max="125" step="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="equipmentRate">Equipment Rate ($/hour)</label>
+                                    <input type="number" id="equipmentRate" value="125" min="50" max="300" step="25">
+                                </div>
+                                <div class="form-group">
+                                    <label for="markup">Contractor Markup (%)</label>
+                                    <input type="number" id="markup" value="25" min="10" max="50" step="5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="results-section">
+                        <div class="card">
+                            <h3><i class="fas fa-balance-scale"></i> Stability Analysis</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Factor of Safety (Overturning):</span>
+                                    <span class="value" id="safetyFactorOT">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Factor of Safety (Sliding):</span>
+                                    <span class="value" id="safetyFactorSliding">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Bearing Pressure:</span>
+                                    <span class="value" id="bearingPressure">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Stability Rating:</span>
+                                    <span class="value" id="stabilityRating">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-calculator"></i> Material Quantities</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Primary Material:</span>
+                                    <span class="value" id="primaryMaterial">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Backfill Required:</span>
+                                    <span class="value" id="backfillQuantity">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Drainage Stone:</span>
+                                    <span class="value" id="drainageStone">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Reinforcement:</span>
+                                    <span class="value" id="reinforcementQuantity">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-hard-hat"></i> Construction Analysis</h3>
+                            <div class="results-grid">
+                                <div class="result-item">
+                                    <span class="label">Excavation Volume:</span>
+                                    <span class="value" id="excavationVolume">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Construction Time:</span>
+                                    <span class="value" id="constructionTime">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Equipment Hours:</span>
+                                    <span class="value" id="equipmentHours">-</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="label">Access Difficulty Factor:</span>
+                                    <span class="value" id="accessFactor">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-tint"></i> Drainage Design</h3>
+                            <div id="drainageDesign" class="drainage-analysis">
+                                <!-- Drainage analysis will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Engineering Notes</h3>
+                            <div id="engineeringNotes" class="engineering-notes">
+                                <!-- Engineering recommendations will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-dollar-sign"></i> Cost Breakdown</h3>
+                            <div class="cost-breakdown">
+                                <div class="cost-row">
+                                    <span>Excavation & Site Prep:</span>
+                                    <span id="excavationCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Foundation & Materials:</span>
+                                    <span id="foundationMaterialsCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Wall Materials:</span>
+                                    <span id="wallMaterialsCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Drainage System:</span>
+                                    <span id="drainageSystemCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Backfill & Compaction:</span>
+                                    <span id="backfillCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Reinforcement:</span>
+                                    <span id="reinforcementCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Labor:</span>
+                                    <span id="laborCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Equipment:</span>
+                                    <span id="equipmentCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Permits & Engineering:</span>
+                                    <span id="permitsCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotalCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Markup (<span id="markupPercent">25</span>%):</span>
+                                    <span id="markupCost">$0</span>
+                                </div>
+                                <div class="cost-row total">
+                                    <span>Total Project Cost:</span>
+                                    <span id="totalCost">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Cost per Linear Foot:</span>
+                                    <span id="costPerLinearFoot">$0</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span>Cost per Square Foot (face):</span>
+                                    <span id="costPerSqFt">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-actions">
+                    <button onclick="calculator.saveCalculation()" data-action="save"><i class="fas fa-save"></i> Save</button>
+                    <button onclick="calculator.exportCSV()" data-action="export"><i class="fas fa-download"></i> Export CSV</button>
+                    <button onclick="calculator.shareLink()"><i class="fas fa-share"></i> Share Link</button>
+                    <button onclick="calculator.printResults()" data-action="print"><i class="fas fa-print"></i> Print</button>
+                </div>
+
+                <div class="methodology-section">
+                    <div class="card">
+                        <h3><i class="fas fa-info-circle"></i> Calculation Methodology</h3>
+                        <div class="methodology-content">
+                            <h4>Stability Analysis:</h4>
+                            <p>• Overturning analysis using moments about toe of wall</p>
+                            <p>• Sliding resistance based on friction and passive earth pressure</p>
+                            <p>• Bearing pressure calculated using Rankine earth pressure theory</p>
+                            
+                            <h4>Material Calculations:</h4>
+                            <p>• Wall volume based on geometry and batter specifications</p>
+                            <p>• Backfill quantities include compaction and settlement factors</p>
+                            <p>• Drainage stone sized per permeability requirements</p>
+                            
+                            <h4>Cost Estimation:</h4>
+                            <p>• Material costs based on regional pricing data</p>
+                            <p>• Labor productivity adjusted for wall type and site conditions</p>
+                            <p>• Equipment hours calculated from standard construction rates</p>
+                            
+                            <h4>Important Notes:</h4>
+                            <p>• Calculations are preliminary estimates for planning purposes</p>
+                            <p>• Professional engineering required for walls over 4 feet</p>
+                            <p>• Local soil conditions may require specialized analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 CostFlow AI. Professional construction cost analysis.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/calculator-core.js"></script>
+    <script src="/assets/js/calculators.js" defer></script>
+    <script src="/assets/js/export-utilities.js" defer></script>
+    <script src="/assets/js/calculators-hub.js" defer></script>
+    <script>
+        class RetainingWallCalculator extends ProCalculator {
+            constructor() {
+                super('Retaining Wall Calculator');
+                this.initializeCalculator();
+            }
+
+            initializeCalculator() {
+                const inputs = [
+                    'wallLength', 'wallHeight', 'avgHeight', 'batter',
+                    'soilType', 'drainageConditions', 'slope', 'surcharge',
+                    'wallType', 'materialGrade', 'finish', 'reinforcement',
+                    'drainageType', 'drainPipeSize', 'backfillMaterial', 'filterFabric',
+                    'excavationDepth', 'foundationWidth', 'accessDifficulty', 'permitRequired',
+                    'materialCostUnit', 'laborRate', 'equipmentRate', 'markup'
+                ];
+
+                inputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('input', () => this.calculate());
+                        element.addEventListener('change', () => this.calculate());
+                    }
+                });
+
+                // Update material costs and units when wall type changes
+                document.getElementById('wallType').addEventListener('change', () => {
+                    this.updateMaterialCosts();
+                    this.calculate();
+                });
+
+                this.loadFromURL();
+                this.calculate();
+            }
+
+            updateMaterialCosts() {
+                const wallType = document.getElementById('wallType').value;
+                
+                const materialData = {
+                    'gravity-stone': { cost: 25, unit: 'per ton' },
+                    'gravity-concrete': { cost: 120, unit: 'per cu yd' },
+                    'cantilever-concrete': { cost: 140, unit: 'per cu yd' },
+                    'segmental-block': { cost: 8, unit: 'per sq ft' },
+                    'modular-block': { cost: 12, unit: 'per sq ft' },
+                    'timber-crib': { cost: 35, unit: 'per lin ft' },
+                    'gabion': { cost: 45, unit: 'per cu yd' },
+                    'sheet-pile': { cost: 25, unit: 'per sq ft' }
+                };
+                
+                const data = materialData[wallType] || materialData['gravity-stone'];
+                document.getElementById('materialCostUnit').value = data.cost;
+                document.getElementById('materialUnit').textContent = data.unit;
+            }
+
+            calculate() {
+                this.collectInputs();
+                this.performStabilityAnalysis();
+                this.calculateQuantities();
+                this.analyzeConstruction();
+                this.designDrainage();
+                this.generateEngNotes();
+                this.calculateCosts();
+                this.displayResults();
+                this.updateInputs();
+            }
+
+            collectInputs() {
+                this.inputs = {
+                    wallLength: parseFloat(document.getElementById('wallLength').value) || 100,
+                    wallHeight: parseFloat(document.getElementById('wallHeight').value) || 4,
+                    avgHeight: parseFloat(document.getElementById('avgHeight').value) || 3.5,
+                    batter: parseFloat(document.getElementById('batter').value) || 0,
+                    soilType: document.getElementById('soilType').value || 'silt',
+                    drainageConditions: document.getElementById('drainageConditions').value || 'fair',
+                    slope: parseFloat(document.getElementById('slope').value) || 10,
+                    surcharge: parseFloat(document.getElementById('surcharge').value) || 100,
+                    wallType: document.getElementById('wallType').value || 'gravity-stone',
+                    materialGrade: document.getElementById('materialGrade').value || 'standard',
+                    finish: document.getElementById('finish').value || 'natural',
+                    reinforcement: document.getElementById('reinforcement').value || 'geogrid',
+                    drainageType: document.getElementById('drainageType').value || 'french-drain',
+                    drainPipeSize: parseFloat(document.getElementById('drainPipeSize').value) || 4,
+                    backfillMaterial: document.getElementById('backfillMaterial').value || 'granular',
+                    filterFabric: document.getElementById('filterFabric').value || 'standard',
+                    excavationDepth: parseFloat(document.getElementById('excavationDepth').value) || 2,
+                    foundationWidth: parseFloat(document.getElementById('foundationWidth').value) || 2,
+                    accessDifficulty: document.getElementById('accessDifficulty').value || 'easy',
+                    permitRequired: document.getElementById('permitRequired').value || 'basic',
+                    materialCostUnit: parseFloat(document.getElementById('materialCostUnit').value) || 25,
+                    laborRate: parseFloat(document.getElementById('laborRate').value) || 55,
+                    equipmentRate: parseFloat(document.getElementById('equipmentRate').value) || 125,
+                    markup: parseFloat(document.getElementById('markup').value) || 25
+                };
+            }
+
+            performStabilityAnalysis() {
+                // Soil pressure coefficients (simplified)
+                const soilPressures = {
+                    'clay': { ka: 0.5, angle: 15, density: 120 },
+                    'silty-clay': { ka: 0.4, angle: 20, density: 115 },
+                    'sandy-clay': { ka: 0.35, angle: 25, density: 125 },
+                    'silt': { ka: 0.35, angle: 28, density: 105 },
+                    'sandy-silt': { ka: 0.3, angle: 30, density: 110 },
+                    'sand': { ka: 0.3, angle: 35, density: 115 },
+                    'gravel': { ka: 0.25, angle: 40, density: 125 },
+                    'rock': { ka: 0.2, angle: 45, density: 150 }
+                };
+
+                const soil = soilPressures[this.inputs.soilType] || soilPressures['silt'];
+                
+                // Wall geometry
+                const height = this.inputs.avgHeight;
+                const batterRadians = Math.atan(this.inputs.batter / 12);
+                
+                // Earth pressure calculation
+                const slopeRadians = this.inputs.slope * Math.PI / 180;
+                const adjustedKa = soil.ka * (1 + Math.sin(slopeRadians));
+                
+                // Lateral pressure at base
+                const lateralPressure = adjustedKa * soil.density * height + 
+                    adjustedKa * this.inputs.surcharge;
+                
+                // Wall weight estimation
+                const wallVolume = this.getWallVolume();
+                const wallWeight = wallVolume * this.getWallDensity();
+                
+                // Overturning moment
+                const overturnMoment = lateralPressure * height * this.inputs.wallLength / 2;
+                
+                // Resisting moment (simplified)
+                const resistMoment = wallWeight * (this.inputs.foundationWidth / 2);
+                
+                // Safety factors
+                this.results.safetyFactorOT = resistMoment / overturnMoment;
+                this.results.safetyFactorSliding = Math.tan(soil.angle * Math.PI / 180) * wallWeight / 
+                    (lateralPressure * this.inputs.wallLength);
+                
+                // Bearing pressure
+                this.results.bearingPressure = wallWeight / (this.inputs.foundationWidth * this.inputs.wallLength);
+                
+                // Stability rating
+                if (this.results.safetyFactorOT >= 2.0 && this.results.safetyFactorSliding >= 1.5) {
+                    this.results.stabilityRating = 'Excellent';
+                } else if (this.results.safetyFactorOT >= 1.5 && this.results.safetyFactorSliding >= 1.2) {
+                    this.results.stabilityRating = 'Good';
+                } else if (this.results.safetyFactorOT >= 1.2 && this.results.safetyFactorSliding >= 1.0) {
+                    this.results.stabilityRating = 'Marginal';
+                } else {
+                    this.results.stabilityRating = 'Inadequate';
+                }
+            }
+
+            getWallVolume() {
+                // Simplified wall volume calculation
+                const baseWidth = this.inputs.foundationWidth;
+                const height = this.inputs.avgHeight;
+                const length = this.inputs.wallLength;
+                const batter = this.inputs.batter / 12;
+                
+                // Trapezoidal cross-section
+                const topWidth = baseWidth - (height * batter);
+                const avgWidth = (baseWidth + Math.max(0.5, topWidth)) / 2;
+                
+                return avgWidth * height * length;
+            }
+
+            getWallDensity() {
+                // Material densities (pcf)
+                const densities = {
+                    'gravity-stone': 150,
+                    'gravity-concrete': 150,
+                    'cantilever-concrete': 150,
+                    'segmental-block': 120,
+                    'modular-block': 120,
+                    'timber-crib': 40,
+                    'gabion': 120,
+                    'sheet-pile': 490 // Steel
+                };
+                
+                return densities[this.inputs.wallType] || 150;
+            }
+
+            calculateQuantities() {
+                // Primary material quantity
+                const wallVolume = this.getWallVolume();
+                
+                if (this.inputs.wallType.includes('concrete')) {
+                    this.results.primaryMaterialQty = wallVolume / 27; // cubic yards
+                    this.results.primaryMaterialUnit = 'cu yd';
+                } else if (this.inputs.wallType.includes('block') || this.inputs.wallType === 'sheet-pile') {
+                    this.results.primaryMaterialQty = this.inputs.wallLength * this.inputs.avgHeight;
+                    this.results.primaryMaterialUnit = 'sq ft';
+                } else if (this.inputs.wallType === 'timber-crib') {
+                    this.results.primaryMaterialQty = this.inputs.wallLength;
+                    this.results.primaryMaterialUnit = 'lin ft';
+                } else {
+                    // Stone/gabion - convert to tons
+                    this.results.primaryMaterialQty = wallVolume * this.getWallDensity() / 2000;
+                    this.results.primaryMaterialUnit = 'tons';
+                }
+                
+                // Backfill calculation
+                const backfillVolume = this.inputs.wallLength * this.inputs.avgHeight * 
+                    (this.inputs.avgHeight * 0.5); // Triangular prism behind wall
+                this.results.backfillQty = backfillVolume / 27; // cubic yards
+                
+                // Drainage stone
+                if (this.inputs.drainageType !== 'none') {
+                    const drainStoneVolume = this.inputs.wallLength * 2 * 1; // 2ft wide x 1ft deep
+                    this.results.drainageStoneQty = drainStoneVolume / 27;
+                } else {
+                    this.results.drainageStoneQty = 0;
+                }
+                
+                // Reinforcement
+                if (this.inputs.reinforcement === 'geogrid') {
+                    this.results.reinforcementQty = this.inputs.wallLength * this.inputs.avgHeight * 0.7;
+                    this.results.reinforcementUnit = 'sq ft';
+                } else if (this.inputs.reinforcement === 'rebar') {
+                    this.results.reinforcementQty = this.inputs.wallLength * 10; // lbs per linear foot
+                    this.results.reinforcementUnit = 'lbs';
+                } else {
+                    this.results.reinforcementQty = 0;
+                    this.results.reinforcementUnit = 'none';
+                }
+            }
+
+            analyzeConstruction() {
+                // Excavation volume
+                const excVolume = this.inputs.wallLength * this.inputs.foundationWidth * 
+                    this.inputs.excavationDepth;
+                this.results.excavationVolumeYards = excVolume / 27;
+                
+                // Construction time estimation
+                const baseProductivity = this.getBaseProductivity(); // LF per day
+                
+                // Access difficulty multipliers
+                const accessMultipliers = {
+                    'easy': 1.0,
+                    'moderate': 0.8,
+                    'difficult': 0.6,
+                    'very-difficult': 0.4
+                };
+                
+                const accessFactor = accessMultipliers[this.inputs.accessDifficulty] || 1.0;
+                const adjustedProductivity = baseProductivity * accessFactor;
+                
+                this.results.constructionDays = Math.ceil(this.inputs.wallLength / adjustedProductivity);
+                this.results.accessMultiplier = accessFactor;
+                
+                // Equipment hours
+                const excHours = this.results.excavationVolumeYards / 20; // 20 CY/hr
+                const constructionHours = this.results.constructionDays * 8;
+                this.results.equipmentHours = excHours + constructionHours * 0.6; // 60% equipment utilization
+            }
+
+            getBaseProductivity() {
+                // Base productivity rates (linear feet per day)
+                const productivityRates = {
+                    'gravity-stone': 25,
+                    'gravity-concrete': 20,
+                    'cantilever-concrete': 15,
+                    'segmental-block': 40,
+                    'modular-block': 35,
+                    'timber-crib': 30,
+                    'gabion': 20,
+                    'sheet-pile': 50
+                };
+                
+                return productivityRates[this.inputs.wallType] || 25;
+            }
+
+            designDrainage() {
+                const drainageDiv = document.getElementById('drainageDesign');
+                let html = '';
+                
+                if (this.inputs.drainageType === 'none') {
+                    html = `
+                        <div class="drainage-item warning">
+                            <strong>⚠️ No Drainage System</strong>
+                            <p>Without proper drainage, hydrostatic pressure may cause wall failure.</p>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="drainage-item">
+                            <strong>Drainage Method:</strong> ${this.inputs.drainageType.replace('-', ' ')}
+                        </div>
+                        <div class="drainage-item">
+                            <strong>Pipe Size:</strong> ${this.inputs.drainPipeSize}" perforated pipe
+                        </div>
+                        <div class="drainage-item">
+                            <strong>Stone Required:</strong> ${this.results.drainageStoneQty.toFixed(1)} cubic yards
+                        </div>
+                        <div class="drainage-item">
+                            <strong>Filter Fabric:</strong> ${this.inputs.filterFabric.replace('-', ' ')}
+                        </div>
+                        <div class="drainage-item">
+                            <strong>Outlet:</strong> Gravity discharge recommended every 100 feet
+                        </div>
+                    `;
+                    
+                    if (this.inputs.drainageConditions === 'poor') {
+                        html += `
+                            <div class="drainage-item warning">
+                                <strong>⚠️ Poor Drainage Conditions</strong>
+                                <p>Consider subsurface drainage system and waterproofing.</p>
+                            </div>
+                        `;
+                    }
+                }
+                
+                drainageDiv.innerHTML = html;
+            }
+
+            generateEngNotes() {
+                const notesDiv = document.getElementById('engineeringNotes');
+                let notes = [];
+                
+                // Height warnings
+                if (this.inputs.wallHeight > 4) {
+                    notes.push({
+                        type: 'warning',
+                        text: 'Professional engineering required for walls over 4 feet high.'
+                    });
+                }
+                
+                // Stability warnings
+                if (this.results.safetyFactorOT < 1.5) {
+                    notes.push({
+                        type: 'error',
+                        text: 'Overturning safety factor is inadequate. Consider widening foundation or adding reinforcement.'
+                    });
+                }
+                
+                if (this.results.safetyFactorSliding < 1.2) {
+                    notes.push({
+                        type: 'error',
+                        text: 'Sliding safety factor is inadequate. Consider increasing wall weight or adding passive resistance.'
+                    });
+                }
+                
+                // Soil conditions
+                if (this.inputs.soilType === 'clay') {
+                    notes.push({
+                        type: 'warning',
+                        text: 'Expansive clay soils require special consideration for drainage and movement joints.'
+                    });
+                }
+                
+                // Surcharge loads
+                if (this.inputs.surcharge > 250) {
+                    notes.push({
+                        type: 'warning',
+                        text: 'High surcharge loads detected. Verify load calculations and consider reinforced design.'
+                    });
+                }
+                
+                // Drainage recommendations
+                if (this.inputs.drainageType === 'none' && this.inputs.wallHeight > 2) {
+                    notes.push({
+                        type: 'error',
+                        text: 'Drainage system strongly recommended for walls over 2 feet high.'
+                    });
+                }
+                
+                // Default professional recommendation
+                notes.push({
+                    type: 'info',
+                    text: 'All retaining wall designs should be reviewed by a qualified engineer, especially for critical applications.'
+                });
+                
+                let html = '';
+                notes.forEach(note => {
+                    const iconClass = note.type === 'error' ? 'fas fa-exclamation-circle' : 
+                        note.type === 'warning' ? 'fas fa-exclamation-triangle' : 'fas fa-info-circle';
+                    html += `
+                        <div class="engineering-note ${note.type}">
+                            <i class="${iconClass}"></i>
+                            <span>${note.text}</span>
+                        </div>
+                    `;
+                });
+                
+                notesDiv.innerHTML = html;
+            }
+
+            calculateCosts() {
+                // Material costs
+                this.results.wallMaterialsCost = this.results.primaryMaterialQty * this.inputs.materialCostUnit;
+                
+                // Foundation materials (concrete/stone base)
+                const foundationVolume = this.inputs.wallLength * this.inputs.foundationWidth * 
+                    this.inputs.excavationDepth / 27;
+                this.results.foundationMaterialsCost = foundationVolume * 120; // $120/CY
+                
+                // Backfill cost
+                const backfillCosts = {
+                    'native': 15,
+                    'granular': 35,
+                    'engineered': 55,
+                    'lightweight': 85
+                };
+                this.results.backfillCost = this.results.backfillQty * 
+                    (backfillCosts[this.inputs.backfillMaterial] || 35);
+                
+                // Drainage system cost
+                if (this.inputs.drainageType !== 'none') {
+                    const pipeCost = this.inputs.wallLength * (8 + this.inputs.drainPipeSize * 2);
+                    const stoneCost = this.results.drainageStoneQty * 45;
+                    const fabricCost = this.inputs.filterFabric !== 'none' ? 
+                        this.inputs.wallLength * this.inputs.avgHeight * 1.5 : 0;
+                    this.results.drainageSystemCost = pipeCost + stoneCost + fabricCost;
+                } else {
+                    this.results.drainageSystemCost = 0;
+                }
+                
+                // Reinforcement cost
+                if (this.inputs.reinforcement === 'geogrid') {
+                    this.results.reinforcementCost = this.results.reinforcementQty * 3.5;
+                } else if (this.inputs.reinforcement === 'rebar') {
+                    this.results.reinforcementCost = this.results.reinforcementQty * 0.85;
+                } else {
+                    this.results.reinforcementCost = 0;
+                }
+                
+                // Excavation cost
+                this.results.excavationCost = this.results.excavationVolumeYards * 8;
+                
+                // Labor cost
+                const totalLaborHours = this.results.constructionDays * 8;
+                this.results.laborCost = totalLaborHours * this.inputs.laborRate;
+                
+                // Equipment cost
+                this.results.equipmentCost = this.results.equipmentHours * this.inputs.equipmentRate;
+                
+                // Permits and engineering
+                const permitCosts = {
+                    'none': 0,
+                    'basic': 250,
+                    'engineering': 1500,
+                    'comprehensive': 3500
+                };
+                this.results.permitsCost = permitCosts[this.inputs.permitRequired] || 250;
+                
+                // Subtotal
+                this.results.subtotalCost = this.results.excavationCost + 
+                    this.results.foundationMaterialsCost + this.results.wallMaterialsCost + 
+                    this.results.drainageSystemCost + this.results.backfillCost + 
+                    this.results.reinforcementCost + this.results.laborCost + 
+                    this.results.equipmentCost + this.results.permitsCost;
+                
+                // Markup
+                this.results.markupCost = this.results.subtotalCost * (this.inputs.markup / 100);
+                
+                // Total cost
+                this.results.totalCost = this.results.subtotalCost + this.results.markupCost;
+                
+                // Per unit costs
+                this.results.costPerLinearFoot = this.results.totalCost / this.inputs.wallLength;
+                const wallFaceArea = this.inputs.wallLength * this.inputs.avgHeight;
+                this.results.costPerSqFt = this.results.totalCost / wallFaceArea;
+            }
+
+            displayResults() {
+                // Stability Analysis
+                document.getElementById('safetyFactorOT').textContent = this.results.safetyFactorOT.toFixed(2);
+                document.getElementById('safetyFactorSliding').textContent = this.results.safetyFactorSliding.toFixed(2);
+                document.getElementById('bearingPressure').textContent = `${this.results.bearingPressure.toFixed(0)} psf`;
+                document.getElementById('stabilityRating').textContent = this.results.stabilityRating;
+                
+                // Material Quantities
+                document.getElementById('primaryMaterial').textContent = `${this.results.primaryMaterialQty.toFixed(1)} ${this.results.primaryMaterialUnit}`;
+                document.getElementById('backfillQuantity').textContent = `${this.results.backfillQty.toFixed(1)} cu yd`;
+                document.getElementById('drainageStone').textContent = `${this.results.drainageStoneQty.toFixed(1)} cu yd`;
+                document.getElementById('reinforcementQuantity').textContent = this.results.reinforcementQty > 0 ? 
+                    `${this.results.reinforcementQty.toFixed(0)} ${this.results.reinforcementUnit}` : 'None';
+                
+                // Construction Analysis
+                document.getElementById('excavationVolume').textContent = `${this.results.excavationVolumeYards.toFixed(1)} cu yd`;
+                document.getElementById('constructionTime').textContent = `${this.results.constructionDays} days`;
+                document.getElementById('equipmentHours').textContent = `${this.results.equipmentHours.toFixed(1)} hours`;
+                document.getElementById('accessFactor').textContent = `${this.results.accessMultiplier}x`;
+                
+                // Costs
+                document.getElementById('excavationCost').textContent = `$${this.results.excavationCost.toFixed(2)}`;
+                document.getElementById('foundationMaterialsCost').textContent = `$${this.results.foundationMaterialsCost.toFixed(2)}`;
+                document.getElementById('wallMaterialsCost').textContent = `$${this.results.wallMaterialsCost.toFixed(2)}`;
+                document.getElementById('drainageSystemCost').textContent = `$${this.results.drainageSystemCost.toFixed(2)}`;
+                document.getElementById('backfillCost').textContent = `$${this.results.backfillCost.toFixed(2)}`;
+                document.getElementById('reinforcementCost').textContent = `$${this.results.reinforcementCost.toFixed(2)}`;
+                document.getElementById('laborCost').textContent = `$${this.results.laborCost.toFixed(2)}`;
+                document.getElementById('equipmentCost').textContent = `$${this.results.equipmentCost.toFixed(2)}`;
+                document.getElementById('permitsCost').textContent = `$${this.results.permitsCost.toFixed(2)}`;
+                document.getElementById('subtotalCost').textContent = `$${this.results.subtotalCost.toFixed(2)}`;
+                document.getElementById('markupPercent').textContent = this.inputs.markup;
+                document.getElementById('markupCost').textContent = `$${this.results.markupCost.toFixed(2)}`;
+                document.getElementById('totalCost').textContent = `$${this.results.totalCost.toFixed(2)}`;
+                document.getElementById('costPerLinearFoot').textContent = `$${this.results.costPerLinearFoot.toFixed(2)}`;
+                document.getElementById('costPerSqFt').textContent = `$${this.results.costPerSqFt.toFixed(2)}`;
+            }
+
+            printResults() {
+                const printWindow = window.open('', '_blank');
+                const printContent = `
+                    <html>
+                    <head>
+                        <title>Retaining Wall Analysis Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .section { margin-bottom: 20px; }
+                            .section h3 { color: #2c5282; border-bottom: 2px solid #2c5282; padding-bottom: 5px; }
+                            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+                            .cost-table { width: 100%; border-collapse: collapse; }
+                            .cost-table th, .cost-table td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+                            .highlight { background: #e6fffa; padding: 10px; border-radius: 5px; }
+                            .total-row { font-weight: bold; border-top: 2px solid #2c5282; }
+                            .warning { background: #fff5f5; border-left: 4px solid #f56565; padding: 10px; margin: 10px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h2>Retaining Wall Analysis Results</h2>
+                            <p>Wall: ${this.inputs.wallType.replace('-', ' ')} - ${this.inputs.wallLength}' x ${this.inputs.avgHeight}'</p>
+                            <p>Site: ${this.inputs.soilType} soil, ${this.inputs.slope}% slope</p>
+                            <p>Generated: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Stability Analysis</h3>
+                            <div class="highlight">
+                                <div><strong>Overturning Safety Factor:</strong> ${this.results.safetyFactorOT.toFixed(2)} ${this.results.safetyFactorOT < 1.5 ? '⚠️ LOW' : '✓'}</div>
+                                <div><strong>Sliding Safety Factor:</strong> ${this.results.safetyFactorSliding.toFixed(2)} ${this.results.safetyFactorSliding < 1.2 ? '⚠️ LOW' : '✓'}</div>
+                                <div><strong>Bearing Pressure:</strong> ${this.results.bearingPressure.toFixed(0)} psf</div>
+                                <div><strong>Overall Rating:</strong> ${this.results.stabilityRating}</div>
+                            </div>
+                            ${this.results.stabilityRating === 'Inadequate' || this.results.safetyFactorOT < 1.5 ? 
+                                '<div class="warning"><strong>⚠️ ENGINEERING REVIEW REQUIRED</strong><br>Stability factors are below acceptable limits.</div>' : ''}
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Material Requirements</h3>
+                            <div class="grid">
+                                <div>Primary Material: ${this.results.primaryMaterialQty.toFixed(1)} ${this.results.primaryMaterialUnit}</div>
+                                <div>Backfill: ${this.results.backfillQty.toFixed(1)} cu yd</div>
+                                <div>Drainage Stone: ${this.results.drainageStoneQty.toFixed(1)} cu yd</div>
+                                <div>Excavation: ${this.results.excavationVolumeYards.toFixed(1)} cu yd</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Construction Analysis</h3>
+                            <div class="grid">
+                                <div>Construction Time: ${this.results.constructionDays} days</div>
+                                <div>Equipment Hours: ${this.results.equipmentHours.toFixed(1)} hours</div>
+                                <div>Access Factor: ${this.results.accessMultiplier}x</div>
+                                <div>Drainage: ${this.inputs.drainageType.replace('-', ' ')}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Cost Summary</h3>
+                            <table class="cost-table">
+                                <tr><th>Item</th><th>Cost</th></tr>
+                                <tr><td>Wall Materials</td><td>$${this.results.wallMaterialsCost.toFixed(2)}</td></tr>
+                                <tr><td>Foundation & Excavation</td><td>$${(this.results.foundationMaterialsCost + this.results.excavationCost).toFixed(2)}</td></tr>
+                                <tr><td>Drainage System</td><td>$${this.results.drainageSystemCost.toFixed(2)}</td></tr>
+                                <tr><td>Backfill</td><td>$${this.results.backfillCost.toFixed(2)}</td></tr>
+                                <tr><td>Labor & Equipment</td><td>$${(this.results.laborCost + this.results.equipmentCost).toFixed(2)}</td></tr>
+                                <tr><td>Permits</td><td>$${this.results.permitsCost.toFixed(2)}</td></tr>
+                                <tr><td>Markup (${this.inputs.markup}%)</td><td>$${this.results.markupCost.toFixed(2)}</td></tr>
+                                <tr class="total-row"><td>Total Project Cost</td><td>$${this.results.totalCost.toFixed(2)}</td></tr>
+                            </table>
+                            <p><strong>Cost per Linear Foot:</strong> $${this.results.costPerLinearFoot.toFixed(2)}</p>
+                            <p><strong>Cost per Square Foot:</strong> $${this.results.costPerSqFt.toFixed(2)}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Important Notes</h3>
+                            <div class="warning">
+                                <strong>Disclaimer:</strong> This analysis provides preliminary estimates for planning purposes only. 
+                                Professional engineering review is required for final design, especially for walls over 4 feet high 
+                                or in critical applications. Local building codes and soil conditions may require additional considerations.
+                            </div>
+                        </div>
+                    <script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body>
+                    </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.print();
+            }
+        }
+
+        // Initialize calculator
+        const calculator = new RetainingWallCalculator();
+    </script>
+<script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body>
+</html>

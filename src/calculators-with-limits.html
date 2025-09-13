@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    
+<link rel="canonical" href="https://costflowai.com/calculators-with-limits.html"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Calculators - Free Professional Tools | CostFlowAI</title>
+    <meta name="description" content="Free professional construction calculators for residential, commercial, and concrete projects. All calculators currently unlimited access during setup period.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Usage Limiter CSS and JS -->
+    <script src="/assets/js/usage-limiter.js"></script>
+    <script src="/assets/js/calculator-integration.js"></script>
+    <style>
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .calculator-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .calculator-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .calc-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+        }
+        
+        .calc-body {
+            padding: 1.5rem;
+        }
+        
+        .calc-input {
+            margin-bottom: 1rem;
+        }
+        
+        .calc-input label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .calc-input input,
+        .calc-input select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+        
+        .calc-result {
+            background: #f0fdf4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .result-value {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .calc-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .calc-button:hover {
+            background: #1d4ed8;
+        }
+        
+        .calc-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .usage-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 2rem 0;
+            text-align: center;
+            color: #92400e;
+        }
+        
+        .usage-notice strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .premium-features {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .premium-features h3 {
+            color: #0369a1;
+            margin-bottom: 1rem;
+        }
+        
+        .premium-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            text-align: left;
+        }
+        
+        .premium-list li {
+            padding: 0.25rem 0;
+            color: #0c4a6e;
+            display: flex;
+            align-items: center;
+        }
+        
+        .premium-list li::before {
+            content: "✨";
+            margin-right: 0.5rem;
+        }
+    </style>
+<!-- GA4 -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date()); gtag('config','G-H7RWMCGDHG');</script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>CostFlowAI</h1>
+                <span class="tagline">Smart Construction Estimation</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/calculators/" class="active">Calculators</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/#contact">Contact</a></li>
+                <li><a href="/#contact">💬 Feedback</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="padding: 2rem 0;">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Professional Construction Calculators</h1>
+                <p class="hero-subtitle">Instant, accurate calculations for every project type</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Free Access Notice -->
+    <section style="padding: 1rem 0;">
+        <div class="container">
+            <div class="usage-notice" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+                <strong>🎉 All calculators are currently FREE with unlimited access!</strong>
+                Use all our professional construction calculators without any limits.
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculators -->
+    <section style="padding: 3rem 0;">
+        <div class="container">
+            <div class="calculator-grid">
+                <!-- Square Footage Calculator -->
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <h3>Square Footage Calculator</h3>
+                        <p>Calculate total area and cost per square foot</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-input">
+                            <label>Length (feet)</label>
+                            <input type="number" id="sqft-length" placeholder="30">
+                        </div>
+                        <div class="calc-input">
+                            <label>Width (feet)</label>
+                            <input type="number" id="sqft-width" placeholder="40">
+                        </div>
+                        <div class="calc-input">
+                            <label>Cost per sq ft ($)</label>
+                            <input type="number" id="sqft-cost" placeholder="150">
+                        </div>
+                        <button class="calc-button" onclick="calculateSquareFootage()">Calculate Area & Cost</button>
+                        <div class="calc-result" id="sqft-result">
+                            <div class="result-value">0 sq ft</div>
+                            <div class="result-label">Total Cost: $0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Concrete Calculator -->
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <h3>Concrete Volume Calculator</h3>
+                        <p>Calculate cubic yards and estimated cost</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-input">
+                            <label>Length (feet)</label>
+                            <input type="number" id="concrete-length" placeholder="20">
+                        </div>
+                        <div class="calc-input">
+                            <label>Width (feet)</label>
+                            <input type="number" id="concrete-width" placeholder="20">
+                        </div>
+                        <div class="calc-input">
+                            <label>Depth (inches)</label>
+                            <input type="number" id="concrete-depth" placeholder="4">
+                        </div>
+                        <button class="calc-button" onclick="calculateConcrete()">Calculate Concrete</button>
+                        <div class="calc-result" id="concrete-result">
+                            <div class="result-value">0 cu yd</div>
+                            <div class="result-label">Estimated Cost: $0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roofing Calculator -->
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <h3>Roofing Calculator</h3>
+                        <p>Calculate materials and installation costs</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-input">
+                            <label>Roof Area (sq ft)</label>
+                            <input type="number" id="roof-area" placeholder="2000">
+                        </div>
+                        <div class="calc-input">
+                            <label>Material Type</label>
+                            <select id="roof-material">
+                                <option value="3">Asphalt Shingles</option>
+                                <option value="7">Metal Roofing</option>
+                                <option value="10">Tile</option>
+                                <option value="15">Slate</option>
+                            </select>
+                        </div>
+                        <div class="calc-input">
+                            <label>Complexity</label>
+                            <select id="roof-complexity">
+                                <option value="1">Simple</option>
+                                <option value="1.2">Moderate</option>
+                                <option value="1.5">Complex</option>
+                            </select>
+                        </div>
+                        <button class="calc-button" onclick="calculateRoofing()">Calculate Roofing</button>
+                        <div class="calc-result" id="roof-result">
+                            <div class="result-value">$0</div>
+                            <div class="result-label">Total Roofing Cost</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paint Calculator -->
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <h3>Paint Calculator</h3>
+                        <p>Calculate paint needed for any project</p>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-input">
+                            <label>Wall Area (sq ft)</label>
+                            <input type="number" id="paint-area" placeholder="500">
+                        </div>
+                        <div class="calc-input">
+                            <label>Number of Coats</label>
+                            <select id="paint-coats">
+                                <option value="1">1 Coat</option>
+                                <option value="2">2 Coats</option>
+                                <option value="3">3 Coats</option>
+                            </select>
+                        </div>
+                        <div class="calc-input">
+                            <label>Paint Quality</label>
+                            <select id="paint-quality">
+                                <option value="25">Basic ($25/gal)</option>
+                                <option value="45">Premium ($45/gal)</option>
+                                <option value="65">High-End ($65/gal)</option>
+                            </select>
+                        </div>
+                        <button class="calc-button" onclick="calculatePaint()">Calculate Paint</button>
+                        <div class="calc-result" id="paint-result">
+                            <div class="result-value">0 gallons</div>
+                            <div class="result-label">Total Cost: $0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Features Available Notice -->
+            <div class="premium-features" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e;">
+                <h3 style="color: #15803d;">🎉 All Features Currently FREE!</h3>
+                <ul class="premium-list">
+                    <li>Unlimited calculations</li>
+                    <li>AI Photo Estimator</li>
+                    <li>ROI Maximizer</li>
+                    <li>Professional PDF reports</li>
+                    <li>Advanced material pricing</li>
+                    <li>Priority customer support</li>
+                </ul>
+                <p style="margin: 1rem 0; color: #15803d;">
+                    <strong>Limited Time:</strong> All premium features are temporarily free while we set up our payment system!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 CostFlowAI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize usage limiter with your Stripe checkout URL
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize usage limiter if not already done
+            if (!window.usageLimiterInstance) {
+                window.usageLimiterInstance = new UsageLimiter({
+                    stripeUrl: 'https://buy.stripe.com/test_abc123' // Replace with your actual URL
+                });
+            }
+        });
+
+        // Calculator Functions with Usage Tracking
+
+        async function calculateSquareFootage() {
+            const allowed = await checkUsageAndCalculate('square_footage', () => {
+                const length = parseFloat(document.getElementById('sqft-length').value) || 0;
+                const width = parseFloat(document.getElementById('sqft-width').value) || 0;
+                const cost = parseFloat(document.getElementById('sqft-cost').value) || 0;
+                
+                if (length <= 0 || width <= 0) {
+                    alert('Please enter valid length and width values');
+                    return false;
+                }
+                
+                const area = length * width;
+                const totalCost = area * cost;
+                
+                const result = document.getElementById('sqft-result');
+                result.style.display = 'block';
+                result.querySelector('.result-value').textContent = area.toLocaleString() + ' sq ft';
+                result.querySelector('.result-label').textContent = `Total Cost: $${totalCost.toLocaleString()}`;
+                
+                return true;
+            });
+        }
+
+        async function calculateConcrete() {
+            const allowed = await checkUsageAndCalculate('concrete', () => {
+                const length = parseFloat(document.getElementById('concrete-length').value) || 0;
+                const width = parseFloat(document.getElementById('concrete-width').value) || 0;
+                const depth = parseFloat(document.getElementById('concrete-depth').value) || 0;
+                
+                if (length <= 0 || width <= 0 || depth <= 0) {
+                    alert('Please enter valid dimensions');
+                    return false;
+                }
+                
+                const cubicFeet = length * width * (depth / 12);
+                const cubicYards = cubicFeet / 27;
+                const cost = cubicYards * 150; // $150 per cubic yard average
+                
+                const result = document.getElementById('concrete-result');
+                result.style.display = 'block';
+                result.querySelector('.result-value').textContent = cubicYards.toFixed(2) + ' cu yd';
+                result.querySelector('.result-label').textContent = `Estimated Cost: $${Math.round(cost).toLocaleString()}`;
+                
+                return true;
+            });
+        }
+
+        async function calculateRoofing() {
+            const allowed = await checkUsageAndCalculate('roofing', () => {
+                const area = parseFloat(document.getElementById('roof-area').value) || 0;
+                const materialCost = parseFloat(document.getElementById('roof-material').value) || 3;
+                const complexity = parseFloat(document.getElementById('roof-complexity').value) || 1;
+                
+                if (area <= 0) {
+                    alert('Please enter a valid roof area');
+                    return false;
+                }
+                
+                const materialTotal = area * materialCost * complexity;
+                const laborTotal = area * 2 * complexity; // $2-3 per sq ft for labor
+                const totalCost = Math.round(materialTotal + laborTotal);
+                
+                const result = document.getElementById('roof-result');
+                result.style.display = 'block';
+                result.querySelector('.result-value').textContent = `$${totalCost.toLocaleString()}`;
+                result.querySelector('.result-label').textContent = `Materials: $${Math.round(materialTotal).toLocaleString()} | Labor: $${Math.round(laborTotal).toLocaleString()}`;
+                
+                return true;
+            });
+        }
+
+        async function calculatePaint() {
+            const allowed = await checkUsageAndCalculate('paint', () => {
+                const area = parseFloat(document.getElementById('paint-area').value) || 0;
+                const coats = parseInt(document.getElementById('paint-coats').value) || 1;
+                const pricePerGallon = parseFloat(document.getElementById('paint-quality').value) || 25;
+                
+                if (area <= 0) {
+                    alert('Please enter a valid wall area');
+                    return false;
+                }
+                
+                const coverage = 350; // sq ft per gallon
+                const gallons = Math.ceil((area * coats) / coverage);
+                const totalCost = gallons * pricePerGallon;
+                
+                const result = document.getElementById('paint-result');
+                result.style.display = 'block';
+                result.querySelector('.result-value').textContent = `${gallons} gallons`;
+                result.querySelector('.result-label').textContent = `Total Cost: $${totalCost.toLocaleString()}`;
+                
+                return true;
+            });
+        }
+
+        // Auto-wrap existing calculator functions
+        setTimeout(() => {
+            if (window.autoWrapCalculators) {
+                window.autoWrapCalculators();
+            }
+        }, 1000);
+    </script>
+<script src="/assets/js/calc-events.js" defer></script>
+<script src="/assets/js/ga-init.js" defer></script>
+</body>
+</html>

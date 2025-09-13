@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>HVAC Load Calculator - Manual J & Equipment | CostFlowAI</title>
+  <meta name="description" content="Calculate HVAC loads with Manual J methods, size equipment, and determine duct CFM requirements. Professional HVAC design calculator.">
+  <link rel="canonical" href="https://costflowai.com/calculators/hvac-load.html">
+  <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/print.css" media="print">
+  <style>
+    .calc-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .calc-header { text-align: center; margin-bottom: 2rem; }
+    .quick-actions { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
+    .calc-body { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .input-section { background: #f7fafc; padding: 1.5rem; border-radius: 8px; }
+    .results-section { background: white; border: 2px solid #e2e8f0; padding: 1.5rem; border-radius: 8px; }
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; margin: 0.25rem; }
+    .btn-primary { background: #ff6b35; color: white; }
+    .btn-secondary { background: #e2e8f0; }
+    .result-primary { font-size: 2rem; font-weight: bold; color: #1e3a5f; }
+    .breakdown-table { width: 100%; margin-top: 1rem; }
+    .breakdown-table td { padding: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+    .disclaimer { background: #fff5f5; border-left: 3px solid #ff6b35; padding: 1rem; margin-top: 2rem; }
+    .room-section { background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+    .equipment-comparison { background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+    @media (max-width: 768px) { .calc-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav" role="navigation" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/calculators/">Calculators</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#contact">Contact</a>
+      <a href="/#contact">💬 Feedback</a>
+    </nav>
+    
+    <div class="header">
+      <h1>❄️ HVAC Load Calculator</h1>
+      <p>Manual J load calculations, equipment sizing, and energy analysis</p>
+    </div>
+  </header>
+  
+  <div class="calc-container" id="hvac-calc" data-calc="hvac">
+    <div class="calc-header">
+      <h2>HVAC Load Calculator</h2>
+      <p>Manual J calculations for proper equipment sizing and duct design</p>
+      <div class="quick-actions">
+        <button class="btn btn-secondary" onclick="loadDefaults('residential')">Residential Defaults</button>
+        <button class="btn btn-secondary" onclick="loadDefaults('commercial')">Commercial Defaults</button>
+        <button class="btn btn-secondary" onclick="loadLastUsed()">Load Last Used</button>
+      </div>
+    </div>
+
+    <div class="calc-body">
+      <div class="input-section">
+        <h3>Building Information</h3>
+        
+        <!-- Climate Zone -->
+        <div class="input-group">
+          <label>Climate Zone</label>
+          <select id="climateZone">
+            <option value="1">Zone 1 - Very Hot Humid (Miami)</option>
+            <option value="2">Zone 2 - Hot Humid (Houston)</option>
+            <option value="3">Zone 3 - Warm Humid (Atlanta)</option>
+            <option value="4" selected>Zone 4 - Mixed (Nashville)</option>
+            <option value="5">Zone 5 - Cool (Chicago)</option>
+            <option value="6">Zone 6 - Cold (Minneapolis)</option>
+            <option value="7">Zone 7 - Very Cold (Duluth)</option>
+          </select>
+        </div>
+
+        <!-- Building Envelope -->
+        <div class="input-group">
+          <label>Building Type</label>
+          <select id="buildingType">
+            <option value="residential" selected>Residential</option>
+            <option value="office">Office</option>
+            <option value="retail">Retail</option>
+            <option value="warehouse">Warehouse</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Total Conditioned Area (sq ft)</label>
+          <input type="number" id="totalArea" value="2000" min="0">
+        </div>
+
+        <div class="input-group">
+          <label>Ceiling Height (feet)</label>
+          <input type="number" id="ceilingHeight" value="9" step="0.5" min="8" max="20">
+        </div>
+
+        <!-- Envelope Characteristics -->
+        <div class="input-group">
+          <label>Wall Insulation</label>
+          <select id="wallInsulation">
+            <option value="poor">Poor (R-11)</option>
+            <option value="average" selected>Average (R-13)</option>
+            <option value="good">Good (R-19)</option>
+            <option value="excellent">Excellent (R-25+)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Ceiling/Roof Insulation</label>
+          <select id="roofInsulation">
+            <option value="poor">Poor (R-19)</option>
+            <option value="average">Average (R-30)</option>
+            <option value="good" selected>Good (R-38)</option>
+            <option value="excellent">Excellent (R-50+)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Window Type</label>
+          <select id="windowType">
+            <option value="single">Single Pane</option>
+            <option value="double" selected>Double Pane</option>
+            <option value="lowE">Low-E Double Pane</option>
+            <option value="triple">Triple Pane</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Window Area (% of wall area)</label>
+          <input type="number" id="windowPercent" value="15" min="5" max="40">
+        </div>
+
+        <!-- Occupancy and Internal Loads -->
+        <div class="input-group">
+          <label>Number of Occupants</label>
+          <input type="number" id="occupants" value="4" min="1">
+        </div>
+
+        <div class="input-group">
+          <label>Internal Heat Gain Level</label>
+          <select id="internalGains">
+            <option value="low">Low (Minimal equipment)</option>
+            <option value="medium" selected>Medium (Normal equipment)</option>
+            <option value="high">High (Heavy equipment use)</option>
+          </select>
+        </div>
+
+        <!-- Duct System -->
+        <div class="input-group">
+          <label>Ductwork Location</label>
+          <select id="ductLocation">
+            <option value="conditioned">Conditioned Space</option>
+            <option value="unconditioned" selected>Unconditioned Attic/Crawl</option>
+            <option value="basement">Basement</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Duct Insulation Level</label>
+          <select id="ductInsulation">
+            <option value="none">No Insulation</option>
+            <option value="r6">R-6 Insulation</option>
+            <option value="r8" selected>R-8 Insulation</option>
+            <option value="r11">R-11+ Insulation</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" data-action="calculate" style="width: 100%; margin-top: 1rem;">Calculate Load</button>
+      </div>
+
+      <div class="results-section">
+        <h3>HVAC Load Results</h3>
+        
+        <div style="text-align: center; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+          <div>Total Cooling Load</div>
+          <div class="result-primary" id="coolingLoad">0 BTU/hr</div>
+          <div style="color: #718096;" id="coolingTonnage">0.0 tons</div>
+        </div>
+
+        <div style="text-align: center; padding: 1rem; margin-top: 1rem; background: #fff5f5; border-radius: 8px;">
+          <div>Total Heating Load</div>
+          <div class="result-primary" id="heatingLoad">0 BTU/hr</div>
+          <div style="color: #718096;" id="heatingDetails">Design temperature difference</div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Load Breakdown (Cooling)</h4>
+        <table class="breakdown-table">
+          <tr><td>Sensible Heat - Walls</td><td align="right" id="wallLoad">0 BTU/hr</td></tr>
+          <tr><td>Sensible Heat - Roof</td><td align="right" id="roofLoad">0 BTU/hr</td></tr>
+          <tr><td>Sensible Heat - Windows</td><td align="right" id="windowLoad">0 BTU/hr</td></tr>
+          <tr><td>Sensible Heat - Infiltration</td><td align="right" id="infiltrationLoad">0 BTU/hr</td></tr>
+          <tr><td>Sensible Heat - Internal</td><td align="right" id="internalLoad">0 BTU/hr</td></tr>
+          <tr><td>Latent Heat - Occupants</td><td align="right" id="latentLoad">0 BTU/hr</td></tr>
+          <tr><td>Duct Losses</td><td align="right" id="ductLoss">0 BTU/hr</td></tr>
+        </table>
+
+        <div class="equipment-comparison">
+          <h4>Equipment Sizing Recommendations</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <strong>Recommended Unit Size</strong>
+              <div id="recommendedSize">0.0 tons</div>
+              <div style="color: #718096; font-size: 0.9rem;">Based on calculated load</div>
+            </div>
+            <div>
+              <strong>CFM Required</strong>
+              <div id="requiredCFM">0 CFM</div>
+              <div style="color: #718096; font-size: 0.9rem;">400 CFM per ton</div>
+            </div>
+          </div>
+          
+          <h5 style="margin-top: 1rem;">SEER Rating Comparison (10-year cost)</h5>
+          <div id="seerComparison" style="font-size: 0.9rem;">
+            <div>SEER 14: <span id="seer14Cost">$0</span></div>
+            <div>SEER 16: <span id="seer16Cost">$0</span></div>
+            <div>SEER 18: <span id="seer18Cost">$0</span></div>
+            <div>SEER 20: <span id="seer20Cost">$0</span></div>
+          </div>
+        </div>
+
+        <h4 style="margin-top: 1.5rem;">Duct Sizing</h4>
+        <div id="ductSizing" style="color: #718096;">
+          <div>Main trunk: <span id="trunkSize">0" x 0"</span></div>
+          <div>Branch ducts: <span id="branchSize">6" - 8" round</span></div>
+          <div>Return duct: <span id="returnSize">0" x 0"</span></div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="saveCalculation()" data-action="save">💾 Save</button>
+          <button class="btn btn-secondary" onclick="exportLoadCalculation()" data-action="export">📊 Export Load Sheet</button>
+          <button class="btn btn-secondary" onclick="shareCalculation()">🔗 Share</button>
+          <button class="btn btn-secondary" onclick="window.print()" data-action="print">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ Important:</strong> This provides rough order of magnitude (ROM) estimates based on simplified Manual J calculations. For final equipment selection, always have a complete Manual J load calculation performed by an HVAC professional.
+    </div>
+
+    <details style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+      <summary style="cursor: pointer; font-weight: bold;">📐 Calculation Methodology</summary>
+      <div style="margin-top: 1rem;">
+        <h4>Manual J Principles:</h4>
+        <ul>
+          <li><strong>Sensible Heat:</strong> Temperature difference × Area × U-factor × CLTD</li>
+          <li><strong>Latent Heat:</strong> Occupants × 200 BTU/hr + Ventilation latent</li>
+          <li><strong>Infiltration:</strong> 1.1 × CFM × ΔT (sensible) + 0.68 × CFM × Δω (latent)</li>
+          <li><strong>Equipment Size:</strong> Load ÷ 12,000 = Tonnage</li>
+          <li><strong>Duct CFM:</strong> 400 CFM per ton (residential standard)</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <script src="/assets/js/calculator-core.js" defer></script>
+  <script src="/assets/js/calculators.js" defer></script>
+  <script src="/assets/js/export-utilities.js" defer></script>
+  <script src="/assets/js/calculators-hub.js" defer></script>
+  <script>
+    const calc = new ProCalculator('hvac-load');
+    
+    // HVAC data and factors
+    const hvacData = {
+      // Design temperature differences by climate zone (cooling/heating)
+      designTemps: {
+        1: {cooling: 20, heating: 30}, 2: {cooling: 25, heating: 40}, 3: {cooling: 25, heating: 45},
+        4: {cooling: 25, heating: 50}, 5: {cooling: 25, heating: 60}, 6: {cooling: 25, heating: 70}, 7: {cooling: 25, heating: 80}
+      },
+      // U-factors for different insulation levels (BTU/hr/sq ft/°F)
+      wallUFactors: {poor: 0.084, average: 0.067, good: 0.052, excellent: 0.040},
+      roofUFactors: {poor: 0.050, average: 0.030, good: 0.025, excellent: 0.020},
+      windowUFactors: {single: 1.0, double: 0.5, lowE: 0.35, triple: 0.25},
+      // Solar heat gain coefficient for windows
+      windowSHGC: {single: 0.8, double: 0.7, lowE: 0.3, triple: 0.25},
+      // Internal heat gains (BTU/hr per sq ft)
+      internalGains: {low: 2, medium: 3, high: 5},
+      // Duct loss factors
+      ductLoss: {conditioned: 0.05, unconditioned: 0.20, basement: 0.10},
+      ductInsulationFactor: {none: 1.0, r6: 0.85, r8: 0.75, r11: 0.65},
+      // Equipment efficiency and costs
+      seerCosts: {14: 3500, 16: 4200, 18: 5000, 20: 6200}, // Equipment cost
+      electricityRate: 0.12 // $/kWh
+    };
+
+    function calculate() {
+      // Get all inputs
+      const climateZone = parseInt(document.getElementById('climateZone').value);
+      const buildingType = document.getElementById('buildingType').value;
+      const totalArea = parseFloat(document.getElementById('totalArea').value) || 0;
+      const ceilingHeight = parseFloat(document.getElementById('ceilingHeight').value) || 9;
+      const wallInsulation = document.getElementById('wallInsulation').value;
+      const roofInsulation = document.getElementById('roofInsulation').value;
+      const windowType = document.getElementById('windowType').value;
+      const windowPercent = parseFloat(document.getElementById('windowPercent').value) / 100;
+      const occupants = parseFloat(document.getElementById('occupants').value) || 0;
+      const internalGains = document.getElementById('internalGains').value;
+      const ductLocation = document.getElementById('ductLocation').value;
+      const ductInsulation = document.getElementById('ductInsulation').value;
+
+      // Calculate building envelope areas
+      const perimeter = Math.sqrt(totalArea) * 4; // Assume square building
+      const wallArea = perimeter * ceilingHeight;
+      const windowArea = wallArea * windowPercent;
+      const netWallArea = wallArea - windowArea;
+      
+      // Get design conditions
+      const designTemps = hvacData.designTemps[climateZone];
+      const coolingDeltaT = designTemps.cooling;
+      const heatingDeltaT = designTemps.heating;
+
+      // Calculate sensible cooling loads
+      const wallLoad = netWallArea * hvacData.wallUFactors[wallInsulation] * coolingDeltaT;
+      const roofLoad = totalArea * hvacData.roofUFactors[roofInsulation] * coolingDeltaT;
+      const windowConductionLoad = windowArea * hvacData.windowUFactors[windowType] * coolingDeltaT;
+      const windowSolarLoad = windowArea * hvacData.windowSHGC[windowType] * 200; // Simplified solar gain
+      const windowLoad = windowConductionLoad + windowSolarLoad;
+      
+      // Infiltration load (simplified - 0.5 ACH)
+      const volume = totalArea * ceilingHeight;
+      const infiltrationCFM = volume * 0.5 / 60;
+      const infiltrationLoad = infiltrationCFM * 1.1 * coolingDeltaT;
+      
+      // Internal loads
+      const internalLoad = totalArea * hvacData.internalGains[internalGains];
+      
+      // Latent load (occupants + ventilation)
+      const latentLoad = occupants * 200 + infiltrationCFM * 0.68 * 0.005; // Simplified latent
+
+      // Total sensible cooling load
+      const totalSensibleLoad = wallLoad + roofLoad + windowLoad + infiltrationLoad + internalLoad;
+      const totalCoolingLoad = totalSensibleLoad + latentLoad;
+      
+      // Apply duct losses
+      const ductLossFactor = hvacData.ductLoss[ductLocation] * hvacData.ductInsulationFactor[ductInsulation];
+      const ductLoss = totalCoolingLoad * ductLossFactor;
+      const totalCoolingLoadWithDucts = totalCoolingLoad + ductLoss;
+
+      // Calculate heating load (simplified)
+      const heatingLoad = (netWallArea * hvacData.wallUFactors[wallInsulation] + 
+                          totalArea * hvacData.roofUFactors[roofInsulation] + 
+                          windowArea * hvacData.windowUFactors[windowType] + 
+                          infiltrationCFM * 1.1) * heatingDeltaT;
+
+      // Equipment sizing
+      const coolingTonnage = totalCoolingLoadWithDucts / 12000;
+      const recommendedTonnage = Math.ceil(coolingTonnage * 4) / 4; // Round to nearest 0.25 tons
+      const requiredCFM = recommendedTonnage * 400;
+
+      // SEER comparison (10-year operating cost)
+      const annualCoolingHours = climateZone <= 3 ? 2000 : climateZone <= 5 ? 1200 : 800;
+      const annualkWh = totalCoolingLoadWithDucts * annualCoolingHours / 1000; // Convert to kWh
+      
+      const seer14Cost = hvacData.seerCosts[14] + (annualkWh / 14) * hvacData.electricityRate * 10;
+      const seer16Cost = hvacData.seerCosts[16] + (annualkWh / 16) * hvacData.electricityRate * 10;
+      const seer18Cost = hvacData.seerCosts[18] + (annualkWh / 18) * hvacData.electricityRate * 10;
+      const seer20Cost = hvacData.seerCosts[20] + (annualkWh / 20) * hvacData.electricityRate * 10;
+
+      // Duct sizing (simplified rectangular equivalent)
+      const trunkCFM = requiredCFM * 0.8;
+      const trunkVelocity = 800; // FPM for main trunk
+      const trunkArea = trunkCFM / trunkVelocity;
+      const trunkWidth = Math.round(Math.sqrt(trunkArea * 2));
+      const trunkHeight = Math.round(trunkArea / trunkWidth);
+
+      // Update display
+      document.getElementById('coolingLoad').textContent = Math.round(totalCoolingLoadWithDucts).toLocaleString() + ' BTU/hr';
+      document.getElementById('coolingTonnage').textContent = coolingTonnage.toFixed(1) + ' tons';
+      document.getElementById('heatingLoad').textContent = Math.round(heatingLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('heatingDetails').textContent = `${heatingDeltaT}°F design temperature difference`;
+
+      // Load breakdown
+      document.getElementById('wallLoad').textContent = Math.round(wallLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('roofLoad').textContent = Math.round(roofLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('windowLoad').textContent = Math.round(windowLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('infiltrationLoad').textContent = Math.round(infiltrationLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('internalLoad').textContent = Math.round(internalLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('latentLoad').textContent = Math.round(latentLoad).toLocaleString() + ' BTU/hr';
+      document.getElementById('ductLoss').textContent = Math.round(ductLoss).toLocaleString() + ' BTU/hr';
+
+      // Equipment recommendations
+      document.getElementById('recommendedSize').textContent = recommendedTonnage.toFixed(1) + ' tons';
+      document.getElementById('requiredCFM').textContent = Math.round(requiredCFM).toLocaleString() + ' CFM';
+
+      // SEER comparison
+      document.getElementById('seer14Cost').textContent = '$' + Math.round(seer14Cost).toLocaleString();
+      document.getElementById('seer16Cost').textContent = '$' + Math.round(seer16Cost).toLocaleString();
+      document.getElementById('seer18Cost').textContent = '$' + Math.round(seer18Cost).toLocaleString();
+      document.getElementById('seer20Cost').textContent = '$' + Math.round(seer20Cost).toLocaleString();
+
+      // Duct sizing
+      document.getElementById('trunkSize').textContent = `${trunkWidth}" x ${trunkHeight}"`;
+      document.getElementById('returnSize').textContent = `${Math.round(trunkWidth * 1.2)}" x ${Math.round(trunkHeight * 1.2)}"`;
+
+      // Save to calculator object
+      calc.inputs = { 
+        climateZone, totalArea, ceilingHeight, wallInsulation, roofInsulation,
+        windowType, windowPercent: windowPercent * 100, occupants, internalGains,
+        ductLocation, ductInsulation
+      };
+      calc.results = { 
+        coolingLoad: totalCoolingLoadWithDucts.toFixed(0),
+        heatingLoad: heatingLoad.toFixed(0),
+        tonnage: recommendedTonnage.toFixed(1),
+        cfm: requiredCFM.toFixed(0)
+      };
+    }
+
+    function loadDefaults(type) {
+      if (type === 'residential') {
+        document.getElementById('buildingType').value = 'residential';
+        document.getElementById('totalArea').value = '2000';
+        document.getElementById('occupants').value = '4';
+        document.getElementById('internalGains').value = 'medium';
+      } else {
+        document.getElementById('buildingType').value = 'office';
+        document.getElementById('totalArea').value = '5000';
+        document.getElementById('occupants').value = '20';
+        document.getElementById('internalGains').value = 'high';
+      }
+      calculate();
+    }
+
+    function loadLastUsed() {
+      if (calc.loadLastUsed()) {
+        Object.keys(calc.inputs).forEach(key => {
+          const element = document.getElementById(key);
+          if (element) element.value = calc.inputs[key];
+        });
+        calculate();
+      }
+    }
+
+    function saveCalculation() {
+      calc.saveCalculation();
+    }
+
+    function exportLoadCalculation() {
+      calc.exportCSV();
+    }
+
+    function shareCalculation() {
+      calc.shareLink();
+    }
+
+    // Auto-calculate when inputs change
+    document.addEventListener('input', calculate);
+    document.addEventListener('change', calculate);
+
+    // Load from URL if shared
+    window.onload = function() {
+      if (calc.loadFromURL()) {
+        Object.keys(calc.inputs).forEach(key => {
+          const element = document.getElementById(key);
+          if (element) element.value = calc.inputs[key];
+        });
+      }
+      calculate();
+    };
+  </script>
+<script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body>
+</html>

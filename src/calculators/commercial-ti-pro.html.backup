@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<link rel="canonical" href="https://costflowai.com/calculators/commercial-ti-pro.html"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Commercial TI Pro | CostFlowAI</title>
+<link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/print.css" media="print">
+<style>
+.container{max-width:1000px;margin:0 auto;padding:16px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{border:1px solid #e5e5e5;border-radius:14px;padding:16px;margin-top:16px}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{border:1px solid #eee;padding:8px;text-align:right}
+.table th:first-child,.table td:first-child{text-align:left}
+.small{font-size:0.9rem;color:#555}
+.error{color:#b00020}
+details summary{cursor:pointer;font-weight:600}
+button{padding:8px 12px;border:1px solid #ddd;border-radius:10px}
+</style>
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H7RWMCGDHG"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
+gtag('js',new Date()); gtag('config','G-H7RWMCGDHG');</script>
+</head><body>
+<header class="container"><a href="/">Home</a> / <a href="/calculators/">Calculators</a> / Commercial TI Pro</header>
+<main class="container">
+<h1>Commercial TI — Pro (Assemblies + Region/Year)</h1>
+<p class="small">Estimate TI by SF; region/year factors; OH/Fee/Contingency.</p>
+
+<div class="form-grid">
+  <label>Area (SF)<br><input id="area" type="number" value="12000" min="500"></label>
+  <label>Build Type<br><select id="type"><option value="open_office" selected>Open Office</option><option value="lab_light">Light Lab</option><option value="retail">Retail</option></select></label>
+  <label>Region (State)<br><select id="region"><option>US_DEFAULT</option><option selected>NC</option><option>TX</option><option>CA</option><option>NY</option></select></label>
+  <label>Year<br><select id="year"><option>2023</option><option>2024</option><option selected>2025</option></select></label>
+  <label>Labor Rate ($/hr)<br><input id="laborRate" type="number" value="62"></label>
+  <label>Overhead (%)<br><input id="oh" type="number" value="10"></label>
+  <label>Fee (%)<br><input id="fee" type="number" value="5"></label>
+  <label>Contingency (%)<br><input id="ct" type="number" value="10"></label>
+</div>
+<p id="err" class="error"></p>
+<p><button id="calc">Calculate</button> <button id="csv">Download CSV</button></p>
+<div class="card"><details><summary>Assumptions</summary>
+<p>Assemblies: Demo, Partitions/Doors, Ceilings, Finishes, MEP Mods. Lab type applies a factor for MEP-heavy scope.</p>
+</details></div>
+<div id="results" class="card" hidden>
+  <h2>Line Items</h2>
+  <table class="table" id="tbl"><thead><tr><th>Assembly</th><th>Qty</th><th>Mat $</th><th>Labor hrs</th><th>Labor $</th><th>Total $</th></tr></thead><tbody></tbody></table>
+  <h3 id="sum"></h3>
+</div>
+<script>
+async function loadJSON(path, fallback){
+  try{ const r = await fetch(path,{cache:'no-cache'}); if(!r.ok) throw 0; return await r.json(); }
+  catch{ console.warn('Using fallback for', path); return fallback; }
+}
+function toCSV(rows){return rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");}
+function triSample(min, mode, max){ const u=Math.random(); const c=(mode-min)/(max-min);
+  if(u<c) return min+Math.sqrt(u*(max-min)*(mode-min));
+  return max-Math.sqrt((1-u)*(max-min)*(max-mode)); }
+function percentiles(arr){ const a=[...arr].sort((x,y)=>x-y);
+  const ix=p=>Math.floor((p/100)*(a.length-1));
+  return {p10:a[ix(10)],p50:a[ix(50)],p90:a[ix(90)]}; }
+
+const FB = {
+  regions: {"US_DEFAULT":{"index":1.0},"NC":{"index":0.96},"TX":{"index":0.92},"CA":{"index":1.12},"NY":{"index":1.10}},
+  escalation: {"2023":1.0,"2024":1.04,"2025":1.08},
+  pricebook: {ti:{assemblies:[
+    {"name":"Demolition/Prep","uom":"sf","mat":12,"hrs":0.05},
+    {"name":"Partitions & Doors","uom":"sf","mat":22,"hrs":0.10},
+    {"name":"Ceilings","uom":"sf","mat":9,"hrs":0.04},
+    {"name":"Finishes","uom":"sf","mat":18,"hrs":0.09},
+    {"name":"MEP Modifications","uom":"sf","mat":28,"hrs":0.11}
+  ]}}
+};
+async function getData(){
+  const [regions, esc, pb] = await Promise.all([
+    loadJSON('/data/regions.json', FB.regions),
+    loadJSON('/data/escalation.json', FB.escalation),
+    loadJSON('/data/pricebook.json', FB.pricebook)
+  ]); return {regions, esc, pb};
+}
+document.getElementById('calc').addEventListener('click', async ()=>{
+  const sf=+document.getElementById('area').value;
+  const typ=document.getElementById('type').value;
+  const regKey=document.getElementById('region').value;
+  const year=document.getElementById('year').value;
+  const lr=+document.getElementById('laborRate').value;
+  const oh=+document.getElementById('oh').value/100;
+  const fee=+document.getElementById('fee').value/100;
+  const ct=+document.getElementById('ct').value/100;
+  const err=document.getElementById('err'); err.textContent='';
+  if(!(sf>0&&lr>0)){err.textContent='Enter valid inputs.';return;}
+  const {regions,esc,pb}=await getData();
+  const regIdx=(regions[regKey]&&regions[regKey].index)||1.0;
+  const escF=esc[year]||1.0;
+  const items=pb.ti.assemblies;
+  let typeF=1.0; if(typ==='lab_light') typeF=1.35; if(typ==='retail') typeF=0.95;
+  const tbody=document.querySelector('#tbl tbody');tbody.innerHTML='';
+  let matSum=0,labSum=0,rows=[["Assembly","Qty","Mat $","Labor hrs","Labor $","Total $"]];
+  items.forEach(a=>{
+    const qty=sf;
+    const mat=a.mat*qty*typeF;
+    const hrs=a.hrs*qty*typeF;
+    const lab=hrs*lr; const tot=mat+lab;
+    matSum+=mat; labSum+=lab;
+    const tr=document.createElement('tr');
+    function td(v){const el=document.createElement('td');el.textContent=(typeof v==='number')?v.toLocaleString():v;return el;}
+    tr.appendChild(td(a.name)); tr.appendChild(td(qty)); tr.appendChild(td(mat));
+    tr.appendChild(td(hrs)); tr.appendChild(td(lab)); tr.appendChild(td(tot));
+    tbody.appendChild(tr); rows.push([a.name,qty,mat,hrs,lab,tot]);
+  });
+  let subtotal=(matSum+labSum)*regIdx*escF;
+  const over=subtotal*oh; const profit=(subtotal+over)*fee; const cont=(subtotal+over+profit)*ct;
+  const total=subtotal+over+profit+cont;
+  document.getElementById('sum').innerHTML =
+    `Materials: <b>$${matSum.toLocaleString()}</b> &nbsp; Labor: <b>$${labSum.toLocaleString()}</b> &nbsp; `+
+    `Region×Year: <b>x ${(regIdx*escF).toFixed(2)}</b><br>`+
+    `OH: <b>$${over.toLocaleString()}</b> &nbsp; Fee: <b>$${profit.toLocaleString()}</b> &nbsp; `+
+    `Contingency: <b>$${cont.toLocaleString()}</b><br>`+
+    `<span style="font-size:1.2rem">Total: <b>$${total.toLocaleString()}</b></span>`;
+  window._csvRows=rows; document.getElementById('results').hidden=false;
+});
+document.getElementById('csv').addEventListener('click',()=>{
+  const rows=window._csvRows||[];
+  const blob=new Blob([toCSV(rows)],{type:'text/csv'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='commercial_ti_pro.csv'; a.click(); URL.revokeObjectURL(url);
+});
+</script>
+<p class="small">Disclaimer: ROM only; not a substitute for sealed estimates/QS. Data as-of 2025-08-27. Always verify assumptions.</p>
+</main><script src="/assets/js/calc-events.js" defer></script>
+<script defer>
+    document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+</script>
+</body></html>
