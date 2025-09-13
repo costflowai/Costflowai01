@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 30px 0; padding: 20px; border: 1px solid #ccc; }
+        input { padding: 10px; margin: 5px; width: 200px; }
+        .result { font-weight: bold; color: #2196F3; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Calculator Test Page</h1>
+    
+    <div class="test-section">
+        <h3>Concrete Calculator Test</h3>
+        <input type="number" placeholder="Length (30)" value="30">
+        <input type="number" placeholder="Width (20)" value="20">
+        <input type="number" placeholder="Thickness (4)" value="4">
+        
+        <div class="project-results">
+            <table>
+                <tr><td>Concrete Needed:</td><td class="result">0.00 cu yd</td></tr>
+                <tr><td>Total Cost:</td><td class="result">$0.00</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Console Check</h3>
+        <p>Open browser console (F12) to see loading messages.</p>
+        <button onclick="debugCalculators()">🔍 Debug Calculators</button>
+    </div>
+
+    <!-- Load Calculator Script -->
+    <script src="/js/calculators.js"></script>
+    
+    <script>
+        // Test script loading
+        setTimeout(() => {
+            if (typeof initializeAllCalculators === 'function') {
+                console.log('✅ Calculator script loaded successfully!');
+            } else {
+                console.error('❌ Calculator script failed to load!');
+                document.body.innerHTML += '<div style="background: red; color: white; padding: 20px; margin: 20px 0;">❌ JavaScript Error: Calculator script not loaded</div>';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
