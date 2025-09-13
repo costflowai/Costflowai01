@@ -505,23 +505,20 @@
 <script src="/assets/js/init.js" defer></script>
 
 <!-- Working Calculator Engine -->
-<script src="/js/working-calculators.js" defer></script>
-
-<!-- Export Manager -->
-<script src="/js/export-manager.js" defer></script>
+<script src="/js/calculators.js"></script>
 
 <!-- Feedback Widget -->
 <script src="/assets/js/feedback-loader.js" defer></script>
 
-<!-- Temporary: Unregister problematic service worker -->
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(registration => registration.unregister());
-    console.log('Service workers unregistered for hotfix');
-  });
-}
+    // Fallback initialization
+    if (typeof initializeAllCalculators === 'function') {
+        console.log('✅ Calculators script loaded successfully');
+    } else {
+        console.error('❌ Calculator script failed to load');
+    }
 </script>
+
 
 </body>
 </html>

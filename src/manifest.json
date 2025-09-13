@@ -1,20 +1,12 @@
 {
-  "name": "CostFlowAI - Construction Cost Calculator",
+  "name": "CostFlowAI Calculator",
   "short_name": "CostFlowAI",
-  "description": "AI-powered construction cost estimation platform",
+  "description": "Construction Cost Calculator",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0066ff",
-  "orientation": "portrait-primary",
+  "theme_color": "#2196F3",
   "icons": [
-    {
-      "src": "/assets/images/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
     {
       "src": "/assets/images/icon-192.png",
       "sizes": "192x192",
@@ -24,19 +16,6 @@
       "src": "/assets/images/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    }
-  ],
-  "categories": ["business", "productivity", "utilities"],
-  "shortcuts": [
-    {
-      "name": "Residential Calculator",
-      "url": "/calculators/rom",
-      "description": "Quick residential cost estimates"
-    },
-    {
-      "name": "Commercial Calculator", 
-      "url": "/calculators/ti-calculator",
-      "description": "Commercial project estimates"
     }
   ]
 }
