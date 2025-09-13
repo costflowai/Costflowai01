@@ -1,0 +1,15 @@
+{
+  "name": "cfa-next",
+  "version": "1.0.0",
+  "description": "CFA Calculator Suite - Professional construction cost estimators",
+  "type": "module",
+  "scripts": {
+    "qa:smoke": "node tests/smoke.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^23.0.0"
+  },
+  "keywords": ["construction", "calculator", "cost-estimation"],
+  "author": "CFA Team",
+  "license": "MIT"
+}

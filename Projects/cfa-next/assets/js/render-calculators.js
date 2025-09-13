@@ -207,7 +207,9 @@ class CalculatorRenderer {
             </div>
         `;
         actionsDiv.parentNode.insertBefore(resultsDiv, actionsDiv.nextSibling);
-n    renderDrywall(section) {
+        }
+
+    renderDrywall(section) {
         const inputsDiv = section.querySelector('.inputs');
         inputsDiv.innerHTML = `
             <div class="input-row">

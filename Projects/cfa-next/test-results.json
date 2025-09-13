@@ -1,0 +1,97 @@
+{
+  "summary": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "tests": [
+    {
+      "name": "Initial setup: Tabs and panels rendered successfully",
+      "status": "PASS"
+    },
+    {
+      "name": "Tab navigation: Concrete panel becomes visible",
+      "status": "PASS"
+    },
+    {
+      "name": "Tab navigation: Paint panel becomes visible",
+      "status": "PASS"
+    },
+    {
+      "name": "Tab navigation: Previous panel becomes hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Results section is initially hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: No previous calculation stored",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Action buttons are initially disabled",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: lastCalculation.type is correct",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: lastCalculationByType has results",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Total cost is positive (168.96)",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Action buttons are enabled after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Results section is visible after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Results section is initially hidden",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: No previous calculation stored",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Action buttons are initially disabled",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: lastCalculation.type is correct",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: lastCalculationByType has results",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Total cost is positive (3604.5)",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Action buttons are enabled after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Results section is visible after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "No auto-calculation: Results unchanged after input change",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual calculation: Results change after Calculate click",
+      "status": "PASS"
+    }
+  ]
+}
