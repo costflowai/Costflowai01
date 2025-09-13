@@ -79,7 +79,133 @@ class CalculatorRenderer {
             `;
 
             panelsContainer.appendChild(section);
+
+            // Call per-slug renderer if it exists
+            const renderer = this.getSlugRenderer(calc.slug);
+            if (renderer) {
+                renderer(section);
+            }
         });
+    }
+
+    getSlugRenderer(slug) {
+        const renderers = {
+            paint: this.renderPaint.bind(this)
+        };
+        return renderers[slug] || null;
+    }
+
+    renderPaint(section) {
+        const inputsDiv = section.querySelector('.inputs');
+        inputsDiv.innerHTML = `
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="paint-area">Total Area (sq ft) <span class="required">*</span></label>
+                    <input type="number" id="paint-area" name="area" step="0.1" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="paint-openings">Openings (sq ft)</label>
+                    <input type="number" id="paint-openings" name="openings" step="0.1" min="0" value="0">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="paint-coats">Number of Coats</label>
+                    <input type="number" id="paint-coats" name="coats" step="1" min="1" max="4" value="2">
+                </div>
+                <div class="input-group">
+                    <label for="paint-texture">Surface Texture</label>
+                    <select id="paint-texture" name="texture">
+                        <option value="smooth">Smooth</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="heavy">Heavy</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="paint-quality">Paint Quality</label>
+                    <select id="paint-quality" name="quality">
+                        <option value="builder">Builder Grade</option>
+                        <option value="standard" selected>Standard</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="input-group checkbox-group">
+                    <label for="paint-primer">
+                        <input type="checkbox" id="paint-primer" name="primer">
+                        Use Primer
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="paint-coverage">Coverage (sq ft/gal)</label>
+                    <input type="number" id="paint-coverage" name="coverage" step="1" min="100" placeholder="Auto">
+                </div>
+                <div class="input-group">
+                    <label for="paint-mat-rate">Material Rate ($/gal)</label>
+                    <input type="number" id="paint-mat-rate" name="materialRate" step="0.01" min="0" placeholder="Auto">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="paint-labor-rate">Labor Rate ($/hr)</label>
+                    <input type="number" id="paint-labor-rate" name="laborRate" step="0.01" min="0" value="55">
+                </div>
+                <div class="input-group">
+                    <label for="paint-productivity">Productivity (sq ft/hr)</label>
+                    <input type="number" id="paint-productivity" name="productivity" step="1" min="50" value="250">
+                </div>
+            </div>
+        `;
+
+        // Add results section after actions
+        const actionsDiv = section.querySelector('.actions');
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'results';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = `
+            <h3>Results</h3>
+            <div class="results-grid">
+                <div class="result-group">
+                    <h4>Materials</h4>
+                    <div class="result-item">
+                        <span class="label">Paint Needed:</span>
+                        <span id="paint-gallons">0.0 gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Primer Needed:</span>
+                        <span id="paint-primer-gallons">0.0 gal</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Material Cost:</span>
+                        <span id="paint-material">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="result-group">
+                    <h4>Labor</h4>
+                    <div class="result-item">
+                        <span class="label">Labor Hours:</span>
+                        <span id="paint-labor-hours">0.0 hrs</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Labor Cost:</span>
+                        <span id="paint-labor">$0.00</span>
+                    </div>
+                    <div class="result-item total">
+                        <span class="label">Total Cost:</span>
+                        <span id="paint-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        actionsDiv.parentNode.insertBefore(resultsDiv, actionsDiv.nextSibling);
     }
 
     setupTabBehavior() {
