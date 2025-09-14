@@ -250,10 +250,10 @@
         // Format label from key
         formatLabel: function(key) {
             return key
-                .replace(/([A-Z])/g, ' $1')
+            .replace(/([A-Z])/g, ' $1')
                 .replace(/[_-]/g, ' ')
                 .replace(/^./, str => str.toUpperCase())
-                .trim();
+            .trim();
         },
 
         // Show notification
@@ -261,36 +261,36 @@
             const notification = document.createElement('div');
             notification.className = `export-notification ${type}`;
             notification.textContent = message;
-            
-            const colors = {
-                success: '#10b981',
-                error: '#ef4444',
-                info: '#3b82f6'
-            };
-            
+        
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            info: '#3b82f6'
+        };
+        
             notification.style.cssText = `
-                position: fixed;
+            position: fixed;
                 top: 20px;
-                right: 20px;
+            right: 20px;
                 background: ${colors[type] || colors.info};
-                color: white;
-                padding: 12px 20px;
+            color: white;
+            padding: 12px 20px;
                 border-radius: 6px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 10000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10000;
                 animation: slideIn 0.3s ease-out;
-            `;
-            
+        `;
+        
             document.body.appendChild(notification);
-            
-            setTimeout(() => {
+        
+        setTimeout(() => {
                 notification.style.animation = 'slideOut 0.3s ease-in';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
     };
 
-    // Add animation styles
+// Add animation styles
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
