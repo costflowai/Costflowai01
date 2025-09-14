@@ -7,13 +7,16 @@ const CACHE_NAME = 'cfa-calc-v1';
 const STATIC_ASSETS = [
   '/',
   '/calculators/',
-  '/calculators/index.html',
-  '/assets/css/styles.css',
+  '/assets/css/calculators.css',
   '/assets/js/calculators-hub.js',
-  '/assets/js/validators.js',
-  '/assets/js/paint-calculator.js',
   '/assets/js/export-utilities.js',
-  '/assets/js/sw-register.js'
+  '/assets/js/sw-register.js',
+  '/assets/js/calc/paint.js',
+  '/assets/js/calc/drywall.js',
+  '/assets/js/calc/framing.js',
+  '/assets/js/calc/concrete.js',
+  '/assets/images/favicon.svg',
+  '/manifest.json'
 ];
 
 /**
