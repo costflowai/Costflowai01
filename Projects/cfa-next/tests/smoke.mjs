@@ -94,6 +94,7 @@ async function loadScripts(window) {
     'assets/js/compute/paint.js',
     'assets/js/compute/drywall.js',
     'assets/js/compute/framing.js',
+    'assets/js/export-utilities.js',
     'assets/js/calculators-hub.js'
   ];
 
@@ -251,6 +252,25 @@ function assertPostCalculationState(window, slug) {
   const resultsDiv = section.querySelector('.results');
   const isResultsVisible = resultsDiv.style.display === 'block';
   assert(isResultsVisible, `${slug}: Results section is visible after calculation`);
+
+  // Test CSV export functionality
+  const csv = window.exportUtils.exportToCSV(calculationByType, slug);
+  const csvContainsType = csv.includes(slug);
+  const csvContainsCost = csv.includes(String(totalCost));
+  assert(csvContainsType && csvContainsCost, `${slug}: CSV export contains type and totalCost`);
+
+  // Test secondary action buttons
+  const exportBtn = section.querySelector('[data-action="export"]');
+  const saveBtn = section.querySelector('[data-action="save"]');
+  const shareBtn = section.querySelector('[data-action="share"]');
+  const printBtn = section.querySelector('[data-action="print"]');
+  const emailBtn = section.querySelector('[data-action="email"]');
+
+  assert(!exportBtn.disabled, `${slug}: Export button is enabled`);
+  assert(!saveBtn.disabled, `${slug}: Save button is enabled`);
+  assert(!shareBtn.disabled, `${slug}: Share button is enabled`);
+  assert(!printBtn.disabled, `${slug}: Print button is enabled`);
+  assert(!emailBtn.disabled, `${slug}: Email button is enabled`);
 }
 
 function clickCalculateButton(window, slug) {
@@ -375,6 +395,30 @@ async function testNoAutoCalc(window) {
   assert(newTotal !== beforeTotal, 'Manual calculation: Results change after Calculate click');
 }
 
+async function testExportFunctionality(window) {
+  log('=== Testing Export Functionality ===');
+
+  // Test all calculators have working exports
+  const testCases = ['paint', 'drywall', 'framing'];
+
+  for (const slug of testCases) {
+    const calc = window.lastCalculationByType?.[slug];
+    if (!calc) continue; // Skip if not calculated
+
+    // Test CSV export
+    const csv = window.exportUtils.exportToCSV(calc, slug);
+    assert(typeof csv === 'string' && csv.length > 0, `${slug}: CSV export produces valid output`);
+
+    // Test clipboard functionality exists
+    assert(typeof window.exportUtils.copyToClipboard === 'function', `${slug}: Clipboard function exists`);
+
+    // Test webShare functionality exists
+    assert(typeof window.exportUtils.webShare === 'function', `${slug}: WebShare function exists`);
+
+    log(`✓ Export functions verified for ${slug}`);
+  }
+}
+
 async function testTabNavigation(window) {
   log('=== Testing Tab Navigation ===');
 
@@ -415,6 +459,7 @@ async function runSmokeTests() {
     await testDrywallCalculator(window);
     await testFramingCalculator(window);
     await testNoAutoCalc(window);
+    await testExportFunctionality(window);
 
     // Final summary
     log('');

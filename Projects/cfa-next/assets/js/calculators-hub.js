@@ -127,13 +127,29 @@
 
     // Secondary actions (remain disabled until compute succeeds)
     if (SECONDARY_ACTIONS.has(action)) {
-      if (!window?.lastCalculationByType?.[slug]) {
-        e.preventDefault();
-        console.warn(`No calculation yet for ${slug}; action "${action}" blocked.`);
-        return;
+      e.preventDefault();
+      const calc = window?.lastCalculationByType?.[slug];
+      if (!calc){ console.warn(`No calculation yet for ${slug}`); return; }
+
+      if (action==='save'){
+        const key = `cfa_calc_${slug}_${Date.now()}`;
+        localStorage.setItem(key, JSON.stringify(calc));
+        window.exportUtils?.showToast?.('Saved locally');
       }
-      // Bridge hooks will be added in a later step (exports, print, email, etc.)
-      console.log(`Action "${action}" triggered for ${slug}`, window.lastCalculationByType[slug]);
+      if (action==='export'){
+        window.exportUtils?.exportToCSV?.(calc, slug);
+      }
+      if (action==='share'){
+        window.exportUtils?.webShare?.(calc);
+      }
+      if (action==='print'){
+        window.exportUtils?.printSection?.(section);
+      }
+      if (action==='email'){
+        const guess = prompt('Send to email (optional):','');
+        window.exportUtils?.emailResults?.(calc, guess||'');
+      }
+      return;
     }
   }, true);
 
