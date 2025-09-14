@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 30,
-    "passed": 30,
+    "total": 57,
+    "passed": 57,
     "failed": 0
   },
   "tests": [
@@ -54,6 +54,30 @@
       "status": "PASS"
     },
     {
+      "name": "paint: CSV export contains type and totalCost",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Export button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Save button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Share button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Print button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Email button is enabled",
+      "status": "PASS"
+    },
+    {
       "name": "drywall: Results section is initially hidden",
       "status": "PASS"
     },
@@ -83,6 +107,30 @@
     },
     {
       "name": "drywall: Results section is visible after calculation",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: CSV export contains type and totalCost",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Export button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Save button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Share button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Print button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Email button is enabled",
       "status": "PASS"
     },
     {
@@ -118,11 +166,71 @@
       "status": "PASS"
     },
     {
+      "name": "framing: CSV export contains type and totalCost",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Export button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Save button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Share button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Print button is enabled",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Email button is enabled",
+      "status": "PASS"
+    },
+    {
       "name": "No auto-calculation: Results unchanged after input change",
       "status": "PASS"
     },
     {
       "name": "Manual calculation: Results change after Calculate click",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: CSV export produces valid output",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: Clipboard function exists",
+      "status": "PASS"
+    },
+    {
+      "name": "paint: WebShare function exists",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: CSV export produces valid output",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: Clipboard function exists",
+      "status": "PASS"
+    },
+    {
+      "name": "drywall: WebShare function exists",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: CSV export produces valid output",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: Clipboard function exists",
+      "status": "PASS"
+    },
+    {
+      "name": "framing: WebShare function exists",
       "status": "PASS"
     }
   ]
