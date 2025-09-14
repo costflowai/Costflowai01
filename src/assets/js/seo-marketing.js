@@ -131,7 +131,8 @@ class SEOMarketing {
                 };
                 
                 if (urls[platform]) {
-                    window.open(urls[platform], '_blank', 'width=600,height=400');
+                    const w = window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=400');
+                    if (w) w.opener = null;
                 }
                 
                 // Track sharing
@@ -408,7 +409,7 @@ class SEOMarketing {
                             this.sendEvent('scroll_depth', { depth: maxScroll });
                         }
                     }
-                });
+                }, { passive: true });
             },
             
             trackClickHeatmap() {

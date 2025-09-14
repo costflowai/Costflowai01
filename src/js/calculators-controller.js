@@ -157,7 +157,7 @@
                 
                 // Navigate to calculator page
                 if (options.newTab) {
-                    window.open(url, '_blank');
+                    window.open(url, '_blank', 'noopener,noreferrer');
                 } else {
                     window.location.href = url;
                 }

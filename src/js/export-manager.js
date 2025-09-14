@@ -335,7 +335,7 @@ class ExportManager {
             const data = this.getCalculationData(calculatorType);
             const printContent = this.generatePDFContent(data);
             
-            const printWindow = window.open('', '_blank');
+            const printWindow = window.open('', '_blank', 'noopener,noreferrer');
             printWindow.document.write(printContent);
             printWindow.document.close();
             printWindow.print();

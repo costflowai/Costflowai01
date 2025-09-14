@@ -164,16 +164,16 @@ class ErrorMonitoring {
         document.addEventListener('click', (event) => {
             const button = event.target.closest('button, [onclick]');
             if (button) {
-                // Check if button has onclick but no function exists
+                // Check if button has onclick but no function exists safely (no eval)
                 const onclick = button.getAttribute('onclick');
                 if (onclick) {
-                    try {
-                        // Try to evaluate the onclick to see if it's valid
-                        new Function(onclick);
-                    } catch (error) {
+                    const fnName = String(onclick).trim().split('(')[0].trim();
+                    const isValidName = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(fnName);
+                    const fnExists = isValidName && typeof window[fnName] === 'function';
+                    if (!fnExists) {
                         this.captureError({
                             type: 'broken_onclick_handler',
-                            message: 'Invalid onclick handler detected',
+                            message: 'Invalid or missing onclick function detected',
                             onclick: onclick,
                             buttonText: button.textContent?.trim(),
                             timestamp: new Date().toISOString(),

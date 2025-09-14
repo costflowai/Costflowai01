@@ -343,7 +343,7 @@ class CostFlowAnalytics {
                     this.trackEvent('scroll_milestone', { depth: 90 });
                 }
             }, 100);
-        });
+        }, { passive: true });
     }
 
     getScrollDepth() {

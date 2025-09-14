@@ -183,7 +183,7 @@ class ProCalculator {
     try {
       // Prepare print-friendly version
       const printContent = this.generatePrintContent();
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=800,height=600');
       
       printWindow.document.write(printContent);
       printWindow.document.close();

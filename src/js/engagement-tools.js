@@ -462,7 +462,8 @@ class EngagementTools {
         
         // Global functions for community actions
         window.joinDiscussion = function() {
-            window.open('https://community.costflowai.com', '_blank');
+            const w = window.open('https://community.costflowai.com', '_blank', 'noopener,noreferrer');
+            if (w) w.opener = null;
         };
         
         window.shareEstimate = function() {

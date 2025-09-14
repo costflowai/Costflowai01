@@ -302,7 +302,7 @@ window.printCalc ||= (section, type) => {
   const html = (s.querySelector('.results,.results-section')?.outerHTML || s.outerHTML)
     .replace(/<\/script>/gi, '<\\/script>');
   
-  const w = window.open('', '_blank');
+  const w = window.open('', '_blank', 'noopener,noreferrer');
   w.document.write(`<!doctype html><html><head><title>${type} Results</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="/assets/css/main.css">

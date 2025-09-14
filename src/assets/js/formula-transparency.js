@@ -440,7 +440,7 @@
       if (!modal) return;
       
       const content = modal.querySelector('.formula-modal-content').innerHTML;
-      const printWindow = window.open('', '_blank');
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer');
       
       printWindow.document.write(`
         <!DOCTYPE html>
