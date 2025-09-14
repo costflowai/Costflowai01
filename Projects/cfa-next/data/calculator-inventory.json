@@ -1,5 +1,6 @@
 [
   {"slug":"concrete","title":"Concrete","category":"Structural"},
   {"slug":"paint","title":"Paint Pro","category":"Finishes"},
-  {"slug":"drywall","title":"Drywall","category":"Finishes"}
+  {"slug":"drywall","title":"Drywall","category":"Finishes"},
+  {"slug":"framing","title":"Framing","category":"Structural"}
 ]

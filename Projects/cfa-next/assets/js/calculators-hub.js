@@ -43,11 +43,11 @@
         const res = tryCall?.();
         if (typeof res !== 'undefined') return res; // truthy or explicit object
       } catch (e) {
-        console.error(`Compute error for ${slug}:`, e);
+        console.error(`Hub: Compute error for ${slug}:`, e);
         throw e;
       }
     }
-    console.warn('No compute function found for', slug);
+    console.warn(`Hub: No compute function found for ${slug}. Expected: window.compute_${slug}(section)`);
     return undefined;
   }
 

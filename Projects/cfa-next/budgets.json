@@ -1,10 +1,10 @@
 {
   "resourceCounts": {
-    "script": 6,
-    "total": 20
+    "script": 8,
+    "total": 25
   },
   "resourceSizes": {
-    "script": 180000,
-    "total": 300000
+    "script": 200000,
+    "total": 350000
   }
 }

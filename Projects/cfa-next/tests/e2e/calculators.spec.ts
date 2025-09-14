@@ -65,3 +65,43 @@ test('PWA offline fallback for /calculators', async ({ page, context }) => {
   await expect(page.locator('h1')).toBeVisible();
   await context.setOffline(false);
 });
+
+test('Deep link navigation works correctly', async ({ page }) => {
+  // Test direct navigation to calculator with hash
+  await page.goto('/calculators#paint');
+  await expect(page.locator('#paint-calc')).toBeVisible();
+  await expect(page.locator('[data-tab="paint"][aria-selected="true"]')).toBeVisible();
+
+  // Test navigation to drywall
+  await page.goto('/calculators#drywall');
+  await expect(page.locator('#drywall-calc')).toBeVisible();
+  await expect(page.locator('[data-tab="drywall"][aria-selected="true"]')).toBeVisible();
+
+  // Test navigation to framing
+  await page.goto('/calculators#framing');
+  await expect(page.locator('#framing-calc')).toBeVisible();
+  await expect(page.locator('[data-tab="framing"][aria-selected="true"]')).toBeVisible();
+});
+
+test('Mobile tab switching works correctly', async ({ page }) => {
+  await page.goto('/calculators');
+
+  // Start with concrete tab and switch to paint
+  await page.getByRole('tab', { name: /Paint/i }).click();
+  await expect(page.locator('#paint-calc')).toBeVisible();
+  await expect(page.locator('#concrete-calc')).toBeHidden();
+
+  // Switch to drywall
+  await page.getByRole('tab', { name: /Drywall/i }).click();
+  await expect(page.locator('#drywall-calc')).toBeVisible();
+  await expect(page.locator('#paint-calc')).toBeHidden();
+
+  // Switch to framing
+  await page.getByRole('tab', { name: /Framing/i }).click();
+  await expect(page.locator('#framing-calc')).toBeVisible();
+  await expect(page.locator('#drywall-calc')).toBeHidden();
+
+  // Verify only one panel is visible at a time
+  const visiblePanels = await page.locator('[role="tabpanel"]:not([hidden])').count();
+  expect(visiblePanels).toBe(1);
+});

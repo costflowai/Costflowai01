@@ -18,6 +18,7 @@ class CalculatorRenderer {
             this.setupTabBehavior();
             this.setupKeyboardNavigation();
             this.handleInitialRoute();
+            this.checkForDuplicateIds();
         } catch (error) {
             console.error('Calculator Renderer: Failed to initialize', error);
         }
@@ -90,11 +91,79 @@ class CalculatorRenderer {
 
     getSlugRenderer(slug) {
         const renderers = {
+            concrete: this.renderConcrete.bind(this),
             paint: this.renderPaint.bind(this),
             drywall: this.renderDrywall.bind(this),
             framing: this.renderFraming.bind(this)
         };
         return renderers[slug] || null;
+    }
+
+    renderConcrete(section) {
+        const inputsDiv = section.querySelector('.inputs');
+        inputsDiv.innerHTML = `
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="concrete-length">Length (ft) <span class="required">*</span></label>
+                    <input type="number" id="concrete-length" name="length" step="0.1" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="concrete-width">Width (ft) <span class="required">*</span></label>
+                    <input type="number" id="concrete-width" name="width" step="0.1" min="0" required>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="concrete-thickness">Thickness (in) <span class="required">*</span></label>
+                    <input type="number" id="concrete-thickness" name="thickness" step="0.25" min="2" value="4" required>
+                </div>
+                <div class="input-group">
+                    <label for="concrete-strength">Strength (PSI)</label>
+                    <select id="concrete-strength" name="strength">
+                        <option value="2500">2,500 PSI</option>
+                        <option value="3000" selected>3,000 PSI</option>
+                        <option value="3500">3,500 PSI</option>
+                        <option value="4000">4,000 PSI</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Note:</strong> This is a placeholder calculator. Full concrete calculations coming soon.
+            </div>
+        `;
+
+        // Add results section after actions
+        const actionsDiv = section.querySelector('.actions');
+        const resultsDiv = document.createElement('div');
+        resultsDiv.className = 'results';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = `
+            <h3>Results</h3>
+            <div class="results-grid">
+                <div class="result-group">
+                    <h4>Materials</h4>
+                    <div class="result-item">
+                        <span class="label">Volume:</span>
+                        <span id="concrete-volume">0.0 cu yd</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Material Cost:</span>
+                        <span id="concrete-material">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="result-group">
+                    <h4>Total</h4>
+                    <div class="result-item total">
+                        <span class="label">Total Cost:</span>
+                        <span id="concrete-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        actionsDiv.parentNode.insertBefore(resultsDiv, actionsDiv.nextSibling);
     }
 
     renderPaint(section) {
@@ -507,6 +576,17 @@ class CalculatorRenderer {
 
     getCalculators() {
         return [...this.calculators];
+    }
+
+    checkForDuplicateIds() {
+        const allIds = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
+        const duplicates = allIds.filter((id, index) => allIds.indexOf(id) !== index);
+
+        if (duplicates.length > 0) {
+            console.error('Calculator Renderer: Duplicate IDs found:', [...new Set(duplicates)]);
+        } else {
+            console.log('Calculator Renderer: No duplicate IDs found');
+        }
     }
 }
 
