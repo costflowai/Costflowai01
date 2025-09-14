@@ -4,9 +4,13 @@
   "description": "CFA Calculator Suite - Professional construction cost estimators",
   "type": "module",
   "scripts": {
-    "qa:smoke": "node tests/smoke.mjs"
+    "dev:serve": "npx http-server . -p 5173 -c-1",
+    "qa:smoke": "node tests/smoke.mjs",
+    "test:e2e": "playwright test",
+    "test:all": "npm run qa:smoke && npm run test:e2e"
   },
   "devDependencies": {
+    "@playwright/test": "^1.47.2",
     "jsdom": "^23.0.0"
   },
   "keywords": ["construction", "calculator", "cost-estimation"],
