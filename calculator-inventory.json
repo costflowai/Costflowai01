@@ -1,0 +1,102 @@
+{
+  "calculators": [
+    {
+      "slug": "concrete",
+      "name": "Concrete Volume Calculator",
+      "category": "materials",
+      "description": "Calculate concrete volume, bags needed, and costs",
+      "units": "cubic yards",
+      "active": true
+    },
+    {
+      "slug": "paint",
+      "name": "Paint Coverage Calculator",
+      "category": "finishes",
+      "description": "Estimate paint needed for walls and ceilings",
+      "units": "gallons",
+      "active": true
+    },
+    {
+      "slug": "drywall",
+      "name": "Drywall Sheet Calculator",
+      "category": "materials",
+      "description": "Calculate drywall sheets and joint compound",
+      "units": "sheets",
+      "active": true
+    },
+    {
+      "slug": "framing",
+      "name": "Framing Lumber Calculator",
+      "category": "structural",
+      "description": "Estimate lumber for wall and floor framing",
+      "units": "board feet",
+      "active": true
+    },
+    {
+      "slug": "roofing",
+      "name": "Roofing Material Calculator",
+      "category": "exterior",
+      "description": "Calculate shingles, underlayment, and accessories",
+      "units": "squares",
+      "active": true
+    },
+    {
+      "slug": "flooring",
+      "name": "Flooring Calculator",
+      "category": "finishes",
+      "description": "Estimate flooring materials with waste factor",
+      "units": "square feet",
+      "active": true
+    },
+    {
+      "slug": "electrical",
+      "name": "Electrical Load Calculator",
+      "category": "systems",
+      "description": "Calculate electrical loads and wire sizing",
+      "units": "amps",
+      "active": true
+    },
+    {
+      "slug": "hvac",
+      "name": "HVAC Sizing Calculator",
+      "category": "systems",
+      "description": "Determine HVAC tonnage requirements",
+      "units": "tons",
+      "active": true
+    },
+    {
+      "slug": "insulation",
+      "name": "Insulation Calculator",
+      "category": "energy",
+      "description": "Calculate insulation R-value and materials",
+      "units": "square feet",
+      "active": true
+    },
+    {
+      "slug": "plumbing",
+      "name": "Plumbing Materials Calculator",
+      "category": "systems",
+      "description": "Estimate pipes, fittings, and fixtures",
+      "units": "linear feet",
+      "active": true
+    },
+    {
+      "slug": "excavation",
+      "name": "Excavation Volume Calculator",
+      "category": "sitework",
+      "description": "Calculate cut/fill volumes and trucking",
+      "units": "cubic yards",
+      "active": true
+    },
+    {
+      "slug": "labor",
+      "name": "Labor Hour Estimator",
+      "category": "management",
+      "description": "Estimate crew hours and labor costs",
+      "units": "hours",
+      "active": true
+    }
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2025-09-14"
+}

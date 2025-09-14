@@ -1,480 +1,297 @@
 /**
  * CostFlowAI Export Utilities
- * Comprehensive export functionality for all calculators
+ * Handles CSV export, print, copy, and email functionality
  */
 
-class ExportUtilities {
-    constructor() {
-        this.companyInfo = {
-            name: 'CostFlowAI',
-            website: 'https://costflowai.com',
-            tagline: 'AI-Powered Construction Cost Estimation',
-            disclaimer: 'Estimates are for planning purposes only. Actual costs may vary.'
-        };
-    }
+(function(window) {
+    'use strict';
 
-    /**
-     * Export data to CSV format
-     */
-    exportToCSV(data, filename = 'costflowai-export') {
-        try {
-            let csv = this.convertToCSV(data);
+    const ExportUtils = {
+        // Export to CSV
+        exportCSV: function(data, filename = 'calculation.csv') {
+            const { title, type, timestamp, inputs, results } = data;
+            
+            let csv = 'CostFlowAI Calculator Export\n';
+            csv += `Title,${title}\n`;
+            csv += `Type,${type}\n`;
+            csv += `Timestamp,${timestamp || new Date().toISOString()}\n\n`;
+            
+            // Inputs section
+            csv += 'INPUTS\n';
+            csv += 'Parameter,Value,Unit\n';
+            for (const [key, value] of Object.entries(inputs || {})) {
+                const label = this.formatLabel(key);
+                const unit = value.unit || '';
+                const val = value.value || value;
+                csv += `"${label}","${val}","${unit}"\n`;
+            }
+            
+            // Results section
+            csv += '\nRESULTS\n';
+            csv += 'Metric,Value,Unit\n';
+            for (const [key, value] of Object.entries(results || {})) {
+                const label = this.formatLabel(key);
+                const unit = value.unit || '';
+                const val = value.value || value;
+                csv += `"${label}","${val}","${unit}"\n`;
+            }
+            
+            // Create and download file
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${filename}-${this.getTimestamp()}.csv`);
-            link.style.visibility = 'hidden';
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
             
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
             
-            this.trackExport('csv', filename);
             return true;
-        } catch (error) {
-            console.error('CSV export failed:', error);
-            this.showToast('CSV export failed. Please try again.', 'error');
-            return false;
-        }
-    }
+        },
 
-    /**
-     * Convert data object to CSV string
-     */
-    convertToCSV(data) {
-        let csv = [];
-        
-        // Add header
-        csv.push(`"${this.companyInfo.name} - ${data.title || 'Cost Estimate'}"`);
-        csv.push(`"Generated: ${new Date().toLocaleString()}"`);
-        csv.push(`""`); // Empty row
-        
-        // Add project info if available
-        if (data.projectInfo) {
-            csv.push('"Project Information"');
-            Object.entries(data.projectInfo).forEach(([key, value]) => {
-                csv.push(`"${this.formatLabel(key)}","${value}"`);
-            });
-            csv.push('');
-        }
-        
-        // Add cost breakdown
-        if (data.breakdown) {
-            csv.push('"Cost Breakdown"');
-            csv.push('"Item","Quantity","Unit","Unit Cost","Total Cost"');
-            data.breakdown.forEach(item => {
-                csv.push(`"${item.name}","${item.quantity || ''}","${item.unit || ''}","${this.formatCurrency(item.unitCost)}","${this.formatCurrency(item.total)}"`);
-            });
-            csv.push('');
-        }
-        
-        // Add summary
-        if (data.summary) {
-            csv.push('"Summary"');
-            Object.entries(data.summary).forEach(([key, value]) => {
-                csv.push(`"${this.formatLabel(key)}","${this.formatValue(value)}"`);
-            });
-        }
-        
-        // Add disclaimer
-        csv.push('');
-        csv.push(`"${this.companyInfo.disclaimer}"`);
-        
-        return csv.join('\n');
-    }
-
-    /**
-     * Export data to PDF format
-     */
-    async exportToPDF(data, filename = 'costflowai-estimate') {
-        try {
-            // Check if jsPDF is loaded and load if necessary
-            if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
-                await this.loadJsPDF();
+        // Copy to clipboard
+        copyToClipboard: function(data) {
+            const { title, type, inputs, results } = data;
+            
+            let text = `${title}\n`;
+            text += `Calculator: ${type}\n`;
+            text += `Date: ${new Date().toLocaleString()}\n\n`;
+            
+            text += 'INPUTS:\n';
+            for (const [key, value] of Object.entries(inputs || {})) {
+                const label = this.formatLabel(key);
+                const val = value.value || value;
+                const unit = value.unit || '';
+                text += `  ${label}: ${val} ${unit}\n`;
             }
             
-            // Get jsPDF constructor from different possible locations
-            let jsPDF;
-            if (window.jspdf && window.jspdf.jsPDF) {
-                jsPDF = window.jspdf.jsPDF;
-            } else if (window.jsPDF) {
-                jsPDF = window.jsPDF;
-            } else if (window.jspdf) {
-                jsPDF = window.jspdf;
-            } else {
-                throw new Error('jsPDF library not available');
+            text += '\nRESULTS:\n';
+            for (const [key, value] of Object.entries(results || {})) {
+                const label = this.formatLabel(key);
+                const val = value.value || value;
+                const unit = value.unit || '';
+                text += `  ${label}: ${val} ${unit}\n`;
             }
             
-            const doc = new jsPDF();
-            
-            // Set fonts and colors
-            const primaryColor = [102, 126, 234];
-            const textColor = [55, 65, 81];
-            
-            // Add header
-            doc.setFillColor(...primaryColor);
-            doc.rect(0, 0, 210, 30, 'F');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.text(this.companyInfo.name, 20, 15);
-            doc.setFontSize(10);
-            doc.text(this.companyInfo.tagline, 20, 22);
-            
-            // Reset text color
-            doc.setTextColor(...textColor);
-            
-            // Add title
-            doc.setFontSize(16);
-            doc.text(data.title || 'Cost Estimate Report', 20, 45);
-            
-            // Add generation date
-            doc.setFontSize(10);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 52);
-            
-            let yPosition = 65;
-            
-            // Add project information
-            if (data.projectInfo) {
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Project Information', 20, yPosition);
-                doc.setFont(undefined, 'normal');
-                yPosition += 7;
-                
-                doc.setFontSize(10);
-                Object.entries(data.projectInfo).forEach(([key, value]) => {
-                    doc.text(`${this.formatLabel(key)}: ${value}`, 25, yPosition);
-                    yPosition += 6;
-                });
-                yPosition += 5;
-            }
-            
-            // Add cost breakdown table
-            if (data.breakdown && data.breakdown.length > 0) {
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Cost Breakdown', 20, yPosition);
-                doc.setFont(undefined, 'normal');
-                yPosition += 7;
-                
-                // Table headers
-                const headers = [['Item', 'Quantity', 'Unit', 'Unit Cost', 'Total']];
-                const rows = data.breakdown.map(item => [
-                    item.name,
-                    item.quantity || '-',
-                    item.unit || '-',
-                    this.formatCurrency(item.unitCost),
-                    this.formatCurrency(item.total)
-                ]);
-                
-                doc.autoTable({
-                    head: headers,
-                    body: rows,
-                    startY: yPosition,
-                    theme: 'striped',
-                    headStyles: { fillColor: primaryColor },
-                    margin: { left: 20, right: 20 }
-                });
-                
-                yPosition = doc.lastAutoTable.finalY + 10;
-            }
-            
-            // Add summary
-            if (data.summary) {
-                // Check if we need a new page
-                if (yPosition > 240) {
-                    doc.addPage();
-                    yPosition = 20;
-                }
-                
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Summary', 20, yPosition);
-                doc.setFont(undefined, 'normal');
-                yPosition += 7;
-                
-                doc.setFontSize(10);
-                Object.entries(data.summary).forEach(([key, value]) => {
-                    doc.text(`${this.formatLabel(key)}: ${this.formatValue(value)}`, 25, yPosition);
-                    yPosition += 6;
-                });
-            }
-            
-            // Add footer
-            doc.setFontSize(8);
-            doc.setTextColor(107, 114, 128);
-            doc.text(this.companyInfo.disclaimer, 20, 280);
-            doc.text(this.companyInfo.website, 20, 285);
-            
-            // Save the PDF
-            doc.save(`${filename}-${this.getTimestamp()}.pdf`);
-            
-            this.trackExport('pdf', filename);
-            return true;
-        } catch (error) {
-            console.error('PDF export failed:', error);
-            this.showToast('PDF export failed. Please try again.', 'error');
-            return false;
-        }
-    }
-
-    /**
-     * Load jsPDF library dynamically
-     */
-    loadJsPDF() {
-        return new Promise((resolve, reject) => {
-            // Check if jsPDF is already loaded in any form
-            if (window.jspdf || window.jsPDF || (window.jspdf && window.jspdf.jsPDF)) {
-                resolve();
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            script.onload = () => {
-                // Give jsPDF time to initialize
-                setTimeout(() => {
-                    if (window.jspdf || window.jsPDF) {
-                        // Try to load autoTable plugin
-                        try {
-                            const tableScript = document.createElement('script');
-                            tableScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
-                            tableScript.onload = () => {
-                                setTimeout(resolve, 100); // Give plugin time to initialize
-                            };
-                            tableScript.onerror = () => {
-                                console.warn('jsPDF autotable plugin failed to load, continuing without it');
-                                resolve(); // Continue without plugin
-                            };
-                            document.head.appendChild(tableScript);
-                        } catch (pluginError) {
-                            console.warn('Error loading jsPDF plugin:', pluginError);
-                            resolve(); // Continue without plugin
-                        }
-                    } else {
-                        reject(new Error('jsPDF failed to initialize'));
-                    }
-                }, 200);
-            };
-            script.onerror = () => reject(new Error('Failed to load jsPDF library'));
-            document.head.appendChild(script);
-        });
-    }
-
-    /**
-     * Copy data to clipboard
-     */
-    copyToClipboard(data) {
-        try {
-            let text = this.formatForClipboard(data);
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    this.showToast('Copied to clipboard!');
+            // Try modern clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text).then(() => {
+                    this.showNotification('Copied to clipboard!');
+                    return true;
+                }).catch(() => {
+                    return this.fallbackCopy(text);
                 });
             } else {
-                // Fallback for older browsers
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
+                return this.fallbackCopy(text);
+            }
+        },
+
+        // Fallback copy method
+        fallbackCopy: function(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
                 document.execCommand('copy');
+                this.showNotification('Copied to clipboard!');
+                return true;
+            } catch (err) {
+                this.showNotification('Copy failed', 'error');
+                return false;
+            } finally {
                 document.body.removeChild(textarea);
-                this.showToast('Copied to clipboard!');
             }
+        },
+
+        // Print calculation
+        print: function(data) {
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const html = this.generatePrintHTML(data);
             
-            this.trackExport('clipboard', data.title);
+            printWindow.document.write(html);
+            printWindow.document.close();
+            
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+            
             return true;
-        } catch (error) {
-            console.error('Copy to clipboard failed:', error);
-            this.showToast('Copy to clipboard failed. Please copy manually.', 'error');
-            return false;
-        }
-    }
+        },
 
-    /**
-     * Format data for clipboard
-     */
-    formatForClipboard(data) {
-        let text = [];
-        
-        text.push(`${this.companyInfo.name} - ${data.title || 'Cost Estimate'}`);
-        text.push(`Generated: ${new Date().toLocaleString()}`);
-        text.push('');
-        
-        if (data.projectInfo) {
-            text.push('PROJECT INFORMATION');
-            Object.entries(data.projectInfo).forEach(([key, value]) => {
-                text.push(`${this.formatLabel(key)}: ${value}`);
-            });
-            text.push('');
+        // Generate print HTML
+        generatePrintHTML: function(data) {
+            const { title, type, timestamp, inputs, results } = data;
+            
+            return `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${title} - CostFlowAI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            line-height: 1.6; 
         }
-        
-        if (data.breakdown) {
-            text.push('COST BREAKDOWN');
-            data.breakdown.forEach(item => {
-                text.push(`• ${item.name}: ${this.formatCurrency(item.total)}`);
-            });
-            text.push('');
+        .header { 
+            border-bottom: 2px solid #333; 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
         }
-        
-        if (data.summary) {
-            text.push('SUMMARY');
-            Object.entries(data.summary).forEach(([key, value]) => {
-                text.push(`${this.formatLabel(key)}: ${this.formatValue(value)}`);
-            });
+        h1 { color: #1e3a5f; margin-bottom: 10px; }
+        .section { margin-bottom: 30px; }
+        h2 { 
+            color: #333; 
+            border-bottom: 1px solid #ccc; 
+            padding-bottom: 10px; 
+            margin-bottom: 15px; 
         }
-        
-        return text.join('\n');
-    }
+        .item { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 8px 0; 
+            border-bottom: 1px dotted #ccc; 
+        }
+        .label { font-weight: 600; }
+        .value { color: #333; }
+        .footer { 
+            margin-top: 40px; 
+            padding-top: 20px; 
+            border-top: 1px solid #ccc; 
+            text-align: center; 
+            color: #666; 
+        }
+        @media print { 
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>${title}</h1>
+        <p>Calculator: ${type}</p>
+        <p>Date: ${timestamp || new Date().toLocaleString()}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Project Inputs</h2>
+        ${Object.entries(inputs || {}).map(([key, value]) => `
+            <div class="item">
+                <span class="label">${this.formatLabel(key)}:</span>
+                <span class="value">${value.value || value} ${value.unit || ''}</span>
+            </div>
+        `).join('')}
+    </div>
+    
+    <div class="section">
+        <h2>Calculation Results</h2>
+        ${Object.entries(results || {}).map(([key, value]) => `
+            <div class="item">
+                <span class="label">${this.formatLabel(key)}:</span>
+                <span class="value">${value.value || value} ${value.unit || ''}</span>
+            </div>
+        `).join('')}
+    </div>
+    
+    <div class="footer">
+        <p>Generated by CostFlowAI Professional Calculators</p>
+        <p>costflowai.com</p>
+    </div>
+</body>
+</html>`;
+        },
 
-    /**
-     * Save data as JSON
-     */
-    saveAsJSON(data, filename = 'costflowai-data') {
-        try {
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
+        // Email calculation (mailto)
+        email: function(data) {
+            const { title, type, inputs, results } = data;
             
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${filename}-${this.getTimestamp()}.json`);
-            link.style.visibility = 'hidden';
+            const subject = encodeURIComponent(`${title} - CostFlowAI Calculation`);
             
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            let body = `${title}\n`;
+            body += `Calculator: ${type}\n`;
+            body += `Date: ${new Date().toLocaleString()}\n\n`;
             
-            this.trackExport('json', filename);
+            body += 'PROJECT INPUTS:\n';
+            for (const [key, value] of Object.entries(inputs || {})) {
+                const label = this.formatLabel(key);
+                const val = value.value || value;
+                const unit = value.unit || '';
+                body += `  ${label}: ${val} ${unit}\n`;
+            }
+            
+            body += '\nCALCULATION RESULTS:\n';
+            for (const [key, value] of Object.entries(results || {})) {
+                const label = this.formatLabel(key);
+                const val = value.value || value;
+                const unit = value.unit || '';
+                body += `  ${label}: ${val} ${unit}\n`;
+            }
+            
+            body += '\n---\n';
+            body += 'Calculation Data (JSON):\n';
+            body += JSON.stringify(data, null, 2);
+            
+            const mailto = `mailto:?subject=${subject}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailto;
+            
             return true;
-        } catch (error) {
-            console.error('JSON export failed:', error);
-            return false;
+        },
+
+        // Format label from key
+        formatLabel: function(key) {
+            return key
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/[_-]/g, ' ')
+                .replace(/^./, str => str.toUpperCase())
+                .trim();
+        },
+
+        // Show notification
+        showNotification: function(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `export-notification ${type}`;
+            notification.textContent = message;
+            
+            const colors = {
+                success: '#10b981',
+                error: '#ef4444',
+                info: '#3b82f6'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
-    }
+    };
 
-    /**
-     * Format currency value
-     */
-    formatCurrency(value) {
-        if (typeof value === 'number') {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(value);
-        }
-        return value;
-    }
-
-    /**
-     * Format label from camelCase or snake_case
-     */
-    formatLabel(str) {
-        return str
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/_/g, ' ')
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ')
-            .trim();
-    }
-
-    /**
-     * Format value based on type
-     */
-    formatValue(value) {
-        if (typeof value === 'number') {
-            if (value > 1000) {
-                return this.formatCurrency(value);
-            }
-            return value.toLocaleString();
-        }
-        return value;
-    }
-
-    /**
-     * Get timestamp for filenames
-     */
-    getTimestamp() {
-        const now = new Date();
-        return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-    }
-
-    /**
-     * Show toast notification
-     */
-    showToast(message, type = 'success', duration = 3000) {
-        const existingToast = document.getElementById('export-toast');
-        if (existingToast) {
-            existingToast.remove();
-        }
-        
-        const colors = {
-            success: '#10b981',
-            error: '#ef4444',
-            warning: '#f59e0b',
-            info: '#3b82f6'
-        };
-        
-        const toast = document.createElement('div');
-        toast.id = 'export-toast';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${colors[type] || colors.success};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-            max-width: 300px;
-            word-wrap: break-word;
-        `;
-        toast.textContent = message;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (toast.parentNode) toast.remove();
-                }, 300);
-            }
-        }, duration);
-    }
-
-    /**
-     * Track export events
-     */
-    trackExport(type, filename) {
-        if (window.gtag) {
-            window.gtag('event', 'export', {
-                export_type: type,
-                export_file: filename,
-                page: window.location.pathname
-            });
-        }
-    }
-}
-
-// Create global instance
-window.exportUtils = new ExportUtilities();
-
-// Add animation styles
-if (!document.getElementById('export-animations')) {
+    // Add animation styles
     const style = document.createElement('style');
-    style.id = 'export-animations';
     style.textContent = `
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -486,4 +303,8 @@ if (!document.getElementById('export-animations')) {
         }
     `;
     document.head.appendChild(style);
-}
+
+    // Export to window
+    window.ExportUtils = ExportUtils;
+
+})(window);

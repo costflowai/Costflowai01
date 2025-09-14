@@ -1,34 +1,65 @@
 [build]
   publish = "src"
+  command = "npm run build"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+[build.environment]
+  NODE_VERSION = "18"
 
-[[headers]]
-  for = "/css/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+# Edge functions
+[[edge_functions]]
+  path = "/*"
+  function = "csp-nonce"
 
-[[headers]]
-  for = "/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+# Headers are defined in _headers file for more control
 
-[[headers]]
-  for = "/assets/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+# Redirects are defined in _redirects file for more control
 
-[[redirects]]
-  from = "/calculator/*"
-  to = "/calculators/:splat"
-  status = 301
+# Performance optimizations
+[build.processing]
+  skip_processing = false
 
-[[redirects]]
-  from = "/calc/*"
-  to = "/calculators/:splat"
-  status = 301
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+# Function configuration
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Development settings
+[dev]
+  port = 8888
+  targetPort = 3000
+  publish = "src"
+  autoLaunch = false
+
+# Context-specific settings
+[context.production]
+  environment = { NODE_ENV = "production" }
+
+[context.deploy-preview]
+  environment = { NODE_ENV = "development" }
+
+[context.branch-deploy]
+  environment = { NODE_ENV = "development" }
+
+# Plugins
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  
+  [plugins.inputs]
+    performance = 0.9
+    accessibility = 0.95
+    best-practices = 0.95
+    seo = 0.95

@@ -1,4 +1,21 @@
-# Redirects for Netlify
-/home              /                    301
-/calculators       /                    301
-/calc/*            /calculators/:splat  301
+# CostFlowAI Redirects
+# Calculator routes - all return 200! for client-side routing
+/calculators/concrete   /calculators    200!
+/calculators/paint      /calculators    200!
+/calculators/drywall    /calculators    200!
+/calculators/framing    /calculators    200!
+/calculators/roofing    /calculators    200!
+/calculators/flooring   /calculators    200!
+/calculators/electrical /calculators    200!
+/calculators/hvac       /calculators    200!
+/calculators/insulation /calculators    200!
+/calculators/plumbing   /calculators    200!
+/calculators/excavation /calculators    200!
+/calculators/labor      /calculators    200!
+
+# Remove .html extensions
+/*.html                 /:splat         301!
+
+# Old routes
+/calculator/*           /calculators/:splat   301!
+/calc/*                 /calculators/:splat   301!
