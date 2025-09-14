@@ -54,7 +54,7 @@ function withUsageTracking(originalFunction, calculatorType) {
  */
 async function checkUsageAndCalculate(calculatorType, calculatorFunction) {
     // TEMPORARILY DISABLED: All calculators are free during Stripe setup
-    console.log('Usage limits temporarily disabled - all calculators are free');
+    // Silent operation - no console logs in production
     return calculatorFunction();
     
     // Original usage limiting code (commented out)

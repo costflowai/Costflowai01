@@ -182,7 +182,7 @@ class UsageLimiter {
      */
     async trackUsage(calculatorType = 'general') {
         // TEMPORARILY DISABLED: All calculators are free during Stripe setup
-        console.log('Usage tracking temporarily disabled - unlimited access enabled');
+        // Silent operation - no console logs in production
         
         // Hide usage counter if it exists
         const existing = document.getElementById('usage-counter-widget');

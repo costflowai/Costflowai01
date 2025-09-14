@@ -424,18 +424,17 @@ function showNotification(message, type = 'info') {
 window.initializeAllCalculators = initializeAllCalculators;
 window.initializeCalculators = initializeAllCalculators; // Legacy compatibility
 
-// Debug function
-window.debugCalculators = function() {
-    console.log('=== Calculator Debug Info ===');
-    console.log('Concrete inputs:', {
-        length: document.querySelector('input[placeholder*="30"], input[name="length"], #length'),
-        width: document.querySelector('input[placeholder*="20"], input[name="width"], #width'),
-        thickness: document.querySelector('input[placeholder*="4"], input[name="thickness"], #thickness')
-    });
-    console.log('All number inputs:', document.querySelectorAll('input[type="number"]'));
-    console.log('All tables:', document.querySelectorAll('table'));
-    console.log('Results containers:', document.querySelectorAll('.project-results, .materials-needed'));
-};
-
-console.log('🚀 CostFlowAI Calculator Engine loaded successfully');
-console.log('Available functions: initializeAllCalculators, copyResults, exportCSV, exportPDF, debugCalculators');
+// Debug function - only available in development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    window.debugCalculators = function() {
+        console.log('=== Calculator Debug Info ===');
+        console.log('Concrete inputs:', {
+            length: document.querySelector('input[placeholder*="30"], input[name="length"], #length'),
+            width: document.querySelector('input[placeholder*="20"], input[name="width"], #width'),
+            thickness: document.querySelector('input[placeholder*="4"], input[name="thickness"], #thickness')
+        });
+        console.log('All number inputs:', document.querySelectorAll('input[type="number"]'));
+        console.log('All tables:', document.querySelectorAll('table'));
+        console.log('Results containers:', document.querySelectorAll('.project-results, .materials-needed'));
+    };
+}

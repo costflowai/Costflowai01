@@ -183,7 +183,7 @@ class ProCalculator {
     try {
       // Prepare print-friendly version
       const printContent = this.generatePrintContent();
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=800,height=600');
       
       printWindow.document.write(printContent);
       printWindow.document.close();
@@ -222,20 +222,32 @@ class ProCalculator {
       const shareUrl = `${baseUrl}?calc=${encodedData}`;
       
       // Try modern share API first
-      if (navigator.share && navigator.canShare && navigator.canShare({url: shareUrl})) {
-        navigator.share({
+      // Fixed logic error: Check if navigator.share exists and handle canShare properly
+      if (navigator.share) {
+        // canShare is optional - not all browsers that support share() have canShare()
+        const shareData = {
           title: `${this.formatLabel(this.name)} Calculation - CostFlowAI`,
           text: 'Check out my construction calculation on CostFlowAI',
           url: shareUrl
-        }).then(() => {
-          this.showNotification('🔗 Shared successfully!', 'success');
-          console.log('🔗 Shared via Web Share API');
-        }).catch((e) => {
-          console.log('Web Share API failed, falling back to clipboard');
+        };
+        
+        // Only check canShare if it exists, otherwise try share directly
+        const canShare = !navigator.canShare || navigator.canShare(shareData);
+        
+        if (canShare) {
+          navigator.share(shareData).then(() => {
+            this.showNotification('🔗 Shared successfully!', 'success');
+            console.log('🔗 Shared via Web Share API');
+          }).catch((e) => {
+            console.log('Web Share API failed, falling back to clipboard:', e);
+            this.copyToClipboard(shareUrl);
+          });
+        } else {
+          // canShare returned false, use clipboard
           this.copyToClipboard(shareUrl);
-        });
+        }
       } else {
-        // Fallback to clipboard
+        // No share API available, fallback to clipboard
         this.copyToClipboard(shareUrl);
       }
       

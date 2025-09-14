@@ -125,7 +125,7 @@
         window.addEventListener('scroll', function() {
             clearTimeout(scrollTimer);
             scrollTimer = setTimeout(checkScrollThresholds, 100);
-        });
+        }, { passive: true });
 
         // Track max scroll on page unload
         window.addEventListener('beforeunload', function() {

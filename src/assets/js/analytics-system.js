@@ -448,7 +448,7 @@ class AnalyticsSystem {
             }
         }, 1000);
         
-        window.addEventListener('scroll', trackScroll);
+        window.addEventListener('scroll', trackScroll, { passive: true });
     }
 
     /**

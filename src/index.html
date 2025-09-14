@@ -38,6 +38,8 @@
     
     <!-- Critical CSS loading -->
     <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="preload" href="/js/config/environment.js" as="script">
+    <link rel="preload" href="/js/performance/optimizer.js" as="script">
     
     <!-- Using system fonts, no custom font preload needed -->
     
@@ -499,6 +501,12 @@
     
     <!-- Feedback Widget -->
     <!-- GA4 External Scripts -->
+<!-- Environment and Performance First -->
+<script src="/js/config/environment.js"></script>
+<script src="/js/performance/optimizer.js"></script>
+<script src="/js/utils/logger.js"></script>
+
+<!-- Analytics -->
 <script src="/assets/js/ga-init.js" defer></script>
 
 <!-- Site Initialization -->

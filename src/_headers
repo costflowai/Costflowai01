@@ -1,48 +1,27 @@
-# Site-wide security headers (CSP now handled by edge function)
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
 
-# Cache static assets
-/assets/*
+/*.js
   Cache-Control: public, max-age=31536000, immutable
 
-# Security headers for private/transactional pages
-/payment-success
-  X-Robots-Tag: noindex, nofollow
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
 
-/payment-success.html
-  X-Robots-Tag: noindex, nofollow
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
 
-/payment-success-new
-  X-Robots-Tag: noindex, nofollow
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
 
-/payment-success-new.html
-  X-Robots-Tag: noindex, nofollow
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
 
-/api-docs
-  X-Robots-Tag: noindex, nofollow
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
 
-/api-docs.html
-  X-Robots-Tag: noindex, nofollow
-
-/admin/*
-  X-Robots-Tag: noindex, nofollow
-
-/dashboard/*
-  X-Robots-Tag: noindex, nofollow
-
-# Development and testing pages
-/test-*
-  X-Robots-Tag: noindex, nofollow
-
-/demo/*
-  X-Robots-Tag: noindex, nofollow
-
-# Staging/preview deployments
-https://deploy-preview-*--costflowai.netlify.app/*
-  X-Robots-Tag: noindex, nofollow
-
-https://branch-*--costflowai.netlify.app/*
-  X-Robots-Tag: noindex, nofollow
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

@@ -9,6 +9,9 @@ class ErrorMonitoring {
         this.maxErrors = 50;
         this.reportingEndpoint = null; // Will use localStorage fallback
         this.sessionId = this.generateSessionId();
+        this.listeners = [];
+        this.intervals = [];
+        this.originalFetch = null;
         
         this.init();
     }
@@ -27,8 +30,8 @@ class ErrorMonitoring {
     }
 
     setupErrorHandlers() {
-        // Global error handler
-        window.addEventListener('error', (event) => {
+        // Global error handler with cleanup tracking
+        const errorHandler = (event) => {
             this.captureError({
                 type: 'javascript_error',
                 message: event.message,
@@ -41,10 +44,12 @@ class ErrorMonitoring {
                 userAgent: navigator.userAgent,
                 sessionId: this.sessionId
             });
-        });
+        };
+        window.addEventListener('error', errorHandler);
+        this.listeners.push({ element: window, event: 'error', handler: errorHandler });
 
-        // Unhandled promise rejections
-        window.addEventListener('unhandledrejection', (event) => {
+        // Unhandled promise rejections with cleanup tracking
+        const rejectionHandler = (event) => {
             this.captureError({
                 type: 'unhandled_promise_rejection',
                 message: event.reason?.message || 'Unhandled promise rejection',
@@ -54,13 +59,15 @@ class ErrorMonitoring {
                 userAgent: navigator.userAgent,
                 sessionId: this.sessionId
             });
-        });
+        };
+        window.addEventListener('unhandledrejection', rejectionHandler);
+        this.listeners.push({ element: window, event: 'unhandledrejection', handler: rejectionHandler });
 
-        // Network errors (fetch failures)
-        const originalFetch = window.fetch;
+        // Network errors (fetch failures) - store original for restoration
+        this.originalFetch = window.fetch;
         window.fetch = async (...args) => {
             try {
-                const response = await originalFetch(...args);
+                const response = await this.originalFetch(...args);
                 
                 // Log failed HTTP requests
                 if (!response.ok) {
@@ -164,16 +171,16 @@ class ErrorMonitoring {
         document.addEventListener('click', (event) => {
             const button = event.target.closest('button, [onclick]');
             if (button) {
-                // Check if button has onclick but no function exists
+                // Check if button has onclick but no function exists safely (no eval)
                 const onclick = button.getAttribute('onclick');
                 if (onclick) {
-                    try {
-                        // Try to evaluate the onclick to see if it's valid
-                        new Function(onclick);
-                    } catch (error) {
+                    const fnName = String(onclick).trim().split('(')[0].trim();
+                    const isValidName = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(fnName);
+                    const fnExists = isValidName && typeof window[fnName] === 'function';
+                    if (!fnExists) {
                         this.captureError({
                             type: 'broken_onclick_handler',
-                            message: 'Invalid onclick handler detected',
+                            message: 'Invalid or missing onclick function detected',
                             onclick: onclick,
                             buttonText: button.textContent?.trim(),
                             timestamp: new Date().toISOString(),
@@ -188,9 +195,31 @@ class ErrorMonitoring {
 
     startPeriodicHealthChecks() {
         // Check for dead links periodically
-        setInterval(() => {
+        const interval = setInterval(() => {
             this.checkPageHealth();
         }, 300000); // Every 5 minutes
+        this.intervals.push(interval);
+    }
+
+    // Cleanup method to prevent memory leaks
+    destroy() {
+        // Remove all event listeners
+        this.listeners.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+        });
+        this.listeners = [];
+
+        // Clear all intervals
+        this.intervals.forEach(interval => clearInterval(interval));
+        this.intervals = [];
+
+        // Restore original fetch if modified
+        if (this.originalFetch) {
+            window.fetch = this.originalFetch;
+            this.originalFetch = null;
+        }
+
+        console.log('ErrorMonitoring cleanup completed');
     }
 
     async checkPageHealth() {

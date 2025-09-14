@@ -821,27 +821,62 @@ class MaterialWasteOptimizer extends AdvancedCalculator {
         document.getElementById('material_cost').textContent = this.formatCurrency(this.results.costAnalysis.totalCost);
         document.getElementById('efficiency_score').textContent = Math.round(this.results.optimization.efficiencyScore);
 
-        // Cut patterns
-        document.getElementById('cut_patterns').innerHTML = this.results.optimization.patterns.map((pattern, index) => `
-            <div class="cut-optimization">
-                <h5>Pattern ${index + 1}: ${pattern.stockLength}' Stock (${pattern.wastePercentage.toFixed(1)}% waste)</h5>
-                <div class="cut-pattern">
-                    <span style="min-width: 80px;">Cuts:</span>
-                    <div class="pattern-bar">
-                        ${pattern.cuts.map(cut => 
-                            `<div class="pattern-segment used-segment" style="flex: ${cut.length};">${cut.length}'</div>`
-                        ).join('')}
-                        ${pattern.waste > 0 ? 
-                            `<div class="pattern-segment waste-segment" style="flex: ${pattern.waste};">Waste: ${pattern.waste.toFixed(2)}'</div>` : 
-                            ''
-                        }
-                    </div>
-                </div>
-                <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
-                    Cuts: ${pattern.cuts.map(cut => `${cut.length}' (${cut.description || 'No desc'})`).join(', ')}
-                </div>
-            </div>
-        `).join('');
+        // Cut patterns - Fixed XSS vulnerability by using DOM methods instead of innerHTML
+        const cutPatternsContainer = document.getElementById('cut_patterns');
+        cutPatternsContainer.innerHTML = ''; // Clear existing content safely
+        
+        this.results.optimization.patterns.forEach((pattern, index) => {
+            const optimizationDiv = document.createElement('div');
+            optimizationDiv.className = 'cut-optimization';
+            
+            const h5 = document.createElement('h5');
+            h5.textContent = `Pattern ${index + 1}: ${pattern.stockLength}' Stock (${pattern.wastePercentage.toFixed(1)}% waste)`;
+            optimizationDiv.appendChild(h5);
+            
+            const cutPatternDiv = document.createElement('div');
+            cutPatternDiv.className = 'cut-pattern';
+            
+            const cutsLabel = document.createElement('span');
+            cutsLabel.style.minWidth = '80px';
+            cutsLabel.textContent = 'Cuts:';
+            cutPatternDiv.appendChild(cutsLabel);
+            
+            const patternBar = document.createElement('div');
+            patternBar.className = 'pattern-bar';
+            
+            // Add cut segments
+            pattern.cuts.forEach(cut => {
+                const segment = document.createElement('div');
+                segment.className = 'pattern-segment used-segment';
+                segment.style.flex = String(cut.length);
+                segment.textContent = `${cut.length}'`;
+                patternBar.appendChild(segment);
+            });
+            
+            // Add waste segment if exists
+            if (pattern.waste > 0) {
+                const wasteSegment = document.createElement('div');
+                wasteSegment.className = 'pattern-segment waste-segment';
+                wasteSegment.style.flex = String(pattern.waste);
+                wasteSegment.textContent = `Waste: ${pattern.waste.toFixed(2)}'`;
+                patternBar.appendChild(wasteSegment);
+            }
+            
+            cutPatternDiv.appendChild(patternBar);
+            optimizationDiv.appendChild(cutPatternDiv);
+            
+            // Add cuts description
+            const descDiv = document.createElement('div');
+            descDiv.style.fontSize = '0.9rem';
+            descDiv.style.color = '#6b7280';
+            descDiv.style.marginTop = '0.5rem';
+            descDiv.textContent = 'Cuts: ' + pattern.cuts.map(cut => 
+                `${cut.length}' (${cut.description || 'No desc'})`
+            ).join(', ');
+            optimizationDiv.appendChild(descDiv);
+            
+            cutPatternsContainer.appendChild(optimizationDiv);
+        });
 
         // Order list
         const orderSummary = Object.entries(this.results.optimization.summary).map(([length, data]) => `
