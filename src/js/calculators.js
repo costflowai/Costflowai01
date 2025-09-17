@@ -67,7 +67,7 @@ function initializeConcreteCalculator() {
             
             // Find and update result display
             const resultElements = document.querySelectorAll(
-                '.cu.yd, .concrete-result, [data-result], .result-value, td:contains("0.00"), .project-results td'
+                '.cu.yd, .concrete-result, [data-result], .result-value, .project-results td'
             );
             
             resultElements.forEach(el => {
