@@ -1,0 +1,241 @@
+{
+  "name": "CostFlowAI - Construction Cost Estimator",
+  "short_name": "CostFlowAI",
+  "description": "Professional construction cost estimation tools with AI-powered features for contractors, builders, and construction professionals.",
+  "version": "2.0.0",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "lang": "en-US",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "/assets/images/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/assets/images/screenshot-mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Main calculator interface on mobile"
+    },
+    {
+      "src": "/assets/images/screenshot-mobile-2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Calculation results with export options"
+    },
+    {
+      "src": "/assets/images/screenshot-desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop calculator dashboard"
+    },
+    {
+      "src": "/assets/images/screenshot-desktop-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Advanced calculator features"
+    }
+  ],
+  
+  "categories": [
+    "business",
+    "productivity",
+    "utilities",
+    "finance"
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Concrete Calculator",
+      "short_name": "Concrete",
+      "description": "Calculate concrete volume and costs",
+      "url": "/calculators/concrete",
+      "icons": [
+        {
+          "src": "/assets/images/shortcut-concrete.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Residential ROM",
+      "short_name": "Residential",
+      "description": "Rough order of magnitude for residential projects",
+      "url": "/calculators/residential-rom-pro.html",
+      "icons": [
+        {
+          "src": "/assets/images/shortcut-residential.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Commercial TI",
+      "short_name": "Commercial",
+      "description": "Commercial tenant improvement estimator",
+      "url": "/calculators/commercial-ti-pro.html",
+      "icons": [
+        {
+          "src": "/assets/images/shortcut-commercial.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "ROI Calculator",
+      "short_name": "ROI",
+      "description": "Return on investment calculator",
+      "url": "/calculators/roi-maximizer.html",
+      "icons": [
+        {
+          "src": "/assets/images/shortcut-roi.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://costflowai.com/manifest.json"
+    }
+  ],
+  
+  "prefer_related_applications": false,
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  
+  "handle_links": "preferred",
+  
+  "capture_links": "existing-client-navigate",
+  
+  "file_handlers": [
+    {
+      "action": "/calculator/import",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/json": [".json"],
+        "application/pdf": [".pdf"]
+      }
+    }
+  ],
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+costflowai",
+      "url": "/calculator?data=%s"
+    }
+  ],
+  
+  "share_target": {
+    "action": "/calculator/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "images",
+          "accept": ["image/*", ".jpg", ".jpeg", ".png", ".webp"]
+        },
+        {
+          "name": "documents",
+          "accept": [".pdf", ".csv", ".json"]
+        }
+      ]
+    }
+  },
+  
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "standalone",
+    "browser"
+  ],
+  
+  "iarc_rating_id": "",
+  
+  "permissions": [
+    "notifications",
+    "background-sync"
+  ],
+  
+  "features": [
+    "offline-support",
+    "push-notifications",
+    "background-sync",
+    "file-handling",
+    "share-target",
+    "window-controls-overlay"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "costflowai-estimator-v2",
+  "version": "2.0.0",
+  "description": "CostFlowAI Professional Construction Estimator - Enterprise Grade",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:analyze": "vite build --mode analyze",
+    "build:production": "NODE_ENV=production vite build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .js,.ts,.vue --fix",
+    "lint:check": "eslint src --ext .js,.ts,.vue",
+    "format": "prettier --write \"src/**/*.{js,ts,css,html,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,ts,css,html,json}\"",
+    "type-check": "tsc --noEmit",
+    "lighthouse": "lighthouse http://localhost:4173 --output=html --view",
+    "optimize:images": "node scripts/optimize-images.js",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
+    "deploy": "npm run build:production && netlify deploy --prod --dir=dist",
+    "deploy:preview": "npm run build && netlify deploy --dir=dist"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "date-fns": "^3.0.0",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1",
+    "workbox-window": "^7.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vitejs/plugin-legacy": "^5.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "autoprefixer": "^10.4.16",
+    "cssnano": "^6.0.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-accessibility": "^2.0.0",
+    "lightningcss": "^1.22.0",
+    "postcss": "^8.4.32",
+    "prettier": "^3.1.0",
+    "sass": "^1.69.0",
+    "sharp": "^0.33.0",
+    "terser": "^5.24.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vite-plugin-pwa": "^0.17.0",
+    "vite-plugin-windicss": "^1.9.0",
+    "vitest": "^1.0.0",
+    "workbox-build": "^7.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
