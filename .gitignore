@@ -1,9 +1,5 @@
 node_modules/
+playwright-report/
+.test-results/
+.zip
 .DS_Store
-*.log
-.env
-.vscode/
-dist/
-build/
-.netlify/
-package-lock.json

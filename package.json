@@ -1,69 +1,18 @@
 {
-  "name": "costflowai-estimator",
+  "name": "costflowai-site",
   "version": "1.0.0",
-  "description": "CostFlowAI Professional Construction Estimator Widget",
-  "main": "index.html",
+  "description": "CostFlowAI enterprise calculator-first static site",
   "type": "module",
   "scripts": {
-    "test": "node ./scripts/run-tests.mjs",
-    "test:jest": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:seo": "echo 'SEO tests: Install @playwright/test to run'",
-    "test:headed": "echo 'Headed tests: Install @playwright/test to run'",
-    "lint": "echo 'Lint: All JavaScript files validated'",
-    "lint:fix": "echo 'Lint: All JavaScript files validated'",
-    "lint:accessibility": "echo 'Accessibility linting: Install @axe-core/cli to run'",
-    "build": "node ./scripts/inject-nonce.mjs",
-    "prepare": "echo 'Prepare: Static site ready'",
-    "dev": "netlify dev",
-    "deploy": "netlify deploy --prod --dir .",
-    "deploy:preview": "netlify deploy --dir .",
-    "validate": "npm test && npm run lint",
-    "validate:html": "echo 'HTML validation: Install html-validate to run'",
-    "validate:schema": "echo 'Schema validation: Skipped'",
-    "integration-test": "echo 'Integration tests: Skipped'",
-    "lighthouse": "echo 'Lighthouse: Install lighthouse CLI to run'",
-    "check:links": "echo 'Link checking: Install link checker to run'",
-    "verify:redirects": "echo 'Redirects verified'",
-    "audit:performance": "echo 'Performance audit: Install tools to run'",
-    "qa:links": "echo 'Links: Install linkinator to run'",
-    "qa:html": "echo 'HTML: Install html-validate to run'",
-    "qa:lighthouse": "echo 'Lighthouse: Install lighthouse CLI to run'",
-    "qa:smoke": "echo 'Smoke tests: Install tools to run'",
-    "test:smoke": "echo 'Smoke tests: Install playwright to run'",
-    "test:e2e": "echo 'E2E tests: Install playwright to run'",
-    "test:e2e:headed": "echo 'E2E tests: Install playwright to run'",
-    "test:e2e:debug": "echo 'E2E tests: Install playwright to run'",
-    "test:calculators": "echo 'Calculator tests: All JavaScript validated'",
-    "test:paint-smoke": "echo 'Paint tests: Install playwright to run'",
-    "test:paint-smoke:headed": "echo 'Paint tests: Install playwright to run'",
-    "test:paint-smoke:debug": "echo 'Paint tests: Install playwright to run'",
-    "test:smoke-js": "echo 'Smoke tests: All JavaScript validated'",
-    "test:calculators-playwright": "echo 'Calculator tests: Install playwright to run'"
+    "build:calculators": "node tools/build_calculators.mjs",
+    "build:blog": "node tools/build_blog.mjs && node tools/build_search_index.mjs",
+    "build:nonce": "node tools/inject_nonce.mjs",
+    "build": "npm run build:calculators && npm run build:blog && npm run build:nonce",
+    "test": "playwright test --config tests/playwright.config.ts",
+    "lint": "node tools/lint.mjs",
+    "lh": "lhci autorun"
   },
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
-    "eslint": "^9.15.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "jsdom": "^23.0.0"
-  },
-  "optionalDevDependencies": {
-    "@playwright/test": "^1.40.0",
-    "@axe-core/cli": "^4.8.0",
-    "html-validate": "^8.7.0",
-    "lighthouse": "^11.4.0",
-    "broken-link-checker": "^0.7.8"
-  },
-  "dependencies": {
-    "express": "^4.21.0",
-    "lambda-rate-limiter": "^3.0.1",
-    "node-fetch": "^3.3.2",
-    "stripe": "^18.0.0"
-  },
-  "optionalDependencies": {
-    "puppeteer": "^22.0.0",
-    "resend": "^4.0.0"
+    "@playwright/test": "^1.42.1"
   }
 }
