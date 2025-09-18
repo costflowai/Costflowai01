@@ -1,26 +1,28 @@
 [build]
   publish = "src"
 
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/vendor/*"
+  to = "/vendor/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
-    Cache-Control = "max-age=0, must-revalidate"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'nonce-{%NONCE%}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
 
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[redirects]]
-  from = "/calculator/*"
-  to = "/calculators/:splat"
-  status = 301
-
-[[redirects]]
-  from = "/calc/*"
-  to = "/calculators/:splat"
-  status = 301
+[[edge_functions]]
+  function = "nonce-injector"
+  path = "/*"
