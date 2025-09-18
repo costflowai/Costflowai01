@@ -1,519 +1,275 @@
-// calculators.js - COMPLETE WORKING VERSION
-console.log('Loading calculators.js...');
+import { jsPDF } from '/vendor/jspdf.umd.min.js';
 
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAllCalculators);
-} else {
-    initializeAllCalculators();
-}
+const calculators = {
+  concrete: {
+    label: 'Concrete',
+    fields: ['length', 'width', 'thickness', 'waste', 'unit-system'],
+    compute: ({ length, width, thickness, waste, unitSystem }) => {
+      if (length <= 0 || width <= 0 || thickness <= 0) {
+        return { summary: [], details: [], math: 'Enter positive values to compute concrete volume.' };
+      }
 
-function initializeAllCalculators() {
-    console.log('Initializing all calculators...');
+      const imperial = unitSystem === 'imperial';
+      const lengthFeet = imperial ? length : length * 3.28084;
+      const widthFeet = imperial ? width : width * 3.28084;
+      const thicknessFeet = imperial ? thickness / 12 : (thickness / 100) * 3.28084;
 
-    // Initialize each calculator type
-    initializeConcreteCalculator();
-    initializeFramingCalculator();
-    initializePaintCalculator();
-    initializeRoofingCalculator();
-    initializeElectricalCalculator();
-    initializeDrywallCalculator();
-    initializeFlooringCalculator();
-    initializePlumbingCalculator();
-    initializeHVACCalculator();
-    initializeInsulationCalculator();
-    
-    // Add export buttons
-    addExportButtons();
-    
-    console.log('All calculators initialized successfully');
-}
+      const volumeCubicFeet = lengthFeet * widthFeet * thicknessFeet;
+      const baseCubicYards = volumeCubicFeet / 27;
+      const adjustedCubicYards = baseCubicYards * (1 + waste / 100);
+      const cubicMeters = adjustedCubicYards / 1.30795;
+      const bags80lb = adjustedCubicYards * 27 / 0.6;
+      const readyMixTrucks = adjustedCubicYards / 10;
 
-function toArray(collection) {
-    return Array.isArray(collection) ? collection.filter(Boolean) : Array.from(collection || []);
-}
+      const math = [
+        `Volume (ft³) = ${lengthFeet.toFixed(2)} × ${widthFeet.toFixed(2)} × ${thicknessFeet.toFixed(3)} = ${volumeCubicFeet.toFixed(2)} ft³`,
+        `Convert to cubic yards: ${volumeCubicFeet.toFixed(2)} ÷ 27 = ${baseCubicYards.toFixed(2)} yd³`,
+        `Waste factor: ${baseCubicYards.toFixed(2)} × (1 + ${waste.toFixed(1)}%) = ${adjustedCubicYards.toFixed(2)} yd³`
+      ].join('\n');
 
-function uniqueElements(elements) {
-    const seen = new Set();
-    return elements.reduce((acc, el) => {
-        if (el && !seen.has(el)) {
-            seen.add(el);
-            acc.push(el);
-        }
-        return acc;
-    }, []);
-}
-
-function getText(node) {
-    if (!node) return '';
-    const { textContent } = node;
-    return typeof textContent === 'string' ? textContent : '';
-}
-
-function textContains(node, needle) {
-    return getText(node).indexOf(needle) !== -1;
-}
-
-function safeQueryAll(scope, selector) {
-    const context = scope || document;
-    try {
-        return Array.from(context.querySelectorAll(selector));
-    } catch (error) {
-        console.warn('CostflowAI: selector failed', selector, error);
-        return [];
+      return {
+        summary: [
+          { label: 'Concrete Volume', value: `${adjustedCubicYards.toFixed(2)} cubic yards` },
+          { label: 'Metric Volume', value: `${cubicMeters.toFixed(2)} cubic meters` },
+          { label: '80 lb Bags', value: `${Math.ceil(bags80lb).toLocaleString('en-US')}` },
+          { label: 'Ready-Mix Trucks (10 yd³)', value: `${Math.max(1, Math.ceil(readyMixTrucks)).toLocaleString('en-US')}` }
+        ],
+        details: [
+          { label: 'Base Volume (yd³)', value: baseCubicYards.toFixed(2) },
+          { label: 'Waste Applied (yd³)', value: adjustedCubicYards.toFixed(2) },
+          { label: 'Volume (m³)', value: cubicMeters.toFixed(2) }
+        ],
+        math
+      };
     }
-}
+  },
+  framing: {
+    label: 'Framing',
+    fields: ['wall-length', 'wall-height', 'stud-spacing', 'plates', 'unit-system'],
+    compute: ({ wallLength, wallHeight, studSpacing, plates, unitSystem }) => {
+      if (wallLength <= 0 || wallHeight <= 0 || studSpacing <= 0) {
+        return { summary: [], details: [], math: 'Enter positive values to compute framing materials.' };
+      }
 
-function filterByText(elements, matcher) {
-    const tests = Array.isArray(matcher) ? matcher : [matcher];
-    return toArray(elements).filter(node =>
-        tests.some(test => {
-            try {
-                return typeof test === 'function' ? test(node) : textContains(node, test);
-            } catch (error) {
-                console.warn('CostflowAI: text filter failed', error);
-                return false;
-            }
-        })
-    );
-}
+      const imperial = unitSystem === 'imperial';
+      const lengthFeet = imperial ? wallLength : wallLength * 3.28084;
+      const heightFeet = imperial ? wallHeight : wallHeight * 3.28084;
+      const spacingInches = imperial ? studSpacing : studSpacing / 2.54;
 
-function findCellsByText(scope, matcher) {
-    return uniqueElements(filterByText(safeQueryAll(scope, 'td'), matcher));
-}
+      const studs = Math.ceil((lengthFeet * 12) / spacingInches) + 1;
+      const platesCount = Math.max(2, plates);
+      const plateFeet = lengthFeet * platesCount;
+      const totalBoardFeet = studs * heightFeet + plateFeet;
+      const sheathingSqFt = lengthFeet * heightFeet;
+      const sheathingSqM = sheathingSqFt / 10.7639;
 
-function initializeConcreteCalculator() {
-    console.log('Initializing concrete calculator...');
+      const math = [
+        `Stud count = ceil((${lengthFeet.toFixed(2)} ft × 12 in) ÷ ${spacingInches.toFixed(1)} in) + 1 = ${studs}`,
+        `Plate length = ${lengthFeet.toFixed(2)} ft × ${platesCount} plates = ${plateFeet.toFixed(2)} ft`,
+        `Board feet = (${studs} studs × ${heightFeet.toFixed(2)} ft) + ${plateFeet.toFixed(2)} ft = ${totalBoardFeet.toFixed(2)} board ft`
+      ].join('\n');
 
-    const concreteRoot =
-        document.querySelector('#concrete-calculator, #concrete-calc, .concrete-calculator, .calculator-panel[data-calc="concrete"], .concrete-calc') ||
-        null;
-
-    const inputScope = concreteRoot || document;
-
-    // Find all possible input fields for concrete calculator
-    const lengthInput = inputScope.querySelector(
-        '#concrete-length, input[placeholder*="30"], input[name="length"], #length, input[placeholder*="Length"], .concrete-calc input[type="number"]:first-of-type'
-    );
-    const widthInput = inputScope.querySelector(
-        '#concrete-width, input[placeholder*="20"], input[name="width"], #width, input[placeholder*="Width"], .concrete-calc input[type="number"]:nth-of-type(2)'
-    );
-    const thicknessInput = inputScope.querySelector(
-        '#concrete-thickness, input[placeholder*="4"], input[name="thickness"], #thickness, input[placeholder*="inches"], .concrete-calc input[type="number"]:nth-of-type(3)'
-    );
-
-    if (!lengthInput || !widthInput || !thicknessInput) {
-        console.log('Concrete calculator inputs not found on this page');
-        return;
+      return {
+        summary: [
+          { label: 'Studs Required', value: `${studs}` },
+          { label: 'Board Feet', value: `${totalBoardFeet.toFixed(2)}` },
+          { label: 'Plates (linear ft)', value: `${plateFeet.toFixed(2)}` },
+          { label: 'Sheathing Area', value: `${sheathingSqFt.toFixed(2)} ft² (${sheathingSqM.toFixed(2)} m²)` }
+        ],
+        details: [
+          { label: 'Wall Height (ft)', value: heightFeet.toFixed(2) },
+          { label: 'Spacing (in)', value: spacingInches.toFixed(2) },
+          { label: 'Plates Count', value: platesCount.toString() }
+        ],
+        math
+      };
     }
-    
-    console.log('Found concrete inputs:', { lengthInput, widthInput, thicknessInput });
-    
-    function calculateConcrete() {
-        const length = parseFloat(lengthInput.value) || 0;
-        const width = parseFloat(widthInput.value) || 0;
-        const thickness = parseFloat(thicknessInput.value) || 0;
-        
-        console.log('Calculating concrete:', { length, width, thickness });
-        
-        if (length > 0 && width > 0 && thickness > 0) {
-            // Calculate volume in cubic yards
-            const cubicFeet = length * width * (thickness / 12);
-            const cubicYards = cubicFeet / 27;
-            const withWaste = cubicYards * 1.1; // 10% waste
-            
-            console.log('Concrete calculation result:', withWaste.toFixed(2), 'cubic yards');
-            
-            // Find and update result display
-            const resultScope = concreteRoot || document;
-            const baseResultElements = safeQueryAll(
-                resultScope,
-                '#concrete-volume, #concrete-result, #concrete-yards, .result-main, .cu.yd, .concrete-result, [data-result], .result-value, .project-results td'
-            );
-            const tdElementsWithDefaultText = findCellsByText(resultScope, node => textContains(node, '0.00'));
-            const resultElements = uniqueElements([...baseResultElements, ...tdElementsWithDefaultText]);
-
-            resultElements.forEach(el => {
-                const text = getText(el).trim();
-                if (text === '' || textContains(el, '0.00') || text.toLowerCase().includes('cu yd')) {
-                    el.textContent = withWaste.toFixed(2) + ' cu yd';
-                    el.style.fontWeight = 'bold';
-                    el.style.color = '#2196F3';
-                }
-            });
-
-            // Update cost displays
-            const costPerYard = 150;
-            const totalCost = withWaste * costPerYard;
-            const costElements = uniqueElements(
-                [
-                    '#concrete-total-cost',
-                    '#concrete-total',
-                    '#concrete-material',
-                    '.cost-display',
-                    '[data-cost]'
-                ].flatMap(selector => safeQueryAll(concreteRoot || document, selector))
-            );
-            costElements.forEach(el => {
-                const text = getText(el);
-                if (text.trim() === '' || text.indexOf('$0') !== -1) {
-                    el.textContent = '$' + totalCost.toFixed(2);
-                    el.style.fontWeight = 'bold';
-                    el.style.color = '#4CAF50';
-                }
-            });
-
-            // Update any table cells that contain results
-            safeQueryAll(concreteRoot || document, 'td').forEach(td => {
-                const text = getText(td);
-                if (text.indexOf('0.00 cu yd') !== -1 || text === '0.00') {
-                    td.textContent = withWaste.toFixed(2) + ' cu yd';
-                    td.style.fontWeight = 'bold';
-                    td.style.color = '#2196F3';
-                }
-                if (
-                    text.indexOf('$0.00') !== -1 &&
-                    td.previousElementSibling &&
-                    textContains(td.previousElementSibling, 'Total')
-                ) {
-                    td.textContent = '$' + totalCost.toFixed(2);
-                    td.style.fontWeight = 'bold';
-                    td.style.color = '#4CAF50';
-                }
-            });
-            
-            // Show formula
-            showFormula('concrete', { length, width, thickness, result: withWaste, cost: totalCost });
-        }
-    }
-    
-    // Attach listeners with multiple event types
-    [lengthInput, widthInput, thicknessInput].forEach(input => {
-        if (input) {
-            input.addEventListener('input', calculateConcrete);
-            input.addEventListener('change', calculateConcrete);
-            input.addEventListener('keyup', calculateConcrete);
-            input.addEventListener('blur', calculateConcrete);
-        }
-    });
-    
-    console.log('Concrete calculator initialized with listeners');
-}
-
-function initializeFramingCalculator() {
-    console.log('Initializing framing calculator...');
-    
-    const wallLengthInput = document.querySelector(
-        '.framing-calculator input[placeholder*="20"], input[name="wallLength"], input[placeholder*="Length"], .framing input[type="number"]:first-of-type'
-    );
-    const wallHeightInput = document.querySelector(
-        '.framing-calculator input[placeholder*="8"], input[name="wallHeight"], input[placeholder*="Height"], .framing input[type="number"]:nth-of-type(2)'
-    );
-    
-    if (!wallLengthInput || !wallHeightInput) {
-        console.log('Framing calculator not on this page');
-        return;
-    }
-    
-    function calculateFraming() {
-        const length = parseFloat(wallLengthInput.value) || 0;
-        const height = parseFloat(wallHeightInput.value) || 0;
-        
-        console.log('Calculating framing:', { length, height });
-        
-        if (length > 0 && height > 0) {
-            // Calculate studs needed (16" on center)
-            const studsNeeded = Math.ceil((length * 12) / 16) + 1;
-            const plates = Math.ceil(length / 8) * 2; // Top and bottom plates
-            const totalCost = (studsNeeded * 8 + plates * 12) * 1.2; // Estimated cost with markup
-            
-            // Update displays
-            const studDisplay = document.querySelector('.stud-count, .studs-needed, [data-studs]');
-            if (studDisplay) {
-                studDisplay.textContent = studsNeeded + ' studs';
-            }
-            
-            // Update result cells
-            safeQueryAll(document, 'td').forEach(td => {
-                if (td.textContent.includes('0 studs') || (td.textContent === '0' && td.previousElementSibling && td.previousElementSibling.textContent.includes('Stud'))) {
-                    td.textContent = studsNeeded + ' studs';
-                    td.style.fontWeight = 'bold';
-                    td.style.color = '#2196F3';
-                }
-            });
-            
-            showFormula('framing', { length, height, studs: studsNeeded, plates, cost: totalCost });
-        }
-    }
-    
-    [wallLengthInput, wallHeightInput].forEach(input => {
-        if (input) {
-            input.addEventListener('input', calculateFraming);
-            input.addEventListener('change', calculateFraming);
-            input.addEventListener('keyup', calculateFraming);
-        }
-    });
-    
-    console.log('Framing calculator initialized');
-}
-
-function initializePaintCalculator() {
-    console.log('Initializing paint calculator...');
-    
-    const areaInput = document.querySelector(
-        'input[placeholder*="400"], input[name="area"], input[placeholder*="Area"], .paint input[type="number"]'
-    );
-    
-    if (!areaInput) {
-        console.log('Paint calculator not found');
-        return;
-    }
-    
-    function calculatePaint() {
-        const area = parseFloat(areaInput.value) || 0;
-        
-        if (area > 0) {
-            const gallons = Math.ceil(area / 350); // 350 sq ft per gallon coverage
-            const cost = gallons * 45; // $45 per gallon
-            
-            // Update displays
-            safeQueryAll(document, 'td').forEach(td => {
-                if (td.textContent.includes('0 gal') || (td.textContent === '0' && td.previousElementSibling && td.previousElementSibling.textContent.includes('Paint'))) {
-                    td.textContent = gallons + ' gallons';
-                    td.style.fontWeight = 'bold';
-                    td.style.color = '#2196F3';
-                }
-            });
-            
-            showFormula('paint', { area, gallons, cost });
-        }
-    }
-    
-    areaInput.addEventListener('input', calculatePaint);
-    areaInput.addEventListener('change', calculatePaint);
-    console.log('Paint calculator initialized');
-}
-
-// Placeholder functions for other calculators
-function initializeRoofingCalculator() {
-    console.log('Roofing calculator placeholder');
-}
-
-function initializeElectricalCalculator() {
-    console.log('Electrical calculator placeholder');
-}
-
-function initializeDrywallCalculator() {
-    console.log('Drywall calculator placeholder');
-}
-
-function initializeFlooringCalculator() {
-    console.log('Flooring calculator placeholder');
-}
-
-function initializePlumbingCalculator() {
-    console.log('Plumbing calculator placeholder');
-}
-
-function initializeHVACCalculator() {
-    console.log('HVAC calculator placeholder');
-}
-
-function initializeInsulationCalculator() {
-    console.log('Insulation calculator placeholder');
-}
-
-function showFormula(type, values) {
-    // Create formula display if it doesn't exist
-    let formulaDiv = document.querySelector('.formula-display');
-    if (!formulaDiv) {
-        formulaDiv = document.createElement('div');
-        formulaDiv.className = 'formula-display';
-        formulaDiv.style.cssText = `
-            margin: 20px 0; 
-            padding: 15px; 
-            background: #f0f8ff; 
-            border-left: 4px solid #2196F3; 
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-        `;
-        
-        const resultsSection = document.querySelector('.project-results, .materials-needed, .calculator');
-        if (resultsSection) {
-            resultsSection.appendChild(formulaDiv);
-        } else {
-            document.body.appendChild(formulaDiv);
-        }
-    }
-    
-    let formulaHTML = '';
-    
-    if (type === 'concrete') {
-        formulaHTML = `
-            <h4 style="color: #1976D2; margin-top: 0;">🧮 Concrete Calculation Formula</h4>
-            <div style="background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
-                <strong>Volume:</strong> ${values.length}ft × ${values.width}ft × ${values.thickness}in ÷ 12 ÷ 27<br>
-                <strong>With Waste (10%):</strong> ${(values.length * values.width * values.thickness / 12 / 27).toFixed(2)} × 1.1 = <span style="color: #2196F3; font-weight: bold;">${values.result.toFixed(2)} cubic yards</span><br>
-                <strong>Estimated Cost:</strong> ${values.result.toFixed(2)} × $150/yd³ = <span style="color: #4CAF50; font-weight: bold;">$${values.cost.toFixed(2)}</span>
-            </div>
-        `;
-    } else if (type === 'framing') {
-        formulaHTML = `
-            <h4 style="color: #1976D2; margin-top: 0;">🔨 Framing Calculation Formula</h4>
-            <div style="background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
-                <strong>Studs Needed:</strong> (${values.length}ft × 12in) ÷ 16in OC + 1 = <span style="color: #2196F3; font-weight: bold;">${values.studs} studs</span><br>
-                <strong>Plates:</strong> ${values.plates} pieces (top & bottom)<br>
-                <strong>Estimated Cost:</strong> <span style="color: #4CAF50; font-weight: bold;">$${values.cost.toFixed(2)}</span>
-            </div>
-        `;
-    } else if (type === 'paint') {
-        formulaHTML = `
-            <h4 style="color: #1976D2; margin-top: 0;">🎨 Paint Calculation Formula</h4>
-            <div style="background: white; padding: 10px; border-radius: 3px; margin: 10px 0;">
-                <strong>Coverage:</strong> ${values.area} sq ft ÷ 350 sq ft/gal = <span style="color: #2196F3; font-weight: bold;">${values.gallons} gallons</span><br>
-                <strong>Estimated Cost:</strong> ${values.gallons} × $45/gal = <span style="color: #4CAF50; font-weight: bold;">$${values.cost.toFixed(2)}</span>
-            </div>
-        `;
-    }
-    
-    formulaDiv.innerHTML = formulaHTML;
-}
-
-function addExportButtons() {
-    const resultsContainers = document.querySelectorAll('.project-results, .materials-needed, .calculator');
-    
-    resultsContainers.forEach(container => {
-        if (container.querySelector('.export-buttons')) return;
-        
-        const exportDiv = document.createElement('div');
-        exportDiv.className = 'export-buttons';
-        exportDiv.style.cssText = 'margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;';
-        exportDiv.innerHTML = `
-            <button onclick="copyResults()" style="padding: 8px 16px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                📋 Copy Results
-            </button>
-            <button onclick="exportCSV()" style="padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                📊 Export CSV
-            </button>
-            <button onclick="exportPDF()" style="padding: 8px 16px; background: #FF9800; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                📄 Export PDF
-            </button>
-            <button onclick="printResults()" style="padding: 8px 16px; background: #9C27B0; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                🖨️ Print
-            </button>
-        `;
-        container.appendChild(exportDiv);
-    });
-}
-
-// Export functions
-window.copyResults = function() {
-    const results = document.querySelector('.project-results, .materials-needed, .calculator');
-    const resultsText = results ? results.innerText : 'No results to copy';
-    
-    navigator.clipboard.writeText(resultsText).then(() => {
-        showNotification('✅ Results copied to clipboard!', 'success');
-    }).catch(() => {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = resultsText;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showNotification('✅ Results copied to clipboard!', 'success');
-    });
+  }
 };
 
-window.exportCSV = function() {
-    const results = [];
-    const tables = safeQueryAll(document, '.project-results table, .materials-needed table');
-    
-    if (tables.length === 0) {
-        // If no tables, create CSV from visible data
-        results.push('Item,Value');
-        safeQueryAll(document, 'td').forEach(td => {
-            if (td.textContent && !td.textContent.includes('0.00') && td.textContent.trim() !== '') {
-                const label = td.previousElementSibling ? td.previousElementSibling.textContent : 'Value';
-                results.push(`"${label}","${td.textContent}"`);
-            }
-        });
-    } else {
-        tables.forEach(table => {
-            const rows = safeQueryAll(table, 'tr');
-            rows.forEach(row => {
-                const cells = safeQueryAll(row, 'td, th');
-                if (cells.length > 0) {
-                    const rowData = Array.from(cells).map(cell => `"${cell.textContent.trim()}"`).join(',');
-                    results.push(rowData);
-                }
-            });
-        });
+const parseValue = (form, name) => {
+  const element = form.querySelector(`[name="${name}"]`);
+  if (!element) return 0;
+  const value = Number.parseFloat(element.value);
+  return Number.isFinite(value) ? value : 0;
+};
+
+const gatherInputs = (calculatorId, form) => {
+  if (calculatorId === 'concrete') {
+    return {
+      length: parseValue(form, 'length'),
+      width: parseValue(form, 'width'),
+      thickness: parseValue(form, 'thickness'),
+      waste: parseValue(form, 'waste'),
+      unitSystem: form.querySelector('[name="unit-system"]').value
+    };
+  }
+
+  return {
+    wallLength: parseValue(form, 'wall-length'),
+    wallHeight: parseValue(form, 'wall-height'),
+    studSpacing: parseValue(form, 'stud-spacing'),
+    plates: parseValue(form, 'plates'),
+    unitSystem: form.querySelector('[name="unit-system"]').value
+  };
+};
+
+const renderResults = (calculatorId, result) => {
+  const container = document.querySelector(`[data-results="${calculatorId}"]`);
+  if (!container) return;
+
+  const summaryList = container.querySelector('[data-summary]');
+  const detailsList = container.querySelector('[data-details]');
+  const mathBlock = container.querySelector('[data-math]');
+
+  if (!result.summary.length) {
+    container.classList.add('hidden');
+    summaryList.innerHTML = '';
+    detailsList.innerHTML = '';
+    mathBlock.textContent = result.math;
+    const toggleButton = container.querySelector(`[data-action="show-math"][data-target="${calculatorId}"]`);
+    if (toggleButton) {
+      toggleButton.textContent = 'Show Math';
     }
-    
-    const csvContent = results.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'costflowai-calculation-results.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    showNotification('📊 CSV file downloaded!', 'success');
+    return;
+  }
+
+  const buildRow = ({ label, value }) => `<tr><th scope="row">${label}</th><td>${value}</td></tr>`;
+
+  summaryList.innerHTML = result.summary.map(buildRow).join('');
+  detailsList.innerHTML = result.details.map(buildRow).join('');
+  mathBlock.textContent = result.math;
+  mathBlock.classList.add('hidden');
+  const toggleButton = container.querySelector(`[data-action="show-math"][data-target="${calculatorId}"]`);
+  if (toggleButton) {
+    toggleButton.textContent = 'Show Math';
+  }
+  container.classList.remove('hidden');
 };
 
-window.exportPDF = function() {
-    showNotification('📄 Opening print dialog for PDF export...', 'info');
-    window.print();
+const exportCsv = (calculatorId) => {
+  const container = document.querySelector(`[data-results="${calculatorId}"]`);
+  if (!container || container.classList.contains('hidden')) return;
+
+  const rows = [...container.querySelectorAll('table tr')]
+    .map((row) => [...row.children].map((cell) => `"${cell.textContent.replace(/"/g, '""')}"`).join(','));
+  const csv = ['"Metric","Value"', ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${calculatorId}-summary.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 };
 
-window.printResults = function() {
-    window.print();
+const exportPdf = (calculatorId) => {
+  const container = document.querySelector(`[data-results="${calculatorId}"]`);
+  if (!container || container.classList.contains('hidden')) return;
+
+  const doc = new jsPDF();
+  let cursorY = 760;
+  const addLine = (text, size = 14) => {
+    doc.text(text, 72, cursorY, { size });
+    cursorY -= size * 1.4;
+  };
+
+  addLine(`${calculators[calculatorId].label} Calculator Summary`, 16);
+
+  container.querySelectorAll('table tr').forEach((row) => {
+    const cells = [...row.children].map((cell) => cell.textContent.trim());
+    addLine(`${cells[0]}: ${cells[1]}`, 12);
+  });
+
+  addLine('---', 12);
+  container.querySelector('[data-math]').textContent.split('\n').forEach((line) => addLine(line, 11));
+
+  doc.save(`${calculatorId}-summary.pdf`);
 };
 
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-        color: white;
-        border-radius: 5px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 10000;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        max-width: 300px;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        if (document.body.contains(notification)) {
-            document.body.removeChild(notification);
-        }
-    }, 4000);
-}
+const printResults = (calculatorId) => {
+  const container = document.querySelector(`[data-results="${calculatorId}"]`);
+  if (!container || container.classList.contains('hidden')) return;
 
-// Make functions globally available
-window.initializeAllCalculators = initializeAllCalculators;
-window.initializeCalculators = initializeAllCalculators; // Legacy compatibility
+  const printWindow = window.open('', '_blank', 'noopener,width=600,height=800');
+  if (!printWindow) return;
+  printWindow.document.write(`<!doctype html><title>${calculators[calculatorId].label} Calculator</title>`);
+  printWindow.document.write('<link rel="stylesheet" href="/assets/css/main.css">');
+  printWindow.document.write(container.outerHTML);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
 
-// Debug function
-window.debugCalculators = function() {
-    console.log('=== Calculator Debug Info ===');
-    console.log('Concrete inputs:', {
-        length: document.querySelector('input[placeholder*="30"], input[name="length"], #length'),
-        width: document.querySelector('input[placeholder*="20"], input[name="width"], #width'),
-        thickness: document.querySelector('input[placeholder*="4"], input[name="thickness"], #thickness')
+const toggleMath = (calculatorId) => {
+  const container = document.querySelector(`[data-results="${calculatorId}"]`);
+  if (!container) return;
+  const mathBlock = container.querySelector('[data-math]');
+  mathBlock.classList.toggle('hidden');
+  const toggleButton = container.querySelector(`[data-action="show-math"][data-target="${calculatorId}"]`);
+  if (toggleButton) {
+    toggleButton.textContent = mathBlock.classList.contains('hidden') ? 'Show Math' : 'Hide Math';
+  }
+};
+
+const compute = (calculatorId) => {
+  const form = document.querySelector(`[data-calculator="${calculatorId}"]`);
+  if (!form) return;
+  const inputs = gatherInputs(calculatorId, form);
+  const result = calculators[calculatorId].compute(inputs);
+  renderResults(calculatorId, result);
+};
+
+window.compute = compute;
+
+const attachHandlers = () => {
+  document.querySelectorAll('[data-calculator]').forEach((form) => {
+    const calculatorId = form.getAttribute('data-calculator');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      compute(calculatorId);
     });
-    console.log('All number inputs:', document.querySelectorAll('input[type="number"]'));
-    console.log('All tables:', document.querySelectorAll('table'));
-    console.log('Results containers:', document.querySelectorAll('.project-results, .materials-needed'));
+  });
+
+  document.querySelectorAll('[data-action="calculate"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const calculatorId = button.getAttribute('data-target');
+      compute(calculatorId);
+    });
+  });
+
+  document.querySelectorAll('[data-action="show-math"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      toggleMath(button.getAttribute('data-target'));
+    });
+  });
+
+  document.querySelectorAll('[data-action="export-csv"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      exportCsv(button.getAttribute('data-target'));
+    });
+  });
+
+  document.querySelectorAll('[data-action="export-pdf"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      exportPdf(button.getAttribute('data-target'));
+    });
+  });
+
+  document.querySelectorAll('[data-action="print"]').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      printResults(button.getAttribute('data-target'));
+    });
+  });
 };
 
-console.log('🚀 CostFlowAI Calculator Engine loaded successfully');
-console.log('Available functions: initializeAllCalculators, copyResults, exportCSV, exportPDF, debugCalculators');
+window.addEventListener('DOMContentLoaded', attachHandlers);
+
+export { compute };
