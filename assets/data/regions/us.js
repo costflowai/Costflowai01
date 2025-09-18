@@ -1,0 +1,10 @@
+export const regions = [
+  { id: 'national', name: 'National Baseline', factor: 1.0 },
+  { id: 'west', name: 'West Coast', factor: 1.12 },
+  { id: 'mountain', name: 'Mountain States', factor: 1.04 },
+  { id: 'midwest', name: 'Midwest', factor: 0.96 },
+  { id: 'south', name: 'Southeast', factor: 0.94 },
+  { id: 'northeast', name: 'Northeast Corridor', factor: 1.08 }
+];
+
+export default { regions };
