@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contingency & Fees Calculator | CostFlowAI</title>
+    <meta name="description" content="Model markup, contingency, and fee structures across program and trade budgets." />
+    <link rel="canonical" href="https://costflow.ai/calculators/contingency-fees.html" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/layout.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/calculators.css" />
+    <link rel="stylesheet" href="/assets/css/print.css" media="print" />
+  </head>
+  <body>
+    <div class="banner" role="status">
+      <span aria-hidden="true">⚠️</span>
+      <span><strong>CostFlowAI</strong> is under active development—thanks for your patience.</span>
+    </div>
+    <div class="site">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <a href="/" class="site-logo"><strong>CostFlowAI</strong></a>
+          <nav aria-label="Primary">
+            <a href="/calculators/index.html" aria-current="page">Calculators</a>
+            <a href="/blog/index.html">Insights</a>
+          </nav>
+        </div>
+      </header>
+      <main class="site-main">
+        <div class="site-main__inner">
+          <section class="calculator-shell" data-calculator-shell data-calculator-id="contingency-fees">
+            <form class="calculator-form" novalidate>
+              <h1>Contingency & Fees</h1>
+              <p class="input-group__help" data-stub-description>Model markup, contingency, and fee structures across program and trade budgets.</p>
+              <div class="error-summary" role="alert" hidden></div>
+
+              <div class="input-group">
+                <label for="area_sqft">Quantity (sq ft)</label>
+                <input id="area_sqft" name="area_sqft" type="number" step="0.1" min="1" required />
+                <p class="input-group__help" data-error-for="area_sqft"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="unit_cost">Unit Cost ($)</label>
+                <input id="unit_cost" name="unit_cost" type="number" step="0.01" min="0" required />
+                <p class="input-group__help" data-error-for="unit_cost"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="region">Region</label>
+                <select id="region" name="region">
+                  <option value="national">National Baseline</option>
+                  <option value="west">West Coast</option>
+                  <option value="mountain">Mountain States</option>
+                  <option value="midwest">Midwest</option>
+                  <option value="south">Southeast</option>
+                  <option value="northeast">Northeast Corridor</option>
+                </select>
+                <p class="input-group__help" data-error-for="region"></p>
+              </div>
+
+              <button class="button" type="submit" data-action="calculate">Calculate</button>
+            </form>
+            <section class="calculator-results" aria-live="polite">
+              <div class="calculator-results__header">
+                <h2>Results</h2>
+                <div class="badge">ROM only</div>
+              </div>
+              <div class="results-live-region" aria-live="polite"></div>
+              <div data-result="summary"></div>
+              <div data-result="table"></div>
+              <section aria-labelledby="assumptions-heading">
+                <h3 id="assumptions-heading">Assumptions</h3>
+                <div data-result="assumptions"></div>
+              </section>
+              <div class="accordion">
+                <button type="button" class="accordion__button" data-action="show-math" aria-expanded="false">
+                  Show Math
+                  <span aria-hidden="true">▾</span>
+                </button>
+                <div class="accordion__content" data-panel="show-math" hidden></div>
+              </div>
+              <div class="export-actions">
+                <button type="button" class="button" data-export="csv">Export CSV</button>
+                <button type="button" class="button" data-export="xlsx">Export XLSX</button>
+                <button type="button" class="button" data-export="pdf">Export PDF</button>
+                <button type="button" class="button" data-export="print">Print</button>
+              </div>
+              <p class="disclaimer">ROM only; verify with licensed professionals.</p>
+            </section>
+          </section>
+        </div>
+      </main>
+      <footer class="site-footer">
+        <div class="site-footer__inner">
+          <p>&copy; 2025 CostFlowAI. Preconstruction intelligence for enterprise teams.</p>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/assets/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <link rel="canonical" href="{{canonical}}" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/layout.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/calculators.css" />
+    <link rel="stylesheet" href="/assets/css/print.css" media="print" />
+    <script type="application/ld+json">{{jsonld}}</script>
+  </head>
+  <body data-page="{{page}}">
+    <div class="banner" role="status">
+      <span aria-hidden="true">⚠️</span>
+      <span><strong>CostFlowAI</strong> is under active development—thanks for your patience.</span>
+    </div>
+    <div class="site">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <a href="/" class="site-logo"><strong>CostFlowAI</strong></a>
+          <nav aria-label="Primary">
+            <a href="/calculators/index.html">Calculators</a>
+            <a href="/blog/index.html">Insights</a>
+          </nav>
+        </div>
+      </header>
+      <main class="site-main">
+        <div class="site-main__inner {{mainModifier}}">
+          {{content}}
+        </div>
+      </main>
+      <footer class="site-footer">
+        <div class="site-footer__inner">
+          <p>&copy; {{year}} CostFlowAI. Preconstruction intelligence for enterprise teams.</p>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/assets/js/app.js"></script>
+  </body>
+</html>

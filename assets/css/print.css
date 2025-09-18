@@ -1,0 +1,30 @@
+@media print {
+  body {
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .site-header,
+  .site-footer,
+  .banner,
+  .export-actions {
+    display: none !important;
+  }
+
+  .calculator-form {
+    border: none;
+    box-shadow: none;
+  }
+
+  .calculator-results {
+    border: 1px solid #0f172a;
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .show-math {
+    white-space: pre-wrap;
+    font-family: 'JetBrains Mono', monospace;
+    color: #0f172a;
+  }
+}
