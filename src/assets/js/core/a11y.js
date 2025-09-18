@@ -1,40 +1,53 @@
-/**
- * Accessibility helpers for focus management and announcements.
- */
+const focusElement = (el) => {
+  if (!el) return;
+  requestAnimationFrame(() => {
+    el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: false });
+    el.addEventListener(
+      'blur',
+      () => {
+        el.removeAttribute('tabindex');
+      },
+      { once: true }
+    );
+  });
+};
 
-let liveRegion;
-
-function ensureLiveRegion() {
-  if (typeof document === 'undefined') return null;
-  if (liveRegion) return liveRegion;
-  liveRegion = document.createElement('div');
-  liveRegion.setAttribute('aria-live', 'polite');
-  liveRegion.setAttribute('role', 'status');
-  liveRegion.className = 'sr-only';
-  document.body.appendChild(liveRegion);
-  return liveRegion;
-}
-
-export function announce(message) {
-  if (typeof document === 'undefined') return;
-  const region = ensureLiveRegion();
+export const announce = (region, message) => {
   if (!region) return;
   region.textContent = '';
-  window.requestAnimationFrame(() => {
+  region.setAttribute('aria-busy', 'true');
+  requestAnimationFrame(() => {
     region.textContent = message;
+    region.setAttribute('aria-busy', 'false');
   });
-}
+};
 
-export function focusErrorSummary(summaryElement) {
-  if (!summaryElement) return;
-  summaryElement.setAttribute('tabindex', '-1');
-  summaryElement.focus();
-  summaryElement.addEventListener('blur', () => {
-    summaryElement.removeAttribute('tabindex');
-  }, { once: true });
-}
+export const trapFocus = (container) => {
+  const focusable = container?.querySelectorAll(
+    'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (!focusable?.length) return () => {};
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const handler = (event) => {
+    if (event.key !== 'Tab') return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  container.addEventListener('keydown', handler);
+  return () => container.removeEventListener('keydown', handler);
+};
+
+export const setInitialFocus = (element) => focusElement(element);
 
 export default {
   announce,
-  focusErrorSummary
+  trapFocus,
+  setInitialFocus
 };

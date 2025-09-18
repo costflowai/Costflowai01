@@ -1,0 +1,380 @@
+:root {
+  color-scheme: light;
+  --brand-ink: #0f172a;
+  --brand-accent: #f97316;
+  --surface: #ffffff;
+  --border: #cbd5e1;
+  --muted: #475569;
+  --success: #0f766e;
+  --error: #b91c1c;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: var(--brand-ink);
+  line-height: 1.6;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  background: var(--brand-accent);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+  outline: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+a {
+  color: inherit;
+}
+
+.site-banner {
+  background: var(--brand-accent);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-weight: 600;
+}
+
+.site-banner button {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  cursor: pointer;
+}
+
+.site-banner button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.page-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+header.hero {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+}
+
+header.hero h1 {
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  margin-bottom: 0.75rem;
+}
+
+header.hero p {
+  font-size: 1.05rem;
+  max-width: 50ch;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.calculator-card {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+  gap: 2rem;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+form.calculator-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+}
+
+.input-group input:focus-visible,
+.input-group select:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--brand-accent);
+  outline-offset: 3px;
+}
+
+.input-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.input-group.has-error label {
+  color: var(--error);
+}
+
+.input-group.has-error input,
+.input-group.has-error select {
+  border-color: var(--error);
+}
+
+.input-error {
+  color: var(--error);
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+button.primary {
+  background: var(--brand-accent);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+button.secondary,
+button.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--brand-ink);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+button.primary[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stack-checkboxes {
+  border: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.35rem;
+}
+
+.stack-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.results-panel {
+  display: grid;
+  gap: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: #f8fafc;
+}
+
+.results-panel[hidden] {
+  display: none;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--brand-accent);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.quantities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.quantities dt {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.quantities dd {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.cost-breakdown {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cost-breakdown caption {
+  text-align: left;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+}
+
+.cost-breakdown th,
+.cost-breakdown td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cost-breakdown .numeric {
+  text-align: right;
+}
+
+.cost-breakdown tfoot th,
+.cost-breakdown tfoot td {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--brand-accent);
+}
+
+details {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  background: #fff7ed;
+}
+
+.show-math pre {
+  white-space: pre-wrap;
+  font-family: 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.error-summary {
+  border: 2px solid var(--error);
+  background: #fef2f2;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.error-summary h2 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 960px) {
+  .calculator-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .site-banner,
+  header.hero,
+  .actions,
+  .export-actions,
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  .calculator-card {
+    box-shadow: none;
+    border: none;
+  }
+
+  .results-panel {
+    border: none;
+    background: transparent;
+  }
+}

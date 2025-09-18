@@ -1,21 +1,39 @@
 {
-  "concrete": {
-    "material": 140,
-    "labor": 48,
-    "reinforcementPerSqFt": 0.85,
-    "pumpFlatFee": 175
+  "materials": {
+    "concrete": {
+      "unit": "yd³",
+      "unitPrice": 145,
+      "notes": "Ready-mix 3500 PSI"
+    },
+    "rebar": {
+      "#4": {
+        "unit": "ft",
+        "unitPrice": 0.72,
+        "notes": "Grade 60 steel"
+      }
+    }
   },
-  "framing": {
-    "stud8ft": 4.25,
-    "stud10ft": 5.4,
-    "sheathingPerSqFt": 1.6,
-    "hardwarePerSqFt": 0.55,
-    "laborPerSqFt": 3.25
+  "labor": {
+    "unit": "hr",
+    "rate": 68,
+    "crewSize": 4,
+    "productivityYd3PerHr": 3,
+    "notes": "Finishing crew with tools"
   },
-  "paint": {
-    "gallonPremium": 48,
-    "gallonStandard": 32,
-    "primerGallon": 24,
-    "laborPerSqFt": 1.35
+  "equipment": {
+    "pumpFlat": 425,
+    "notes": "Line pump and setup"
+  },
+  "financial": {
+    "markupRate": 0.1,
+    "taxRate": 0.0825
+  },
+  "regions": {
+    "National": 1,
+    "Northeast": 1.08,
+    "Southeast": 0.96,
+    "Midwest": 0.94,
+    "Mountain": 1.05,
+    "Pacific": 1.12
   }
 }

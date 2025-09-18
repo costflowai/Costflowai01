@@ -1,107 +1,84 @@
-/**
- * Export utilities: CSV, PDF, Print. These helpers avoid third-party
- * dependencies and operate with progressive enhancement – they no-op during
- * server-side rendering or unit tests.
- */
+import { jsPDF } from '../../vendor/jspdf/jspdf.esm.js';
+import * as SheetJS from '../../vendor/xlsx/xlsx.mjs';
 
-function guardWindow(action) {
-  if (typeof window === 'undefined') return null;
-  return action(window);
-}
+const safeFilename = (name, extension) =>
+  `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'estimate'}.${extension}`;
 
-export function toCSV(calculation) {
-  if (!calculation) return '';
-  const rows = [['Field', 'Value']];
-  Object.entries(calculation.inputs || {}).forEach(([key, value]) => {
-    rows.push([`Input: ${key}`, value]);
+const buildRowsFromEntries = (entries) =>
+  entries.map(([label, value]) => [label, typeof value === 'number' ? value.toString() : value]);
+
+export const toCSV = ({ title, entries }) => {
+  const rows = buildRowsFromEntries(entries);
+  const csv = rows.map((row) => row.map((value) => `"${String(value ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+  return csv;
+};
+
+export const downloadCSV = (payload) => {
+  const csv = toCSV(payload);
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = safeFilename(payload.title, 'csv');
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+export const downloadXLSX = (payload) => {
+  const rows = buildRowsFromEntries(payload.entries);
+  const workbook = SheetJS.utils.book_new();
+  const sheet = SheetJS.utils.aoa_to_sheet([['Field', 'Value'], ...rows]);
+  SheetJS.utils.book_append_sheet(workbook, sheet, 'Estimate');
+  const arrayBuffer = SheetJS.write(workbook, { type: 'array' });
+  const blob = new Blob([arrayBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   });
-  Object.entries(calculation.results || {}).forEach(([key, value]) => {
-    rows.push([`Result: ${key}`, value]);
-  });
-  return rows.map(row => row.map(String).map(item => `"${item.replace(/"/g, '""')}"`).join(',')).join('\n');
-}
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = safeFilename(payload.title, 'xlsx');
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
-export function downloadCSV(calculation) {
-  return guardWindow(() => {
-    const csv = toCSV(calculation);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${calculation?.type || 'calculator'}-results.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  });
-}
+const formatLine = ([label, value]) => `${label}: ${value}`;
 
-function buildPrintableHtml(calculation) {
-  const resultRows = Object.entries(calculation.results || {}).map(([key, value]) => {
-    return `<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ccc;">${key}</th><td style="padding:8px;border-bottom:1px solid #ccc;">${value}</td></tr>`;
-  }).join('');
-  const inputRows = Object.entries(calculation.inputs || {}).map(([key, value]) => {
-    return `<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #eee;">${key}</th><td style="padding:8px;border-bottom:1px solid #eee;">${value}</td></tr>`;
-  }).join('');
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${calculation.title || 'Calculator Results'}</title></head><body style="font-family:system-ui,sans-serif;padding:32px;max-width:720px;margin:0 auto;">
-    <h1>${calculation.title || 'Calculator Results'}</h1>
-    <p><strong>Generated:</strong> ${new Date(calculation.timestamp || Date.now()).toLocaleString()}</p>
-    <h2>Inputs</h2>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">${inputRows}</table>
-    <h2>Results</h2>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">${resultRows}</table>
-    <p style="font-size:0.85rem;color:#555;">ROM estimate only. Verify with a licensed contractor before purchasing materials.</p>
-  </body></html>`;
-}
-
-export function downloadPDF(calculation) {
-  return guardWindow(() => {
-    const printable = buildPrintableHtml(calculation);
-    const reportWindow = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
-    if (!reportWindow) return;
-    reportWindow.document.write(printable);
-    reportWindow.document.close();
-    reportWindow.focus();
-    reportWindow.print();
+export const downloadPDF = ({ title, subtitle, entries, notes }) => {
+  const doc = new jsPDF();
+  let cursor = 60;
+  doc.setFontSize(20);
+  doc.text(title, 40, cursor);
+  cursor += 16;
+  doc.setFontSize(12);
+  doc.text(subtitle ?? 'Concrete estimate generated by CostFlowAI', 40, cursor);
+  cursor += 20;
+  doc.line(40, cursor, 560, cursor);
+  cursor += 20;
+  entries.forEach((entry) => {
+    doc.text(formatLine(entry), 40, cursor);
+    cursor += 16;
+    if (cursor > 700) {
+      cursor = 60;
+    }
   });
-}
-
-export function triggerPrint(calculation) {
-  return guardWindow(() => {
-    const printable = buildPrintableHtml(calculation);
-    const reportWindow = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
-    if (!reportWindow) return;
-    reportWindow.document.write(printable);
-    reportWindow.document.close();
-    reportWindow.focus();
+  cursor += 10;
+  doc.text('Assumptions & Notes', 40, cursor);
+  cursor += 14;
+  notes?.forEach((note) => {
+    doc.text(`• ${note}`, 48, cursor);
+    cursor += 14;
   });
-}
+  doc.save(safeFilename(title, 'pdf'));
+};
 
-export function copySummary(calculation) {
-  return guardWindow(() => {
-    const textLines = [`${calculation.title}`, ''];
-    Object.entries(calculation.results || {}).forEach(([key, value]) => {
-      textLines.push(`${key}: ${value}`);
-    });
-    const text = textLines.join('\n');
-    navigator.clipboard?.writeText(text).catch(() => {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', 'true');
-      textarea.style.position = 'absolute';
-      textarea.style.left = '-9999px';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-    });
-  });
-}
+export const triggerPrint = () => {
+  window.print();
+};
 
 export default {
   toCSV,
   downloadCSV,
+  downloadXLSX,
   downloadPDF,
-  triggerPrint,
-  copySummary
+  triggerPrint
 };

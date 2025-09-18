@@ -14,7 +14,7 @@
     "lint": "echo 'Lint: All JavaScript files validated'",
     "lint:fix": "echo 'Lint: All JavaScript files validated'",
     "lint:accessibility": "echo 'Accessibility linting: Install @axe-core/cli to run'",
-    "build": "echo 'Build: Static site ready'",
+    "build": "node ./scripts/inject-nonce.mjs",
     "prepare": "echo 'Prepare: Static site ready'",
     "dev": "netlify dev",
     "deploy": "netlify deploy --prod --dir .",
