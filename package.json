@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "CostFlowAI Professional Construction Estimator Widget",
   "main": "index.html",
+  "type": "module",
   "scripts": {
-    "test": "echo 'Tests: All JavaScript files validated'",
+    "test": "node ./scripts/run-tests.mjs",
     "test:jest": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

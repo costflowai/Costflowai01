@@ -1,268 +1,309 @@
-/**
- * Calculator Runner - Wires calculators to DOM and handles updates
- */
+import { compute, explain, getCalculator } from './registry.js';
+import { downloadCSV, downloadPDF, triggerPrint, copySummary } from '../core/export.js';
+import { announce, focusErrorSummary } from '../core/a11y.js';
+import { recordTelemetry } from '../core/telemetry.js';
+import { publish } from '../core/calcBus.js';
 
-import { compute, getFormula } from './registry.js';
-import { copyText, downloadCSV, downloadPDF } from '../utils/exports.js';
+const STORAGE_KEY = 'costflowai.prefs';
 
-// Regional pricing options
-export const REGIONS = {
-  'US_DEFAULT': 'National Average',
-  'NC': 'North Carolina',
-  'TX': 'Texas', 
-  'CA': 'California',
-  'NY': 'New York',
-  'FL': 'Florida',
-  'Midwest': 'Midwest Region',
-  'West Coast': 'West Coast'
-};
+function loadPrefs() {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch (error) {
+    console.debug('Unable to load prefs', error);
+    return {};
+  }
+}
 
-/**
- * Wire a calculator to its DOM elements
- */
-export function wireCalculator(calculatorKey, config) {
-  const { 
-    sectionSelector,
-    inputSelectors,
-    outputSelectors, 
-    calculateButton,
-    formulaContainer 
-  } = config;
-  
-  const section = document.querySelector(sectionSelector);
-  if (!section) {
-    console.warn(`Section not found: ${sectionSelector}`);
+function savePrefs(prefs) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  } catch (error) {
+    console.debug('Unable to persist prefs', error);
+  }
+}
+
+const prefs = loadPrefs();
+
+function resolveRegionOverride() {
+  if (typeof window === 'undefined') return prefs.region || 'US_DEFAULT';
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('region')) {
+    const region = params.get('region');
+    prefs.region = region;
+    savePrefs(prefs);
+    return region;
+  }
+  return prefs.region || 'US_DEFAULT';
+}
+
+function createErrorSummary(section) {
+  let summary = section.querySelector('[data-error-summary]');
+  if (!summary) {
+    summary = document.createElement('div');
+    summary.setAttribute('data-error-summary', 'true');
+    summary.setAttribute('role', 'alert');
+    summary.className = 'calc-error-summary';
+    summary.hidden = true;
+    section.prepend(summary);
+  }
+  return summary;
+}
+
+function renderErrors(section, inputs, errors) {
+  const summary = createErrorSummary(section);
+  if (!errors || Object.keys(errors).length === 0) {
+    summary.hidden = true;
+    summary.innerHTML = '';
+    Object.values(inputs).forEach(input => {
+      const field = input.closest('.input-group') || input.parentElement;
+      field?.classList.remove('has-error');
+      const message = field?.querySelector('.input-error');
+      if (message) message.remove();
+    });
     return;
   }
-  
-  // Find input elements
-  const inputs = {};
-  Object.entries(inputSelectors).forEach(([key, selector]) => {
-    const element = section.querySelector(selector);
-    if (element) {
-      inputs[key] = element;
-    } else {
-      console.warn(`Input not found: ${selector} for ${key}`);
-    }
-  });
-  
-  // Find output elements
-  const outputs = {};
-  Object.entries(outputSelectors).forEach(([key, selector]) => {
-    const element = section.querySelector(selector);
-    if (element) {
-      outputs[key] = element;
-    } else {
-      console.warn(`Output not found: ${selector} for ${key}`);
-    }
-  });
-  
-  // Read input values safely
-  function readInputs() {
-    const values = {};
-    Object.entries(inputs).forEach(([key, element]) => {
-      if (element.type === 'checkbox') {
-        values[key] = element.checked;
-      } else if (element.type === 'number' || element.type === 'range') {
-        values[key] = parseFloat(element.value) || 0;
-      } else {
-        values[key] = element.value || '';
+
+  const messages = Object.entries(errors).map(([key, message]) => `<li><strong>${key}</strong>: ${message}</li>`);
+  summary.innerHTML = `<h4>We need a quick fix:</h4><ul>${messages.join('')}</ul>`;
+  summary.hidden = false;
+  focusErrorSummary(summary);
+
+  Object.entries(inputs).forEach(([key, input]) => {
+    const field = input.closest('.input-group') || input.parentElement;
+    if (!field) return;
+    const message = errors[key];
+    field.classList.toggle('has-error', Boolean(message));
+    let inline = field.querySelector('.input-error');
+    if (message) {
+      if (!inline) {
+        inline = document.createElement('div');
+        inline.className = 'input-error';
+        inline.setAttribute('role', 'status');
+        field.appendChild(inline);
       }
-    });
-    return values;
+      inline.textContent = message;
+    } else if (inline) {
+      inline.remove();
+    }
+  });
+}
+
+function ensureMathToggle(section, calculatorKey) {
+  let toggle = section.querySelector('[data-action="show-math"]');
+  let panel = section.querySelector('[data-formula-panel]');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.setAttribute('data-formula-panel', 'true');
+    panel.className = 'formula-panel collapse';
+    panel.hidden = true;
+    section.querySelector('.results-section')?.appendChild(panel);
   }
-  
-  // Update output elements
-  function updateOutputs(results) {
-    if (!results) return;
-    
-    Object.entries(outputs).forEach(([key, element]) => {
-      const value = results[key];
-      if (value !== undefined) {
-        if (typeof value === 'number') {
-          // Format numbers appropriately
-          if (key.includes('Cost') || key.includes('Price') || key === 'totalCost') {
-            element.textContent = `$${value.toLocaleString('en-US', { 
-              minimumFractionDigits: 0, 
-              maximumFractionDigits: 0 
-            })}`;
-          } else if (key.includes('Gallons') || key === 'volume' || key === 'yards') {
-            element.textContent = value.toLocaleString('en-US', { 
-              minimumFractionDigits: 2, 
-              maximumFractionDigits: 2 
-            });
-          } else {
-            element.textContent = value.toLocaleString('en-US', { 
-              maximumFractionDigits: 2 
-            });
-          }
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.setAttribute('data-action', 'show-math');
+    toggle.className = 'btn btn-secondary';
+    toggle.textContent = 'Show math';
+    section.querySelector('.results-section .actions')?.appendChild(toggle);
+  }
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    toggle.textContent = expanded ? 'Show math' : 'Hide math';
+    panel.hidden = expanded;
+  });
+  toggle.dataset.calculator = calculatorKey;
+  return panel;
+}
+
+function enableExports(section, calculation) {
+  const csvBtn = section.querySelector('[data-action="export"]');
+  const pdfBtn = section.querySelector('[data-action="pdf"]');
+  const printBtn = section.querySelector('[data-action="print"]');
+  const copyBtn = section.querySelector('[data-action="copy"]');
+  [csvBtn, pdfBtn, printBtn, copyBtn].forEach(button => {
+    if (!button) return;
+    button.disabled = false;
+    button.classList.remove('is-disabled');
+  });
+  csvBtn?.addEventListener('click', () => downloadCSV(calculation), { once: true });
+  pdfBtn?.addEventListener('click', () => downloadPDF(calculation), { once: true });
+  printBtn?.addEventListener('click', () => triggerPrint(calculation), { once: true });
+  copyBtn?.addEventListener('click', () => copySummary(calculation), { once: true });
+}
+
+function readInputs(inputElements) {
+  const values = {};
+  Object.entries(inputElements).forEach(([key, element]) => {
+    if (element.type === 'checkbox') {
+      values[key] = element.checked;
+    } else if (element.type === 'number' || element.type === 'range') {
+      values[key] = element.value ? Number(element.value) : '';
+    } else {
+      values[key] = element.value;
+    }
+  });
+  return values;
+}
+
+function ensureButtonState(button, inputElements) {
+  function update() {
+    const values = readInputs(inputElements);
+    const hasValues = Object.values(values).some(value => value !== '' && value !== null && !Number.isNaN(value));
+    button.disabled = !hasValues;
+    button.classList.toggle('is-disabled', button.disabled);
+  }
+  Object.values(inputElements).forEach(input => {
+    input.addEventListener('input', update);
+    input.addEventListener('change', update);
+  });
+  update();
+}
+
+export function wireCalculator(calculatorKey, config) {
+  const section = document.querySelector(config.sectionSelector);
+  if (!section) return null;
+  const calculator = getCalculator(calculatorKey);
+  if (!calculator) return null;
+
+  const inputElements = {};
+  Object.entries(config.inputSelectors).forEach(([key, selector]) => {
+    const el = section.querySelector(selector);
+    if (el) {
+      inputElements[key] = el;
+      if (prefs[key] != null) {
+        if (el.type === 'checkbox') {
+          el.checked = Boolean(prefs[key]);
         } else {
-          element.textContent = value;
+          el.value = prefs[key];
         }
       }
-    });
-  }
-  
-  // Perform calculation
-  function calculate() {
-    try {
-      const inputValues = readInputs();
-      const results = compute(calculatorKey, inputValues);
-      
-      if (results) {
-        updateOutputs(results);
-        
-        // Store last calculation for exports
-        window.lastCalculation = {
-          type: calculatorKey,
-          title: `${calculatorKey.charAt(0).toUpperCase() + calculatorKey.slice(1)} Calculator Results`,
-          inputs: inputValues,
-          results: results,
-          timestamp: new Date().toISOString()
-        };
-        
-        // Enable export buttons
-        enableExportButtons(section);
-        
-        // Show formula if container exists
-        if (formulaContainer) {
-          displayFormula(calculatorKey, formulaContainer);
-        }
-        
-        // Dispatch calculation complete event
-        section.dispatchEvent(new CustomEvent('calculationComplete', {
-          detail: { calculator: calculatorKey, results }
-        }));
-        
-        console.log(`${calculatorKey} calculation completed:`, results);
-      } else {
-        console.error(`Calculation failed for ${calculatorKey}`);
-      }
-    } catch (error) {
-      console.error(`Error in ${calculatorKey} calculation:`, error);
     }
-  }
-  
-  // Bind events
-  Object.values(inputs).forEach(input => {
-    ['input', 'change'].forEach(event => {
-      input.addEventListener(event, calculate);
-    });
   });
-  
-  // Bind calculate button
-  const button = section.querySelector(calculateButton);
-  if (button) {
-    button.addEventListener('click', calculate);
+
+  const outputElements = {};
+  Object.entries(config.outputSelectors).forEach(([key, selector]) => {
+    const el = section.querySelector(selector);
+    if (el) outputElements[key] = el;
+  });
+
+  const calculateButton = section.querySelector(config.calculateButton);
+  if (!calculateButton) return null;
+
+  ensureButtonState(calculateButton, inputElements);
+
+  const regionSelect = inputElements.region || section.querySelector('#region-selector');
+  const defaultRegion = resolveRegionOverride();
+  if (regionSelect && defaultRegion) {
+    regionSelect.value = defaultRegion;
   }
-  
-  // Bind export buttons
-  bindExportButtons(section);
-  
-  // Initial calculation
-  calculate();
-  
+
+  const formulaPanel = ensureMathToggle(section, calculatorKey);
+  const errorSummary = createErrorSummary(section);
+
+  calculateButton.addEventListener('click', event => {
+    event.preventDefault();
+    const values = readInputs(inputElements);
+    if (regionSelect) {
+      prefs.region = regionSelect.value;
+      savePrefs(prefs);
+    }
+
+    const calcResult = compute(calculatorKey, values);
+    if (!calcResult) {
+      announce('Calculation failed');
+      return;
+    }
+    if (calcResult.errors) {
+      renderErrors(section, inputElements, calcResult.errors);
+      return;
+    }
+
+    renderErrors(section, inputElements, null);
+
+    const { results } = calcResult;
+    Object.entries(results).forEach(([key, value]) => {
+      const output = outputElements[key];
+      if (!output) return;
+      if (typeof value === 'number') {
+        output.textContent = key.toLowerCase().includes('cost') || key === 'totalCost'
+          ? `$${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+          : value.toLocaleString(undefined, { maximumFractionDigits: 3 });
+      } else {
+        output.textContent = value;
+      }
+    });
+
+    const summaryEl = section.querySelector('[data-result-summary]');
+    if (summaryEl) summaryEl.textContent = calcResult.summary;
+
+    if (formulaPanel) {
+      const markdown = explain(calculatorKey, calcResult);
+      formulaPanel.innerText = markdown;
+    }
+
+    const calculationPayload = {
+      type: calculatorKey,
+      title: `${calculatorKey} calculator results`,
+      inputs: calcResult.inputs,
+      results: calcResult.results,
+      timestamp: new Date().toISOString()
+    };
+    enableExports(section, calculationPayload);
+
+    recordTelemetry('calculator_compute', {
+      calculator: calculatorKey,
+      fields_count: Object.keys(values).length,
+      compute_ms: 0
+    });
+    publish('calculator:computed', {
+      calculator: calculatorKey,
+      results: calcResult.results
+    });
+
+    announce('Calculation updated');
+    errorSummary.hidden = true;
+  });
+
+  if (regionSelect) {
+    regionSelect.addEventListener('change', () => {
+      prefs.region = regionSelect.value;
+      savePrefs(prefs);
+    });
+  }
+
   return {
     section,
-    inputs,
-    outputs,
-    calculate,
-    readInputs,
-    updateOutputs
+    calculateButton,
+    inputElements,
+    outputElements
   };
 }
 
-/**
- * Bind export button event handlers
- */
-function bindExportButtons(section) {
-  // Copy button
-  const copyBtn = section.querySelector('[data-action="save"]');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', copyText);
-  }
-  
-  // CSV export button
-  const csvBtn = section.querySelector('[data-action="export"]');
-  if (csvBtn) {
-    csvBtn.addEventListener('click', downloadCSV);
-  }
-  
-  // PDF export button  
-  const pdfBtn = section.querySelector('[data-action="print"]');
-  if (pdfBtn) {
-    pdfBtn.addEventListener('click', downloadPDF);
-  }
-  
-  // Email/share button (copy to clipboard)
-  const shareBtn = section.querySelector('[data-action="email"], [data-action="share"]');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', copyText);
-  }
-}
-
-/**
- * Enable export buttons for a section
- */
-function enableExportButtons(section) {
-  const buttons = section.querySelectorAll('[data-action="save"], [data-action="export"], [data-action="share"], [data-action="print"], [data-action="email"]');
-  buttons.forEach(btn => {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-  });
-}
-
-/**
- * Display formula transparency information
- */
-function displayFormula(calculatorKey, container) {
-  const formula = getFormula(calculatorKey);
-  if (!formula) return;
-  
-  const formulaHtml = `
-    <div class="formula-panel">
-      <h4>🧮 ${formula.title}</h4>
-      <div class="formula-expressions">
-        ${formula.expressions.map(expr => `<div class="formula-expr">${expr}</div>`).join('')}
-      </div>
-      <div class="formula-notes">
-        <strong>Notes:</strong>
-        <ul>
-          ${formula.notes.map(note => `<li>${note}</li>`).join('')}
-        </ul>
-      </div>
-      <div class="formula-methodology">
-        <strong>Methodology:</strong> ${formula.methodology}
-      </div>
-    </div>
-  `;
-  
-  container.innerHTML = formulaHtml;
-}
-
-/**
- * Add regional pricing selector to a calculator
- */
-export function addRegionalPricing(section, onRegionChange) {
+export function addRegionalPricing(section, onChange) {
   const regionSelector = section.querySelector('#region-selector');
-  if (!regionSelector) {
-    console.warn('Regional pricing selector not found');
-    return;
+  if (!regionSelector) return;
+  const regions = [
+    { value: 'US_DEFAULT', label: 'National Average' },
+    { value: 'nc', label: 'North Carolina' },
+    { value: 'tx', label: 'Texas' },
+    { value: 'ca', label: 'California' },
+    { value: 'ny', label: 'New York' },
+    { value: 'fl', label: 'Florida' },
+    { value: 'midwest', label: 'Midwest' },
+    { value: 'west-coast', label: 'West Coast' }
+  ];
+  if (!regionSelector.options.length) {
+    regions.forEach(({ value, label }) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      regionSelector.appendChild(option);
+    });
   }
-  
-  // Populate options
-  Object.entries(REGIONS).forEach(([value, label]) => {
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = label;
-    if (value === 'US_DEFAULT') option.selected = true;
-    regionSelector.appendChild(option);
-  });
-  
-  // Bind change event
-  regionSelector.addEventListener('change', () => {
-    if (onRegionChange) {
-      onRegionChange(regionSelector.value);
-    }
-  });
+  regionSelector.value = resolveRegionOverride();
+  regionSelector.addEventListener('change', () => onChange?.(regionSelector.value));
 }

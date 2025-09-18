@@ -4,24 +4,16 @@
 [[headers]]
   for = "/*"
   [headers.values]
+    Cache-Control = "max-age=0, must-revalidate"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self';"
 
 [[headers]]
-  for = "/css/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-
-[[headers]]
-  for = "/assets/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
 
 [[redirects]]
   from = "/calculator/*"

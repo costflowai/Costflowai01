@@ -1,34 +1,43 @@
 /**
- * Calculator Registry - Central registration and dispatch system
+ * Calculator registry responsible for storing calculator implementations.
+ * Each calculator exposes { init?, compute, explain }.
  */
 
-export const register = {};
+const registry = new Map();
 
-export function registerCalculator(key, impl) {
-  register[key] = impl;
-  console.log(`Registered calculator: ${key}`);
+export function registerCalculator(key, implementation) {
+  registry.set(key, implementation);
+}
+
+export function getCalculator(key) {
+  return registry.get(key);
 }
 
 export function compute(key, inputs) {
-  const calculator = register[key];
+  const calculator = getCalculator(key);
   if (!calculator || typeof calculator.compute !== 'function') {
-    console.warn(`Calculator '${key}' not found or missing compute function`);
+    console.warn(`Calculator '${key}' not found`);
     return null;
   }
-  
-  try {
-    return calculator.compute(inputs);
-  } catch (error) {
-    console.error(`Error computing ${key}:`, error);
-    return null;
-  }
+  return calculator.compute(inputs);
 }
 
-export function getFormula(key) {
-  const calculator = register[key];
-  return calculator?.formula || null;
+export function explain(key, state) {
+  const calculator = getCalculator(key);
+  if (!calculator || typeof calculator.explain !== 'function') {
+    return '';
+  }
+  return calculator.explain(state);
 }
 
 export function listCalculators() {
-  return Object.keys(register);
+  return Array.from(registry.keys());
 }
+
+export default {
+  registerCalculator,
+  getCalculator,
+  compute,
+  explain,
+  listCalculators
+};

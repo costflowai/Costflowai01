@@ -1,134 +1,116 @@
-/**
- * Concrete Calculator Module
- * Professional concrete estimation with regional pricing and waste factors
- */
-
 import { registerCalculator } from './registry.js';
+import { inchesToFeet, cubicFeet, cubicFeetToCubicYards, squareFeet, round } from '../core/units.js';
+import { getPricingSync } from '../core/pricing.js';
+import { validate } from '../core/validate.js';
 
-// Waste factors by pour type
-const WASTE_FACTORS = {
-  slab: 1.05,      // 5% waste for slabs
-  footing: 1.08,   // 8% waste for footings  
-  wall: 1.10,      // 10% waste for walls
-  stairs: 1.15,    // 15% waste for stairs
-  drive: 1.07      // 7% waste for driveways
+const POUR_WASTE = {
+  slab: 1.05,
+  footing: 1.08,
+  wall: 1.1,
+  stairs: 1.15,
+  driveway: 1.07
 };
 
-// Regional cost factors
-const REGIONAL_FACTORS = {
-  'US_DEFAULT': 1.0,
-  'NC': 0.95,      // North Carolina - slightly below national average
-  'TX': 0.92,      // Texas - lower cost
-  'CA': 1.35,      // California - significantly higher
-  'NY': 1.25,      // New York - higher cost
-  'FL': 1.02,      // Florida - slightly above average
-  'Midwest': 0.88, 
-  'West Coast': 1.30
-};
-
-// PSI pricing (per cubic yard)
-const PSI_PRICING = {
-  2500: 125,
-  3000: 130,
-  3500: 135,
-  4000: 140,
-  4500: 145,
-  5000: 155
-};
-
-// Rebar costs (per sq ft)
-const REBAR_COSTS = {
+const REBAR_FACTOR = {
   none: 0,
-  light: 0.65,    // #3 @ 18"
-  standard: 0.85, // #4 @ 12"
-  heavy: 1.25     // #5 @ 12"
+  light: 0.45,
+  standard: 1,
+  heavy: 1.35
 };
 
-// Delivery costs
-const DELIVERY_COSTS = {
-  truck: 0,       // Standard ready-mix truck
-  pump: 150,      // Concrete pump surcharge
-  crane: 200      // Crane bucket surcharge
+const DELIVERY_FEE = {
+  truck: 0,
+  pump: 175,
+  crane: 225
 };
 
-function compute(inputs) {
-  // Input validation and defaults
-  const lengthFt = Math.max(0, parseFloat(inputs.lengthFt) || 0);
-  const widthFt = Math.max(0, parseFloat(inputs.widthFt) || 0);
-  const thicknessIn = Math.max(1, parseFloat(inputs.thicknessIn) || 4);
-  const psi = parseInt(inputs.psi) || 3500;
-  const pourType = inputs.pourType || 'slab';
-  const rebarType = inputs.rebarType || 'none';
-  const deliveryType = inputs.deliveryType || 'truck';
-  const region = inputs.region || 'US_DEFAULT';
-  
-  // Basic calculations
-  const thicknessFt = thicknessIn / 12;
-  const volumeCuFt = lengthFt * widthFt * thicknessFt;
-  const volumeCuYd = volumeCuFt / 27;
-  
-  // Apply waste factor
-  const wasteFactor = WASTE_FACTORS[pourType] || 1.1;
-  const adjustedVolume = volumeCuYd * wasteFactor;
-  
-  // Regional pricing adjustments
-  const regionalFactor = REGIONAL_FACTORS[region] || 1.0;
-  const mixPrice = (PSI_PRICING[psi] || 135) * regionalFactor;
-  
-  // Cost calculations
-  const area = lengthFt * widthFt;
-  const materialCost = adjustedVolume * mixPrice;
-  const rebarCost = area * (REBAR_COSTS[rebarType] || 0) * regionalFactor;
-  const deliveryCost = DELIVERY_COSTS[deliveryType] || 0;
-  const laborRate = 45 * regionalFactor; // Base labor rate per yard
-  const laborCost = adjustedVolume * laborRate;
-  
-  const totalCost = materialCost + rebarCost + deliveryCost + laborCost;
-  
-  return {
-    volume: volumeCuFt,
-    yards: adjustedVolume,
-    area: area,
+const schema = {
+  lengthFt: { type: 'number', min: 1, message: 'Length must be at least 1 ft' },
+  widthFt: { type: 'number', min: 1, message: 'Width must be at least 1 ft' },
+  thicknessIn: { type: 'number', min: 2, message: 'Thickness must be at least 2 in' },
+  psi: { type: 'number', min: 2500, max: 6000, message: 'PSI must be 2500-6000' },
+  pourType: { type: 'enum', options: Object.keys(POUR_WASTE) },
+  rebarType: { type: 'enum', options: Object.keys(REBAR_FACTOR) },
+  deliveryType: { type: 'enum', options: Object.keys(DELIVERY_FEE) }
+};
+
+export function compute(rawInputs) {
+  const inputs = {
+    lengthFt: Number(rawInputs.lengthFt),
+    widthFt: Number(rawInputs.widthFt),
+    thicknessIn: Number(rawInputs.thicknessIn),
+    psi: Number(rawInputs.psi) || 3500,
+    pourType: rawInputs.pourType || 'slab',
+    rebarType: rawInputs.rebarType || 'standard',
+    deliveryType: rawInputs.deliveryType || 'truck',
+    region: rawInputs.region || 'US_DEFAULT'
+  };
+
+  const validation = validate(inputs, schema);
+  if (!validation.valid) {
+    return { errors: validation.errors };
+  }
+
+  const thicknessFt = inchesToFeet(inputs.thicknessIn);
+  const areaSqFt = squareFeet(inputs.lengthFt, inputs.widthFt);
+  const volumeCuFt = cubicFeet(inputs.lengthFt, inputs.widthFt, thicknessFt);
+  const volumeCuYd = cubicFeetToCubicYards(volumeCuFt);
+
+  const wasteFactor = POUR_WASTE[inputs.pourType] ?? 1.08;
+  const adjustedYards = volumeCuYd * wasteFactor;
+
+  const { data, multiplier } = getPricingSync('concrete', inputs.region);
+  const materialCost = adjustedYards * (data.material || 135) * multiplier;
+  const laborCost = adjustedYards * (data.labor || 45) * multiplier;
+  const rebarCost = areaSqFt * (data.reinforcementPerSqFt || 0.85) * (REBAR_FACTOR[inputs.rebarType] ?? 1) * multiplier;
+  const deliveryCost = (DELIVERY_FEE[inputs.deliveryType] || 0) * multiplier;
+  const totalCost = materialCost + laborCost + rebarCost + deliveryCost;
+
+  const results = {
+    areaSqFt: round(areaSqFt, 2),
+    baseYards: round(volumeCuYd, 3),
+    adjustedYards: round(adjustedYards, 3),
+    materialCost: round(materialCost, 2),
+    laborCost: round(laborCost, 2),
+    rebarCost: round(rebarCost, 2),
+    deliveryCost: round(deliveryCost, 2),
+    totalCost: round(totalCost, 2),
     wasteFactor: wasteFactor,
-    materialCost: materialCost,
-    rebarCost: rebarCost,
-    deliveryCost: deliveryCost,
-    laborCost: laborCost,
-    totalCost: totalCost,
-    regionalFactor: regionalFactor,
-    mixPrice: mixPrice,
-    
-    // Breakdown for transparency
-    breakdown: {
-      baseConcrete: volumeCuYd,
-      adjustedConcrete: adjustedVolume,
-      pricePerYard: mixPrice,
-      laborPerYard: laborRate
-    }
+    regionalMultiplier: multiplier
+  };
+
+  return {
+    results,
+    inputs,
+    summary: `Estimated ${round(adjustedYards, 2)} cu yd @ $${round(totalCost, 2)} total`
   };
 }
 
-// Formula information for transparency
-const formula = {
-  title: 'Concrete Volume & Cost Calculation',
-  expressions: [
-    'Volume (cu ft) = Length × Width × Thickness',
-    'Volume (cu yd) = Volume (cu ft) ÷ 27',
-    'Adjusted Volume = Volume × Waste Factor',
-    'Material Cost = Adjusted Volume × PSI Price × Regional Factor',
-    'Labor Cost = Adjusted Volume × Labor Rate × Regional Factor'
-  ],
-  notes: [
-    'Thickness converted from inches to feet (÷12)',
-    'Waste factors: Slab 5%, Footing 8%, Wall 10%, Stairs 15%',
-    'Regional factors adjust for local market conditions',
-    'Labor rates based on standard crew productivity',
-    'Does not include excavation, forms, or finishing'
-  ],
-  methodology: 'Calculations follow ACI (American Concrete Institute) guidelines and construction industry best practices.'
+export function explain({ inputs, results }) {
+  if (!inputs || !results) return '';
+  const { lengthFt, widthFt, thicknessIn, pourType, rebarType, deliveryType, region } = inputs;
+  const lines = [
+    `**Project Inputs**`,
+    `- Dimensions: ${lengthFt} ft × ${widthFt} ft × ${thicknessIn}"`,
+    `- Pour type: ${pourType} (waste factor ${POUR_WASTE[pourType] ?? 1.08})`,
+    `- Reinforcement: ${rebarType}`,
+    `- Delivery: ${deliveryType}`,
+    `- Region: ${region}`,
+    '',
+    `**Math**`,
+    `1. Area = ${lengthFt} × ${widthFt} = ${results.areaSqFt} sq ft`,
+    `2. Thickness = ${thicknessIn}" ÷ 12 = ${round(inchesToFeet(thicknessIn), 3)} ft`,
+    `3. Volume = Area × Thickness = ${round(results.areaSqFt * inchesToFeet(thicknessIn), 3)} cu ft`,
+    `4. Cubic yards = Volume ÷ 27 = ${results.baseYards} cu yd`,
+    `5. Waste applied (${POUR_WASTE[pourType] ?? 1.08}×) = ${results.adjustedYards} cu yd`,
+    `6. Regional multiplier ${results.regionalMultiplier} applied to costs`
+  ];
+  return lines.join('\n');
+}
+
+registerCalculator('concrete', { compute, explain });
+
+export default {
+  compute,
+  explain
 };
-
-// Register the calculator
-registerCalculator('concrete', { compute, formula });
-
-export { compute, formula };

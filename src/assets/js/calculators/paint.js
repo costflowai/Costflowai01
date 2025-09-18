@@ -1,130 +1,97 @@
-/**
- * Paint Calculator Module
- * Professional paint quantity and cost estimation
- */
-
 import { registerCalculator } from './registry.js';
+import { round } from '../core/units.js';
+import { getPricingSync } from '../core/pricing.js';
+import { validate } from '../core/validate.js';
 
-// Coverage rates (sq ft per gallon)
-const COVERAGE_RATES = {
-  smooth: 400,      // Smooth surfaces
-  light: 350,       // Light texture
-  medium: 300,      // Medium texture  
-  heavy: 250,       // Heavy texture
-  stucco: 200       // Stucco/rough surfaces
+const TEXTURE_COVERAGE = {
+  smooth: 350,
+  textured: 300,
+  heavy: 250
 };
 
-// Paint quality pricing (per gallon)
-const PAINT_PRICING = {
-  economy: 35,      // Basic latex paint
-  standard: 55,     // Mid-grade paint
-  premium: 75,      // High-quality paint
-  luxury: 95        // Premium brand paint
+const QUALITY_MULTIPLIER = {
+  premium: 1.25,
+  standard: 1,
+  builder: 0.85
 };
 
-// Primer pricing (per gallon)
-const PRIMER_PRICING = {
-  economy: 30,
-  standard: 45,
-  premium: 60,
-  luxury: 75
+const schema = {
+  wallAreaSqFt: { type: 'number', min: 50, message: 'Wall area must be at least 50 sq ft' },
+  coats: { type: 'number', min: 1, max: 4, message: 'Coats must be 1-4' },
+  texture: { type: 'enum', options: Object.keys(TEXTURE_COVERAGE) },
+  quality: { type: 'enum', options: Object.keys(QUALITY_MULTIPLIER) }
 };
 
-// Regional cost factors
-const REGIONAL_FACTORS = {
-  'US_DEFAULT': 1.0,
-  'NC': 0.95,
-  'TX': 0.92,
-  'CA': 1.25,
-  'NY': 1.20,
-  'FL': 1.05,
-  'Midwest': 0.90,
-  'West Coast': 1.22
-};
+export function compute(rawInputs) {
+  const inputs = {
+    wallAreaSqFt: Number(rawInputs.wallAreaSqFt),
+    openingsSqFt: Number(rawInputs.openingsSqFt) || 0,
+    coats: Number(rawInputs.coats) || 1,
+    texture: rawInputs.texture || 'smooth',
+    quality: rawInputs.quality || 'standard',
+    includePrimer: Boolean(rawInputs.includePrimer),
+    region: rawInputs.region || 'US_DEFAULT'
+  };
 
-function compute(inputs) {
-  // Input validation and defaults
-  const wallArea = Math.max(0, parseFloat(inputs.wallArea) || 0);
-  const openings = Math.max(0, parseFloat(inputs.openings) || 0);
-  const coats = Math.max(1, parseInt(inputs.coats) || 2);
-  const texture = inputs.texture || 'smooth';
-  const quality = inputs.quality || 'standard';
-  const needsPrimer = Boolean(inputs.needsPrimer);
-  const region = inputs.region || 'US_DEFAULT';
-  
-  // Calculate paintable area
-  const paintableArea = Math.max(0, wallArea - openings);
-  
-  // Coverage and paint requirements
-  const coverageRate = COVERAGE_RATES[texture] || 350;
-  const paintNeeded = (paintableArea * coats) / coverageRate;
-  const paintGallons = Math.ceil(paintNeeded * 4) / 4; // Round to nearest quart
-  
-  // Primer requirements (if needed)
-  const primerGallons = needsPrimer ? Math.ceil(paintableArea / coverageRate * 4) / 4 : 0;
-  
-  // Regional pricing adjustments
-  const regionalFactor = REGIONAL_FACTORS[region] || 1.0;
-  const paintPrice = (PAINT_PRICING[quality] || 55) * regionalFactor;
-  const primerPrice = (PRIMER_PRICING[quality] || 45) * regionalFactor;
-  
-  // Cost calculations
-  const paintCost = paintGallons * paintPrice;
-  const primerCost = primerGallons * primerPrice;
+  const validation = validate(inputs, schema);
+  if (!validation.valid) {
+    return { errors: validation.errors };
+  }
+
+  const paintableArea = Math.max(0, inputs.wallAreaSqFt - inputs.openingsSqFt);
+  const coveragePerGallon = TEXTURE_COVERAGE[inputs.texture] || 350;
+  const gallonsNeeded = (paintableArea / coveragePerGallon) * inputs.coats * 1.1; // include 10% waste
+  const primerGallons = inputs.includePrimer ? (paintableArea / 400) : 0;
+
+  const { data, multiplier } = getPricingSync('paint', inputs.region);
+  const paintPrice = (data.gallonPremium || 48) * (QUALITY_MULTIPLIER[inputs.quality] || 1);
+  const primerPrice = data.primerGallon || 24;
+  const laborRate = data.laborPerSqFt || 1.35;
+
+  const paintCost = gallonsNeeded * paintPrice * multiplier;
+  const primerCost = primerGallons * primerPrice * multiplier;
+  const laborCost = paintableArea * laborRate * multiplier;
   const materialCost = paintCost + primerCost;
-  
-  // Labor calculation (assumes professional application)
-  const laborRate = 2.50 * regionalFactor; // Per sq ft
-  const laborCost = paintableArea * laborRate * coats;
-  
   const totalCost = materialCost + laborCost;
-  
+
+  const results = {
+    paintableArea: round(paintableArea, 1),
+    gallonsNeeded: round(gallonsNeeded, 2),
+    primerGallons: round(primerGallons, 2),
+    paintCost: round(paintCost, 2),
+    primerCost: round(primerCost, 2),
+    laborCost: round(laborCost, 2),
+    materialCost: round(materialCost, 2),
+    totalCost: round(totalCost, 2),
+    regionalMultiplier: multiplier
+  };
+
   return {
-    paintableArea: paintableArea,
-    paintGallons: paintGallons,
-    primerGallons: primerGallons,
-    paintCost: paintCost,
-    primerCost: primerCost,
-    materialCost: materialCost,
-    laborCost: laborCost,
-    totalCost: totalCost,
-    coverageRate: coverageRate,
-    coats: coats,
-    regionalFactor: regionalFactor,
-    
-    // Breakdown for transparency
-    breakdown: {
-      baseArea: wallArea,
-      openingDeduction: openings,
-      effectiveArea: paintableArea,
-      paintPricePerGallon: paintPrice,
-      primerPricePerGallon: primerPrice,
-      laborRatePerSqFt: laborRate
-    }
+    results,
+    inputs,
+    summary: `${results.gallonsNeeded} gallons • $${results.totalCost} total`
   };
 }
 
-// Formula information for transparency
-const formula = {
-  title: 'Paint Coverage & Cost Calculation',
-  expressions: [
-    'Paintable Area = Wall Area - Openings',
-    'Paint Needed = (Paintable Area × Coats) ÷ Coverage Rate',
-    'Paint Gallons = Round up to nearest quart',
-    'Material Cost = (Paint Gallons × Paint Price) + (Primer × Primer Price)',
-    'Labor Cost = Paintable Area × Labor Rate × Coats × Regional Factor'
-  ],
-  notes: [
-    'Coverage rates vary by surface texture (smooth: 400 sq ft/gal, heavy: 250 sq ft/gal)',
-    'Primer coverage calculated at single coat rate',
-    'Labor rates include surface preparation and application',
-    'Regional factors adjust for local material and labor costs',
-    'Does not include trim work or specialty finishes'
-  ],
-  methodology: 'Calculations based on industry-standard coverage rates and professional application practices.'
-};
+export function explain({ inputs, results }) {
+  if (!inputs || !results) return '';
+  const lines = [
+    `**Inputs**`,
+    `- Paintable area: ${results.paintableArea} sq ft (openings deducted)`,
+    `- Coats: ${inputs.coats}`,
+    `- Texture: ${inputs.texture}`,
+    `- Quality: ${inputs.quality}`,
+    inputs.includePrimer ? '- Primer required' : '- Primer not required',
+    '',
+    `**Math**`,
+    `1. Coverage (${TEXTURE_COVERAGE[inputs.texture]} sq ft/gal) adjusted for ${inputs.coats} coat(s) and 10% waste`,
+    `2. Gallons = area ÷ coverage × coats × 1.1 = ${results.gallonsNeeded}`,
+    `3. Primer = area ÷ 400 = ${results.primerGallons}`,
+    `4. Costs include regional multiplier ${results.regionalMultiplier}`
+  ];
+  return lines.join('\n');
+}
 
-// Register the calculator
-registerCalculator('paint', { compute, formula });
+registerCalculator('paint', { compute, explain });
 
-export { compute, formula };
+export default { compute, explain };

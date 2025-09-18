@@ -1,164 +1,92 @@
-/**
- * Calculator Initialization - Wire all calculators to the page
- */
-
 import { wireCalculator, addRegionalPricing } from './runner.js';
-import { initHashTabs } from '../ui/hash-tabs.js';
 import './concrete.js';
 import './paint.js';
 import './framing.js';
-import './roofing.js';
 
-// Calculator configurations
-const CALCULATOR_CONFIGS = {
+const CONFIG = {
   concrete: {
-    sectionSelector: '#concrete-calculator',
+    sectionSelector: '#concrete-calc',
     inputSelectors: {
       lengthFt: '#concrete-length',
-      widthFt: '#concrete-width', 
+      widthFt: '#concrete-width',
       thicknessIn: '#concrete-thickness',
       psi: '#concrete-psi',
-      pourType: '#concrete-pour-type',
+      pourType: '#concrete-type',
       rebarType: '#concrete-rebar',
       deliveryType: '#concrete-delivery',
       region: '#region-selector'
     },
     outputSelectors: {
-      volume: '#concrete-volume',
-      yards: '#concrete-yards',
-      area: '#concrete-area',
+      areaSqFt: '#concrete-area',
+      baseYards: '#concrete-base-yards',
+      adjustedYards: '#concrete-yards',
       materialCost: '#concrete-material-cost',
-      rebarCost: '#concrete-rebar-cost',
       laborCost: '#concrete-labor-cost',
+      rebarCost: '#concrete-rebar-cost',
+      deliveryCost: '#concrete-delivery-cost',
       totalCost: '#concrete-total-cost'
     },
-    calculateButton: '[data-action="calculate"]',
-    formulaContainer: '#concrete-formula'
+    calculateButton: '[data-action="calculate"]'
   },
-  
-  paint: {
-    sectionSelector: '#paint-calculator',
-    inputSelectors: {
-      wallArea: '#paint-wall-area',
-      openings: '#paint-openings',
-      coats: '#paint-coats',
-      texture: '#paint-texture',
-      quality: '#paint-quality', 
-      needsPrimer: '#paint-needs-primer',
-      region: '#region-selector'
-    },
-    outputSelectors: {
-      paintableArea: '#paint-paintable-area',
-      paintGallons: '#paint-gallons',
-      primerGallons: '#paint-primer-gallons',
-      paintCost: '#paint-cost',
-      primerCost: '#paint-primer-cost',
-      materialCost: '#paint-material-cost',
-      laborCost: '#paint-labor-cost',
-      totalCost: '#paint-total-cost'
-    },
-    calculateButton: '[data-action="calculate"]',
-    formulaContainer: '#paint-formula'
-  },
-  
   framing: {
-    sectionSelector: '#framing-calculator',
+    sectionSelector: '#framing-calc',
     inputSelectors: {
-      area: '#framing-area',
-      framingType: '#framing-type',
-      lumberSize: '#framing-lumber-size',
-      lumberGrade: '#framing-lumber-grade',
+      wallLengthFt: '#framing-length',
+      wallHeightFt: '#framing-height',
       spacing: '#framing-spacing',
+      lumberSize: '#framing-lumber',
       region: '#region-selector'
     },
     outputSelectors: {
-      linearFeet: '#framing-linear-feet',
-      boardFeet: '#framing-board-feet',
-      materialCost: '#framing-material-cost',
+      studCount: '#framing-studs',
+      platesLinearFeet: '#framing-plates',
+      areaSqFt: '#framing-area',
+      studCost: '#framing-stud-cost',
+      sheathingCost: '#framing-sheathing-cost',
       hardwareCost: '#framing-hardware-cost',
       laborCost: '#framing-labor-cost',
       totalCost: '#framing-total-cost'
     },
-    calculateButton: '[data-action="calculate"]',
-    formulaContainer: '#framing-formula'
+    calculateButton: '[data-action="calculate"]'
   },
-  
-  roofing: {
-    sectionSelector: '#roofing-calculator',
+  paint: {
+    sectionSelector: '#paint-calc',
     inputSelectors: {
-      length: '#roofing-length',
-      width: '#roofing-width',
-      pitch: '#roofing-pitch',
-      material: '#roofing-material',
-      underlayment: '#roofing-underlayment',
-      complexity: '#roofing-complexity',
-      tearOff: '#roofing-tear-off',
+      wallAreaSqFt: '#paint-area',
+      openingsSqFt: '#paint-openings',
+      coats: '#paint-coats',
+      texture: '#paint-texture',
+      quality: '#paint-quality',
+      includePrimer: '#paint-primer',
       region: '#region-selector'
     },
     outputSelectors: {
-      roofArea: '#roofing-area',
-      squares: '#roofing-squares',
-      materialCost: '#roofing-material-cost',
-      laborCost: '#roofing-labor-cost',
-      totalCost: '#roofing-total-cost'
+      paintableArea: '#paint-paintable-area',
+      gallonsNeeded: '#paint-gallons',
+      primerGallons: '#paint-primer-gallons',
+      paintCost: '#paint-cost',
+      primerCost: '#paint-primer-cost',
+      laborCost: '#paint-labor-cost',
+      materialCost: '#paint-material-cost',
+      totalCost: '#paint-total-cost'
     },
-    calculateButton: '[data-action="calculate"]',
-    formulaContainer: '#roofing-formula'
+    calculateButton: '[data-action="calculate"]'
   }
 };
 
-/**
- * Initialize all calculators on page load
- */
+function init(calculatorKey) {
+  const config = CONFIG[calculatorKey];
+  if (!config) return;
+  const section = document.querySelector(config.sectionSelector);
+  if (!section) return;
+  wireCalculator(calculatorKey, config);
+  addRegionalPricing(section);
+}
+
 export function initCalculators() {
-  console.log('Initializing modular calculator system...');
-  
-  // Initialize hash-based routing
-  initHashTabs();
-  
-  // Set up global CFAI object for router integration
-  window.CFAI = window.CFAI || {};
-  window.CFAI.init = initSpecificCalculator;
-  
-  // Listen for panel activation events from router
-  document.addEventListener('calculatorPanelActivated', (e) => {
-    const { calculatorType, panel } = e.detail;
-    console.log(`Panel activated: ${calculatorType}`);
-    initSpecificCalculator(calculatorType, panel);
-  });
-  
-  console.log('Calculator initialization complete');
+  Object.keys(CONFIG).forEach(init);
 }
 
-/**
- * Initialize a specific calculator when its panel becomes active
- */
-function initSpecificCalculator(calculatorType, panel) {
-  const config = CALCULATOR_CONFIGS[calculatorType];
-  if (!config) {
-    console.warn(`No config found for calculator: ${calculatorType}`);
-    return;
-  }
-  
-  // Update selector to use the actual panel instead of document
-  const sectionSelector = `#${panel.id}`;
-  const updatedConfig = {
-    ...config,
-    sectionSelector
-  };
-  
-  console.log(`Wiring calculator: ${calculatorType} in panel ${panel.id}`);
-  wireCalculator(calculatorType, updatedConfig);
-  
-  // Add regional pricing if selector exists
-  addRegionalPricing(panel, () => {
-    // Re-calculate when region changes
-    const calculator = panel.querySelector('[data-action="calculate"]');
-    if (calculator) calculator.click();
-  });
-}
-
-// Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initCalculators);
 } else {

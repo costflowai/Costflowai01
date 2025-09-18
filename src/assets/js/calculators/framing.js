@@ -1,132 +1,90 @@
-/**
- * Framing Calculator Module
- * Professional lumber and framing cost estimation
- */
-
 import { registerCalculator } from './registry.js';
+import { squareFeet, round } from '../core/units.js';
+import { getPricingSync } from '../core/pricing.js';
+import { validate } from '../core/validate.js';
 
-// Lumber pricing (per board foot)
-const LUMBER_PRICING = {
-  'douglas-fir': 0.85,
-  'southern-pine': 0.75,
-  'hem-fir': 0.70,
-  'spf': 0.65,
-  'engineered': 1.25
+const STUD_SPACING = {
+  '12': 12,
+  '16': 16,
+  '24': 24
 };
 
-// Common lumber sizes (board feet per linear foot)
-const LUMBER_SIZES = {
-  '2x4': 0.67,
-  '2x6': 1.0,
-  '2x8': 1.33,
-  '2x10': 1.67,
-  '2x12': 2.0,
-  '4x4': 1.33,
-  '4x6': 2.0
+const LUMBER_LENGTH_FACTOR = {
+  '2x4': 8,
+  '2x6': 10
 };
 
-// Regional cost factors
-const REGIONAL_FACTORS = {
-  'US_DEFAULT': 1.0,
-  'NC': 0.92,
-  'TX': 0.88,
-  'CA': 1.35,
-  'NY': 1.28,
-  'FL': 1.05,
-  'Midwest': 0.85,
-  'West Coast': 1.32
+const schema = {
+  wallLengthFt: { type: 'number', min: 1, message: 'Wall length must be ≥ 1 ft' },
+  wallHeightFt: { type: 'number', min: 7, message: 'Wall height must be ≥ 7 ft' },
+  spacing: { type: 'enum', options: Object.keys(STUD_SPACING) },
+  lumberSize: { type: 'enum', options: Object.keys(LUMBER_LENGTH_FACTOR) }
 };
 
-// Framing factors (linear feet of lumber per sq ft of area)
-const FRAMING_FACTORS = {
-  'floor': 2.4,      // Floor joists
-  'wall': 1.8,       // Wall studs  
-  'ceiling': 2.2,    // Ceiling joists
-  'roof': 2.8        // Roof rafters
-};
+export function compute(rawInputs) {
+  const inputs = {
+    wallLengthFt: Number(rawInputs.wallLengthFt),
+    wallHeightFt: Number(rawInputs.wallHeightFt),
+    spacing: rawInputs.spacing || '16',
+    lumberSize: rawInputs.lumberSize || '2x4',
+    region: rawInputs.region || 'US_DEFAULT'
+  };
 
-function compute(inputs) {
-  // Input validation and defaults
-  const area = Math.max(0, parseFloat(inputs.area) || 0);
-  const framingType = inputs.framingType || 'wall';
-  const lumberSize = inputs.lumberSize || '2x4';
-  const lumberGrade = inputs.lumberGrade || 'spf';
-  const spacing = parseFloat(inputs.spacing) || 16;
-  const region = inputs.region || 'US_DEFAULT';
-  
-  // Calculate lumber requirements
-  const framingFactor = FRAMING_FACTORS[framingType] || 1.8;
-  const spacingFactor = 16 / spacing; // Adjust for spacing (16" OC is baseline)
-  const linearFeet = area * framingFactor * spacingFactor;
-  
-  // Calculate board feet
-  const boardFeetPerLinearFoot = LUMBER_SIZES[lumberSize] || 0.67;
-  const totalBoardFeet = linearFeet * boardFeetPerLinearFoot;
-  
-  // Regional pricing adjustments
-  const regionalFactor = REGIONAL_FACTORS[region] || 1.0;
-  const pricePerBoardFoot = (LUMBER_PRICING[lumberGrade] || 0.75) * regionalFactor;
-  
-  // Cost calculations
-  const materialCost = totalBoardFeet * pricePerBoardFoot;
-  
-  // Hardware costs (nails, screws, plates, etc.)
-  const hardwareCost = area * 0.35 * regionalFactor;
-  
-  // Labor costs
-  const laborRate = 2.25 * regionalFactor; // Per sq ft
-  const laborCost = area * laborRate;
-  
-  // Waste factor (10% for framing)
-  const wasteFactor = 1.10;
-  const adjustedMaterialCost = materialCost * wasteFactor;
-  const adjustedHardwareCost = hardwareCost * wasteFactor;
-  
-  const totalCost = adjustedMaterialCost + adjustedHardwareCost + laborCost;
-  
+  const validation = validate(inputs, schema);
+  if (!validation.valid) {
+    return { errors: validation.errors };
+  }
+
+  const spacingInches = STUD_SPACING[inputs.spacing] || 16;
+  const studCount = Math.ceil((inputs.wallLengthFt * 12) / spacingInches) + 1;
+  const platesLinearFeet = inputs.wallLengthFt * 3; // top + bottom plates
+  const areaSqFt = squareFeet(inputs.wallLengthFt, inputs.wallHeightFt);
+
+  const { data, multiplier } = getPricingSync('framing', inputs.region);
+  const studLength = LUMBER_LENGTH_FACTOR[inputs.lumberSize] || 8;
+  const studCost = studCount * (studLength > 8 ? data.stud10ft : data.stud8ft || 4.5) * multiplier;
+  const sheathingCost = areaSqFt * (data.sheathingPerSqFt || 1.6) * multiplier * 1.07;
+  const hardwareCost = areaSqFt * (data.hardwarePerSqFt || 0.55) * multiplier;
+  const laborCost = areaSqFt * (data.laborPerSqFt || 3.25) * multiplier;
+  const totalCost = studCost + sheathingCost + hardwareCost + laborCost;
+
+  const results = {
+    studCount,
+    platesLinearFeet: round(platesLinearFeet, 1),
+    areaSqFt: round(areaSqFt, 1),
+    studCost: round(studCost, 2),
+    sheathingCost: round(sheathingCost, 2),
+    hardwareCost: round(hardwareCost, 2),
+    laborCost: round(laborCost, 2),
+    totalCost: round(totalCost, 2),
+    regionalMultiplier: multiplier
+  };
+
   return {
-    area: area,
-    linearFeet: linearFeet,
-    boardFeet: totalBoardFeet,
-    materialCost: adjustedMaterialCost,
-    hardwareCost: adjustedHardwareCost,
-    laborCost: laborCost,
-    totalCost: totalCost,
-    wasteFactor: wasteFactor,
-    regionalFactor: regionalFactor,
-    
-    // Breakdown for transparency
-    breakdown: {
-      baseMaterialCost: materialCost,
-      baseHardwareCost: hardwareCost,
-      pricePerBoardFoot: pricePerBoardFoot,
-      laborRatePerSqFt: laborRate,
-      spacingFactor: spacingFactor
-    }
+    results,
+    inputs,
+    summary: `${results.studCount} studs • $${results.totalCost} total`
   };
 }
 
-// Formula information for transparency
-const formula = {
-  title: 'Framing Material & Cost Calculation',
-  expressions: [
-    'Linear Feet = Area × Framing Factor × Spacing Factor',
-    'Board Feet = Linear Feet × Board Feet per Linear Foot',
-    'Material Cost = Board Feet × Price per Board Foot × Regional Factor × Waste Factor',
-    'Hardware Cost = Area × Hardware Rate × Regional Factor × Waste Factor',
-    'Labor Cost = Area × Labor Rate × Regional Factor'
-  ],
-  notes: [
-    'Framing factors: Floor 2.4, Wall 1.8, Ceiling 2.2, Roof 2.8 LF/SF',
-    'Spacing factor adjusts for stud/joist spacing (16" OC baseline)',
-    'Waste factor of 10% applied to materials',
-    'Hardware includes nails, screws, plates, and fasteners',
-    'Does not include sheathing, insulation, or finish materials'
-  ],
-  methodology: 'Calculations based on standard construction practices and International Residential Code requirements.'
-};
+export function explain({ inputs, results }) {
+  if (!inputs || !results) return '';
+  const lines = [
+    `**Inputs**`,
+    `- Wall length: ${inputs.wallLengthFt} ft`,
+    `- Wall height: ${inputs.wallHeightFt} ft`,
+    `- Stud spacing: ${inputs.spacing}" on center`,
+    `- Lumber: ${inputs.lumberSize}`,
+    '',
+    `**Math**`,
+    `1. Stud count = (length ft × 12 in) ÷ spacing + 1 = ${results.studCount}`,
+    `2. Plates = wall length × 3 = ${results.platesLinearFeet} linear ft`,
+    `3. Area = ${inputs.wallLengthFt} × ${inputs.wallHeightFt} = ${results.areaSqFt} sq ft`,
+    `4. Costs derived from pricing table with regional multiplier ${results.regionalMultiplier}`
+  ];
+  return lines.join('\n');
+}
 
-// Register the calculator
-registerCalculator('framing', { compute, formula });
+registerCalculator('framing', { compute, explain });
 
-export { compute, formula };
+export default { compute, explain };
