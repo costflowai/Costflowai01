@@ -1,0 +1,384 @@
+{
+  "documents": [
+    {
+      "title": "Concrete Slab Pro",
+      "url": "/calculators/concrete-slab-pro.html",
+      "excerpt": "Structural slab volumes, rebar, labor, and equipment ROMs.",
+      "terms": [
+        "concrete",
+        "slab",
+        "pro",
+        "structural",
+        "volumes",
+        "rebar",
+        "labor",
+        "and",
+        "equipment",
+        "roms"
+      ]
+    },
+    {
+      "title": "Framing Takeoff",
+      "url": "/calculators/framing-takeoff.html",
+      "excerpt": "Studs, plates, and headers for wood framing packages.",
+      "terms": [
+        "framing",
+        "takeoff",
+        "studs",
+        "plates",
+        "and",
+        "headers",
+        "for",
+        "wood",
+        "packages"
+      ]
+    },
+    {
+      "title": "Drywall & ACT",
+      "url": "/calculators/drywall-act.html",
+      "excerpt": "Gypsum board, finishing, and acoustical ceiling tile coverage.",
+      "terms": [
+        "drywall",
+        "act",
+        "gypsum",
+        "board",
+        "finishing",
+        "and",
+        "acoustical",
+        "ceiling",
+        "tile",
+        "coverage"
+      ]
+    },
+    {
+      "title": "Paint & Coatings",
+      "url": "/calculators/paint-coatings.html",
+      "excerpt": "Interior and exterior paint with substrate prep and coats.",
+      "terms": [
+        "paint",
+        "coatings",
+        "interior",
+        "and",
+        "exterior",
+        "with",
+        "substrate",
+        "prep",
+        "coats"
+      ]
+    },
+    {
+      "title": "Roofing Systems",
+      "url": "/calculators/roofing.html",
+      "excerpt": "Steep and flat roofing with underlayment and flashing.",
+      "terms": [
+        "roofing",
+        "systems",
+        "steep",
+        "and",
+        "flat",
+        "with",
+        "underlayment",
+        "flashing"
+      ]
+    },
+    {
+      "title": "Flooring Takeoff",
+      "url": "/calculators/flooring.html",
+      "excerpt": "Tile, resilient, and carpet flooring takeoffs.",
+      "terms": [
+        "flooring",
+        "takeoff",
+        "tile",
+        "resilient",
+        "and",
+        "carpet",
+        "takeoffs"
+      ]
+    },
+    {
+      "title": "Plumbing Fixtures & Piping",
+      "url": "/calculators/plumbing-fixtures.html",
+      "excerpt": "Fixtures, carriers, and distribution piping.",
+      "terms": [
+        "plumbing",
+        "fixtures",
+        "piping",
+        "carriers",
+        "and",
+        "distribution"
+      ]
+    },
+    {
+      "title": "Electrical Distribution",
+      "url": "/calculators/electrical.html",
+      "excerpt": "Circuits, receptacles, lighting, and conduit allowances.",
+      "terms": [
+        "electrical",
+        "distribution",
+        "circuits",
+        "receptacles",
+        "lighting",
+        "and",
+        "conduit",
+        "allowances"
+      ]
+    },
+    {
+      "title": "HVAC ROM",
+      "url": "/calculators/hvac.html",
+      "excerpt": "HVAC tonnage, ductwork, and air distribution planning.",
+      "terms": [
+        "hvac",
+        "rom",
+        "tonnage",
+        "ductwork",
+        "and",
+        "air",
+        "distribution",
+        "planning"
+      ]
+    },
+    {
+      "title": "Earthwork Cut/Fill",
+      "url": "/calculators/earthwork.html",
+      "excerpt": "Cut/fill balancing and truck cycle allowances.",
+      "terms": [
+        "earthwork",
+        "cut",
+        "fill",
+        "balancing",
+        "and",
+        "truck",
+        "cycle",
+        "allowances"
+      ]
+    },
+    {
+      "title": "Masonry Systems",
+      "url": "/calculators/masonry.html",
+      "excerpt": "CMU, brick, and reinforcing takeoffs.",
+      "terms": [
+        "masonry",
+        "systems",
+        "cmu",
+        "brick",
+        "and",
+        "reinforcing",
+        "takeoffs"
+      ]
+    },
+    {
+      "title": "Structural Steel",
+      "url": "/calculators/structural-steel.html",
+      "excerpt": "Fabricated steel tonnage and erection resources.",
+      "terms": [
+        "structural",
+        "steel",
+        "fabricated",
+        "tonnage",
+        "and",
+        "erection",
+        "resources"
+      ]
+    },
+    {
+      "title": "Asphalt Paving",
+      "url": "/calculators/asphalt-paving.html",
+      "excerpt": "Asphalt lifts, tack coat, and striping allowances.",
+      "terms": [
+        "asphalt",
+        "paving",
+        "lifts",
+        "tack",
+        "coat",
+        "and",
+        "striping",
+        "allowances"
+      ]
+    },
+    {
+      "title": "Site Concrete",
+      "url": "/calculators/site-concrete.html",
+      "excerpt": "Curbs, gutters, and sidewalk pours.",
+      "terms": [
+        "site",
+        "concrete",
+        "curbs",
+        "gutters",
+        "and",
+        "sidewalk",
+        "pours"
+      ]
+    },
+    {
+      "title": "Doors & Windows",
+      "url": "/calculators/doors-windows.html",
+      "excerpt": "Openings, glazing, and hardware counts.",
+      "terms": [
+        "doors",
+        "windows",
+        "openings",
+        "glazing",
+        "and",
+        "hardware",
+        "counts"
+      ]
+    },
+    {
+      "title": "Insulation Systems",
+      "url": "/calculators/insulation.html",
+      "excerpt": "Batt, board, and blown-in insulation planning.",
+      "terms": [
+        "insulation",
+        "systems",
+        "batt",
+        "board",
+        "and",
+        "blown",
+        "in",
+        "planning"
+      ]
+    },
+    {
+      "title": "Firestopping",
+      "url": "/calculators/firestopping.html",
+      "excerpt": "Penetration firestopping system allowances.",
+      "terms": [
+        "firestopping",
+        "penetration",
+        "system",
+        "allowances"
+      ]
+    },
+    {
+      "title": "Waterproofing",
+      "url": "/calculators/waterproofing.html",
+      "excerpt": "Below and above grade waterproofing coverage.",
+      "terms": [
+        "waterproofing",
+        "below",
+        "and",
+        "above",
+        "grade",
+        "coverage"
+      ]
+    },
+    {
+      "title": "Demolition",
+      "url": "/calculators/demolition.html",
+      "excerpt": "Selective and structural demolition planning.",
+      "terms": [
+        "demolition",
+        "selective",
+        "and",
+        "structural",
+        "planning"
+      ]
+    },
+    {
+      "title": "General Conditions",
+      "url": "/calculators/general-conditions.html",
+      "excerpt": "Crew, supervision, and project support allowances.",
+      "terms": [
+        "general",
+        "conditions",
+        "crew",
+        "supervision",
+        "and",
+        "project",
+        "support",
+        "allowances"
+      ]
+    },
+    {
+      "title": "Contingency & Fees",
+      "url": "/calculators/contingency-fees.html",
+      "excerpt": "Markup, contingency, and fee modelling.",
+      "terms": [
+        "contingency",
+        "fees",
+        "markup",
+        "and",
+        "fee",
+        "modelling"
+      ]
+    },
+    {
+      "title": "CostFlowAI Launch Roadmap",
+      "url": "/blog/launch-roadmap.html",
+      "excerpt": "## Why calculator-first matters",
+      "terms": [
+        "costflowai",
+        "launch",
+        "roadmap",
+        "how",
+        "is",
+        "building",
+        "an",
+        "explainable",
+        "construction",
+        "cost",
+        "platform",
+        "why",
+        "calculator",
+        "first",
+        "matters",
+        "we",
+        "built",
+        "to",
+        "solve",
+        "the",
+        "slow",
+        "opaque",
+        "estimating",
+        "workflows",
+        "that",
+        "frustrate",
+        "preconstruction",
+        "teams",
+        "calculators",
+        "let",
+        "us",
+        "lead",
+        "with",
+        "math",
+        "explain",
+        "every",
+        "assumption",
+        "and",
+        "export",
+        "cleanly",
+        "what",
+        "ships",
+        "1",
+        "concrete",
+        "slab",
+        "pro",
+        "for",
+        "structural",
+        "roms",
+        "2",
+        "a",
+        "reusable",
+        "engine",
+        "parity",
+        "3",
+        "searchable",
+        "insights",
+        "benchmark",
+        "best",
+        "in",
+        "class",
+        "estimates",
+        "stay",
+        "tuned",
+        "weekly",
+        "releases",
+        "as",
+        "expand",
+        "trade",
+        "library"
+      ]
+    }
+  ]
+}

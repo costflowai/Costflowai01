@@ -1,0 +1,57 @@
+<section class="calculator-shell" data-calculator-shell data-calculator-id="{{calculatorId}}">
+  <form class="calculator-form" novalidate>
+    <h1>{{calculatorName}}</h1>
+    <p class="input-group__help">Rapid ROM estimator for professional preconstruction teams.</p>
+    <div class="error-summary" role="alert" hidden></div>
+
+    {{formFields}}
+
+    <div class="input-group">
+      <label for="region">Region</label>
+      <select id="region" name="region" aria-describedby="region-help">
+        <option value="national">National Baseline</option>
+        <option value="west">West Coast</option>
+        <option value="mountain">Mountain States</option>
+        <option value="midwest">Midwest</option>
+        <option value="south">Southeast</option>
+        <option value="northeast">Northeast Corridor</option>
+      </select>
+      <p id="region-help" class="input-group__help">Regional factors adjust base pricing.</p>
+    </div>
+
+    <fieldset class="input-group">
+      <legend>Pricing modifiers</legend>
+      <label><input type="checkbox" name="include_markup" value="1" checked /> Include 10% markup</label>
+      <label><input type="checkbox" name="include_tax" value="1" checked /> Include 8.25% sales tax</label>
+    </fieldset>
+
+    <button class="button" type="submit" data-action="calculate">Calculate</button>
+  </form>
+  <section class="calculator-results" aria-live="polite">
+    <div class="calculator-results__header">
+      <h2>Results</h2>
+      <div class="badge">ROM only</div>
+    </div>
+    <div class="results-live-region" aria-live="polite"></div>
+    <div data-result="summary"></div>
+    <div data-result="table"></div>
+    <section aria-labelledby="assumptions-heading">
+      <h3 id="assumptions-heading">Assumptions</h3>
+      <div data-result="assumptions"></div>
+    </section>
+    <div class="accordion">
+      <button type="button" class="accordion__button" data-action="show-math" aria-expanded="false">
+        Show Math
+        <span aria-hidden="true">▾</span>
+      </button>
+      <div class="accordion__content" data-panel="show-math" hidden></div>
+    </div>
+    <div class="export-actions">
+      <button type="button" class="button" data-export="csv">Export CSV</button>
+      <button type="button" class="button" data-export="xlsx">Export XLSX</button>
+      <button type="button" class="button" data-export="pdf">Export PDF</button>
+      <button type="button" class="button" data-export="print">Print</button>
+    </div>
+    <p class="disclaimer">ROM only; verify with licensed professionals.</p>
+  </section>
+</section>
