@@ -1,119 +1,94 @@
-/**
- * Pricing table management. Data is stored in /assets/data but duplicated
- * here as a fallback so unit tests can run without performing fetches.
- */
+let pricingCache = null;
 
-const BASE_DATA = {
-  concrete: {
-    material: 140,
-    labor: 48,
-    reinforcementPerSqFt: 0.85,
-    pumpFlatFee: 175
-  },
-  framing: {
-    stud8ft: 4.25,
-    stud10ft: 5.4,
-    sheathingPerSqFt: 1.6,
-    hardwarePerSqFt: 0.55,
-    laborPerSqFt: 3.25
-  },
-  paint: {
-    gallonPremium: 48,
-    gallonStandard: 32,
-    primerGallon: 24,
-    laborPerSqFt: 1.35
-  }
-};
+const clone = (value) =>
+  (typeof structuredClone === 'function'
+    ? structuredClone(value)
+    : JSON.parse(JSON.stringify(value)));
 
-const REGION_MULTIPLIERS = {
-  US_DEFAULT: 1,
-  nc: 0.94,
-  tx: 0.9,
-  ca: 1.32,
-  ny: 1.22,
-  fl: 1.05,
-  midwest: 0.88,
-  'west-coast': 1.28
-};
-
-const regionCache = new Map();
-let basePricing = null;
-
-function normaliseRegion(region) {
-  if (!region) return 'US_DEFAULT';
-  const key = region.toString().toLowerCase();
-  if (key === 'us_default' || key === 'default') return 'US_DEFAULT';
-  if (REGION_MULTIPLIERS[key] != null) return key;
-  return 'US_DEFAULT';
-}
-
-async function loadJSON(path) {
-  if (typeof fetch === 'function') {
-    try {
-      const res = await fetch(path, { cache: 'no-store' });
-      if (res.ok) {
-        return await res.json();
+const defaultPricing = {
+  materials: {
+    concrete: {
+      unit: 'yd³',
+      unitPrice: 145
+    },
+    rebar: {
+      '#4': {
+        unit: 'ft',
+        unitPrice: 0.72
       }
-    } catch (error) {
-      console.warn('Unable to fetch pricing data', error);
     }
+  },
+  labor: {
+    unit: 'hr',
+    rate: 68,
+    productivityYd3PerHr: 3
+  },
+  equipment: {
+    pumpFlat: 425
+  },
+  financial: {
+    markupRate: 0.1,
+    taxRate: 0.0825
+  },
+  regions: {
+    National: 1,
+    Northeast: 1.08,
+    Southeast: 0.96,
+    Midwest: 0.94,
+    Mountain: 1.05,
+    Pacific: 1.12
   }
-  return null;
-}
+};
 
-async function ensureBasePricing() {
-  if (basePricing) return basePricing;
-  const loaded = await loadJSON('/assets/data/pricing.base.json');
-  basePricing = loaded || BASE_DATA;
-  return basePricing;
-}
-
-async function ensureRegion(regionKey) {
-  if (regionCache.has(regionKey)) {
-    return regionCache.get(regionKey);
+const fetchPricing = async () => {
+  if (pricingCache) return pricingCache;
+  try {
+    const response = await fetch('/assets/data/pricing.base.json', {
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('Pricing fetch failed');
+    pricingCache = await response.json();
+  } catch (error) {
+    console.warn('Falling back to embedded pricing', error);
+    pricingCache = clone(defaultPricing);
   }
-  const loaded = await loadJSON(`/assets/data/regions/${regionKey}.json`);
-  const fallback = REGION_MULTIPLIERS[regionKey] || 1;
-  const multiplier = loaded?.multiplier ?? fallback;
-  regionCache.set(regionKey, multiplier);
-  return multiplier;
-}
+  return pricingCache;
+};
 
-export async function getPricing(calculator, region = 'US_DEFAULT') {
-  const pricingData = await ensureBasePricing();
-  const regionKey = normaliseRegion(region);
-  const multiplier = await ensureRegion(regionKey);
-  const calculatorPricing = pricingData[calculator];
-  if (!calculatorPricing) {
-    console.warn(`Missing pricing config for ${calculator}`);
-    return { data: {}, multiplier: 1 };
-  }
-  return {
-    data: calculatorPricing,
-    multiplier
-  };
-}
+export const getRegions = async () => {
+  const pricing = await fetchPricing();
+  return pricing.regions;
+};
 
-export function getPricingSync(calculator, region = 'US_DEFAULT') {
-  const regionKey = normaliseRegion(region);
-  const base = basePricing || BASE_DATA;
-  const multiplier = regionCache.get(regionKey) ?? REGION_MULTIPLIERS[regionKey] ?? 1;
-  const calculatorPricing = base[calculator] || {};
-  if (!regionCache.has(regionKey)) {
-    regionCache.set(regionKey, multiplier);
-  }
-  return {
-    data: calculatorPricing,
-    multiplier
-  };
-}
+export const getPricing = async (region = 'National') => {
+  const pricing = await fetchPricing();
+  const multiplier = pricing.regions[region] ?? 1;
+  const data = clone(pricing);
+  data.multiplier = multiplier;
+  data.materials.concrete.unitPrice = Number(
+    (data.materials.concrete.unitPrice * multiplier).toFixed(2)
+  );
+  data.materials.rebar['#4'].unitPrice = Number(
+    (data.materials.rebar['#4'].unitPrice * multiplier).toFixed(2)
+  );
+  data.labor.rate = Number((data.labor.rate * multiplier).toFixed(2));
+  data.equipment.pumpFlat = Number((data.equipment.pumpFlat * multiplier).toFixed(2));
+  return data;
+};
 
-export function overridePricing(nextPricing) {
-  basePricing = { ...BASE_DATA, ...nextPricing };
-}
+export const formatRegionLabel = (region) => {
+  if (region === 'National') return 'National Baseline';
+  return `${region} (${Math.round(((pricingCache?.regions?.[region] ?? 1) - 1) * 100)}%)`;
+};
+
+export const clearPricingCache = () => {
+  pricingCache = null;
+};
 
 export default {
   getPricing,
-  getPricingSync,
-  overridePricing
+  getRegions,
+  formatRegionLabel,
+  clearPricingCache
 };
