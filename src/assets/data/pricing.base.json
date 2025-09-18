@@ -1,0 +1,21 @@
+{
+  "concrete": {
+    "material": 140,
+    "labor": 48,
+    "reinforcementPerSqFt": 0.85,
+    "pumpFlatFee": 175
+  },
+  "framing": {
+    "stud8ft": 4.25,
+    "stud10ft": 5.4,
+    "sheathingPerSqFt": 1.6,
+    "hardwarePerSqFt": 0.55,
+    "laborPerSqFt": 3.25
+  },
+  "paint": {
+    "gallonPremium": 48,
+    "gallonStandard": 32,
+    "primerGallon": 24,
+    "laborPerSqFt": 1.35
+  }
+}

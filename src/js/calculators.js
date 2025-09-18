@@ -10,7 +10,7 @@ if (document.readyState === 'loading') {
 
 function initializeAllCalculators() {
     console.log('Initializing all calculators...');
-    
+
     // Initialize each calculator type
     initializeConcreteCalculator();
     initializeFramingCalculator();
@@ -29,20 +29,79 @@ function initializeAllCalculators() {
     console.log('All calculators initialized successfully');
 }
 
+function toArray(collection) {
+    return Array.isArray(collection) ? collection.filter(Boolean) : Array.from(collection || []);
+}
+
+function uniqueElements(elements) {
+    const seen = new Set();
+    return elements.reduce((acc, el) => {
+        if (el && !seen.has(el)) {
+            seen.add(el);
+            acc.push(el);
+        }
+        return acc;
+    }, []);
+}
+
+function getText(node) {
+    if (!node) return '';
+    const { textContent } = node;
+    return typeof textContent === 'string' ? textContent : '';
+}
+
+function textContains(node, needle) {
+    return getText(node).indexOf(needle) !== -1;
+}
+
+function safeQueryAll(scope, selector) {
+    const context = scope || document;
+    try {
+        return Array.from(context.querySelectorAll(selector));
+    } catch (error) {
+        console.warn('CostflowAI: selector failed', selector, error);
+        return [];
+    }
+}
+
+function filterByText(elements, matcher) {
+    const tests = Array.isArray(matcher) ? matcher : [matcher];
+    return toArray(elements).filter(node =>
+        tests.some(test => {
+            try {
+                return typeof test === 'function' ? test(node) : textContains(node, test);
+            } catch (error) {
+                console.warn('CostflowAI: text filter failed', error);
+                return false;
+            }
+        })
+    );
+}
+
+function findCellsByText(scope, matcher) {
+    return uniqueElements(filterByText(safeQueryAll(scope, 'td'), matcher));
+}
+
 function initializeConcreteCalculator() {
     console.log('Initializing concrete calculator...');
-    
+
+    const concreteRoot =
+        document.querySelector('#concrete-calculator, #concrete-calc, .concrete-calculator, .calculator-panel[data-calc="concrete"], .concrete-calc') ||
+        null;
+
+    const inputScope = concreteRoot || document;
+
     // Find all possible input fields for concrete calculator
-    const lengthInput = document.querySelector(
-        'input[placeholder*="30"], input[name="length"], #length, input[placeholder*="Length"], .concrete-calc input[type="number"]:first-of-type'
+    const lengthInput = inputScope.querySelector(
+        '#concrete-length, input[placeholder*="30"], input[name="length"], #length, input[placeholder*="Length"], .concrete-calc input[type="number"]:first-of-type'
     );
-    const widthInput = document.querySelector(
-        'input[placeholder*="20"], input[name="width"], #width, input[placeholder*="Width"], .concrete-calc input[type="number"]:nth-of-type(2)'
+    const widthInput = inputScope.querySelector(
+        '#concrete-width, input[placeholder*="20"], input[name="width"], #width, input[placeholder*="Width"], .concrete-calc input[type="number"]:nth-of-type(2)'
     );
-    const thicknessInput = document.querySelector(
-        'input[placeholder*="4"], input[name="thickness"], #thickness, input[placeholder*="inches"], .concrete-calc input[type="number"]:nth-of-type(3)'
+    const thicknessInput = inputScope.querySelector(
+        '#concrete-thickness, input[placeholder*="4"], input[name="thickness"], #thickness, input[placeholder*="inches"], .concrete-calc input[type="number"]:nth-of-type(3)'
     );
-    
+
     if (!lengthInput || !widthInput || !thicknessInput) {
         console.log('Concrete calculator inputs not found on this page');
         return;
@@ -66,38 +125,57 @@ function initializeConcreteCalculator() {
             console.log('Concrete calculation result:', withWaste.toFixed(2), 'cubic yards');
             
             // Find and update result display
-            const resultElements = document.querySelectorAll(
-                '.cu.yd, .concrete-result, [data-result], .result-value, td:contains("0.00"), .project-results td'
+            const resultScope = concreteRoot || document;
+            const baseResultElements = safeQueryAll(
+                resultScope,
+                '#concrete-volume, #concrete-result, #concrete-yards, .result-main, .cu.yd, .concrete-result, [data-result], .result-value, .project-results td'
             );
-            
+            const tdElementsWithDefaultText = findCellsByText(resultScope, node => textContains(node, '0.00'));
+            const resultElements = uniqueElements([...baseResultElements, ...tdElementsWithDefaultText]);
+
             resultElements.forEach(el => {
-                if (el && (el.textContent.includes('0.00') || el.textContent.includes('cu yd') || el.textContent.trim() === '')) {
+                const text = getText(el).trim();
+                if (text === '' || textContains(el, '0.00') || text.toLowerCase().includes('cu yd')) {
                     el.textContent = withWaste.toFixed(2) + ' cu yd';
                     el.style.fontWeight = 'bold';
                     el.style.color = '#2196F3';
                 }
             });
-            
+
             // Update cost displays
             const costPerYard = 150;
             const totalCost = withWaste * costPerYard;
-            const costElements = document.querySelectorAll('.cost-display, [data-cost]');
+            const costElements = uniqueElements(
+                [
+                    '#concrete-total-cost',
+                    '#concrete-total',
+                    '#concrete-material',
+                    '.cost-display',
+                    '[data-cost]'
+                ].flatMap(selector => safeQueryAll(concreteRoot || document, selector))
+            );
             costElements.forEach(el => {
-                if (el.textContent.includes('$0') || el.textContent.includes('$0.00')) {
+                const text = getText(el);
+                if (text.trim() === '' || text.indexOf('$0') !== -1) {
                     el.textContent = '$' + totalCost.toFixed(2);
                     el.style.fontWeight = 'bold';
                     el.style.color = '#4CAF50';
                 }
             });
-            
+
             // Update any table cells that contain results
-            document.querySelectorAll('td').forEach(td => {
-                if (td.textContent.includes('0.00 cu yd') || td.textContent === '0.00') {
+            safeQueryAll(concreteRoot || document, 'td').forEach(td => {
+                const text = getText(td);
+                if (text.indexOf('0.00 cu yd') !== -1 || text === '0.00') {
                     td.textContent = withWaste.toFixed(2) + ' cu yd';
                     td.style.fontWeight = 'bold';
                     td.style.color = '#2196F3';
                 }
-                if (td.textContent.includes('$0.00') && td.previousElementSibling && td.previousElementSibling.textContent.includes('Total')) {
+                if (
+                    text.indexOf('$0.00') !== -1 &&
+                    td.previousElementSibling &&
+                    textContains(td.previousElementSibling, 'Total')
+                ) {
                     td.textContent = '$' + totalCost.toFixed(2);
                     td.style.fontWeight = 'bold';
                     td.style.color = '#4CAF50';
@@ -156,7 +234,7 @@ function initializeFramingCalculator() {
             }
             
             // Update result cells
-            document.querySelectorAll('td').forEach(td => {
+            safeQueryAll(document, 'td').forEach(td => {
                 if (td.textContent.includes('0 studs') || (td.textContent === '0' && td.previousElementSibling && td.previousElementSibling.textContent.includes('Stud'))) {
                     td.textContent = studsNeeded + ' studs';
                     td.style.fontWeight = 'bold';
@@ -199,7 +277,7 @@ function initializePaintCalculator() {
             const cost = gallons * 45; // $45 per gallon
             
             // Update displays
-            document.querySelectorAll('td').forEach(td => {
+            safeQueryAll(document, 'td').forEach(td => {
                 if (td.textContent.includes('0 gal') || (td.textContent === '0' && td.previousElementSibling && td.previousElementSibling.textContent.includes('Paint'))) {
                     td.textContent = gallons + ' gallons';
                     td.style.fontWeight = 'bold';
@@ -349,12 +427,12 @@ window.copyResults = function() {
 
 window.exportCSV = function() {
     const results = [];
-    const tables = document.querySelectorAll('.project-results table, .materials-needed table');
+    const tables = safeQueryAll(document, '.project-results table, .materials-needed table');
     
     if (tables.length === 0) {
         // If no tables, create CSV from visible data
         results.push('Item,Value');
-        document.querySelectorAll('td').forEach(td => {
+        safeQueryAll(document, 'td').forEach(td => {
             if (td.textContent && !td.textContent.includes('0.00') && td.textContent.trim() !== '') {
                 const label = td.previousElementSibling ? td.previousElementSibling.textContent : 'Value';
                 results.push(`"${label}","${td.textContent}"`);
@@ -362,9 +440,9 @@ window.exportCSV = function() {
         });
     } else {
         tables.forEach(table => {
-            const rows = table.querySelectorAll('tr');
+            const rows = safeQueryAll(table, 'tr');
             rows.forEach(row => {
-                const cells = row.querySelectorAll('td, th');
+                const cells = safeQueryAll(row, 'td, th');
                 if (cells.length > 0) {
                     const rowData = Array.from(cells).map(cell => `"${cell.textContent.trim()}"`).join(',');
                     results.push(rowData);

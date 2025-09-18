@@ -22,6 +22,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="stylesheet" href="/css/calculators.20240218.css">
 <style>
 /* EMBEDDED CSS - ZERO EXTERNAL DEPENDENCIES */
 *{margin:0;padding:0;box-sizing:border-box}
@@ -68,12 +69,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn-secondary:hover{background:#cbd5e0}
 .result-box{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);padding:25px;border-radius:8px;margin-top:20px;text-align:center;border:2px solid #0369a1}
 .result-main{font-size:2.2rem;font-weight:700;color:#0369a1;margin:10px 0}
+.result-sub{font-size:0.9rem;color:#475569}
+.result-header{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.result-header p{color:#475569;font-size:0.95rem}
 .result-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #e2e8f0}
 .result-row:last-child{border-bottom:none;font-weight:600;font-size:1.1rem;color:#1e3a5f}
 .disclaimer{background:#fff5f5;border-left:4px solid #ff6b35;padding:20px;margin-top:25px;color:#666;border-radius:0 8px 8px 0}
 .actions{display:flex;gap:10px;margin-top:25px;flex-wrap:wrap}
+.btn.is-disabled{opacity:0.5;cursor:not-allowed}
+.calc-error-summary{background:#fff1f2;border-left:4px solid #dc2626;padding:16px;margin-bottom:20px;border-radius:6px;color:#7f1d1d}
+.calc-error-summary h4{margin-bottom:8px}
+.calc-error-summary ul{margin-left:16px;line-height:1.4}
+.input-group.has-error label{color:#dc2626}
+.input-group.has-error input,.input-group.has-error select{border-color:#dc2626}
+.input-group .input-error{color:#dc2626;font-size:0.85rem;margin-top:6px}
+.input-group .checkbox{display:flex;align-items:center;gap:8px;font-weight:600;color:#1e3a5f}
 .calc-intro{margin-bottom:20px;color:#4a5568}
 .calc-intro h2{color:#1e3a5f;margin-bottom:10px;font-size:1.8rem}
+.region-form{display:flex;align-items:center;gap:12px;margin:10px 0 20px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;max-width:360px}
+.region-form label{font-weight:600;color:#1e3a5f}
+.region-form select{flex:1;padding:8px;border:1px solid #cbd5e0;border-radius:6px}
 @media(max-width:768px){
   .calc-grid{grid-template-columns:1fr}
   .nav-tabs{gap:8px;padding:15px;overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}
@@ -176,6 +191,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <button role="tab" id="tab-labor" class="tab-btn" data-target="labor" aria-controls="labor-calc" aria-selected="false" tabindex="-1">👷 Labor</button>
   </div>
 
+  <form class="region-form" aria-label="Select pricing region">
+    <label for="region-selector">Regional pricing:</label>
+    <select id="region-selector">
+      <option value="US_DEFAULT">National Average</option>
+    </select>
+  </form>
+
   <!-- CONCRETE CALCULATOR -->
   <section id="concrete-calc" class="calculator-panel active" role="tabpanel" aria-labelledby="tab-concrete" data-calc="concrete">
     <div class="calc-intro">
@@ -256,47 +278,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
       
       <div class="results-section" aria-live="polite" aria-label="Calculation Results">
-        <h3>📊 Project Results</h3>
-        <div class="result-box">
-          <div>Concrete Volume Needed:</div>
-          <div class="result-main" id="concrete-volume">0.00 cu yd</div>
-          <div style="font-size:0.9rem;color:#6b7280;">Including waste factor</div>
+        <div class="result-header">
+          <h3>📊 Project Results</h3>
+          <p data-result-summary>Enter specs and click calculate.</p>
         </div>
-        
+        <div class="result-box">
+          <div>Adjusted Concrete Volume</div>
+          <div class="result-main" id="concrete-yards">0.00 cu yd</div>
+          <div class="result-sub">Waste + region factored in</div>
+        </div>
+
         <div class="result-row">
-          <span>Square Footage:</span>
-          <span id="concrete-sqft">0 sq ft</span>
+          <span>Base Volume:</span>
+          <span id="concrete-base-yards">0.00 cu yd</span>
+        </div>
+        <div class="result-row">
+          <span>Slab Area:</span>
+          <span id="concrete-area">0 sq ft</span>
         </div>
         <div class="result-row">
           <span>Material Cost:</span>
-          <span id="concrete-material">$0</span>
+          <span id="concrete-material-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <span>Rebar Cost:</span>
-          <span id="concrete-rebar-cost">$0</span>
+          <span>Labor Cost:</span>
+          <span id="concrete-labor-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <span>Labor Estimate:</span>
-          <span id="concrete-labor">$0</span>
+          <span>Reinforcement:</span>
+          <span id="concrete-rebar-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <span>Forms/Equipment:</span>
-          <span id="concrete-forms">$0</span>
-        </div>
-        <div class="result-row">
-          <span>Delivery Cost:</span>
-          <span id="concrete-delivery-cost">$0</span>
+          <span>Delivery:</span>
+          <span id="concrete-delivery-cost">$0.00</span>
         </div>
         <div class="result-row">
           <strong>Total Project Cost:</strong>
-          <strong id="concrete-total">$0</strong>
+          <strong id="concrete-total-cost">$0.00</strong>
         </div>
-        
+
         <div class="actions">
-          <button class="btn btn-secondary" data-action="save">💾 Save</button>
-          <button class="btn btn-secondary" data-action="export">📊 Export CSV</button>
-          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
-          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+          <button class="btn btn-secondary is-disabled" data-action="copy" disabled>📋 Copy Summary</button>
+          <button class="btn btn-secondary is-disabled" data-action="export" disabled>📊 Export CSV</button>
+          <button class="btn btn-secondary is-disabled" data-action="pdf" disabled>🧾 Export PDF</button>
+          <button class="btn btn-secondary is-disabled" data-action="print" disabled>🖨️ Print</button>
         </div>
       </div>
     </div>
@@ -312,215 +337,202 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <h2>🔨 Advanced Framing Calculator</h2>
       <p>Calculate lumber requirements, stud counts, and material costs for wall framing projects.</p>
     </div>
-    
+
     <div class="calc-grid">
       <div class="input-section">
         <h3>Wall Specifications</h3>
-        
+
         <div class="input-group-row">
           <div class="input-group">
-            <label>Wall Length (feet)</label>
-            <input type="number" id="framing-length" value="20" min="0" step="0.5">
+            <label for="framing-length">Wall Length (ft)</label>
+            <input type="number" id="framing-length" value="20" min="1" step="0.5">
+            <small class="input-hint">Measure the linear footage of the wall run.</small>
           </div>
           <div class="input-group">
-            <label>Wall Height (feet)</label>
-            <input type="number" id="framing-height" value="8" min="0" step="0.5">
+            <label for="framing-height">Wall Height (ft)</label>
+            <input type="number" id="framing-height" value="9" min="7" step="0.25">
           </div>
         </div>
-        
+
         <div class="input-group">
-          <label>Stud Spacing</label>
+          <label for="framing-spacing">Stud Spacing</label>
           <select id="framing-spacing">
-            <option value="16">16" on center (stronger)</option>
-            <option value="24">24" on center (economical)</option>
+            <option value="16">16" on center (standard)</option>
+            <option value="24">24" on center (economy)</option>
+            <option value="12">12" on center (heavy duty)</option>
           </select>
         </div>
-        
+
         <div class="input-group">
-          <label>Lumber Grade & Size</label>
-          <select id="framing-grade">
-            <option value="standard">2x4 Standard - $8/stud</option>
-            <option value="premium">2x4 Premium - $12/stud</option>
-            <option value="standard6">2x6 Standard - $12/stud</option>
-            <option value="premium6">2x6 Premium - $18/stud</option>
+          <label for="framing-lumber">Lumber Size</label>
+          <select id="framing-lumber">
+            <option value="2x4">2x4 SPF Stud</option>
+            <option value="2x6">2x6 SPF Stud</option>
           </select>
         </div>
-        
-        <div class="input-group">
-          <label>Number of Openings</label>
-          <input type="number" id="framing-openings" value="2" min="0" max="10">
-        </div>
-        
-        <div class="input-group">
-          <label>Include Headers?</label>
-          <select id="framing-headers">
-            <option value="no">No Headers</option>
-            <option value="yes">Yes, Include Headers (+$25 ea)</option>
-          </select>
-        </div>
-        
-        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Framing</button>
+
+        <button type="button" class="btn btn-primary" data-action="calculate">🧮 Calculate Framing</button>
       </div>
-      
-      <div class="results-section">
-        <h3>📊 Materials Needed</h3>
+
+      <div class="results-section" aria-live="polite" aria-label="Framing results">
+        <div class="result-header">
+          <h3>📊 Materials & Cost</h3>
+          <p data-result-summary>Click calculate to view studs and costs.</p>
+        </div>
         <div class="result-box">
-          <div>Total Studs Required:</div>
+          <div>Studs Required</div>
           <div class="result-main" id="framing-studs">0</div>
-          <div style="font-size:0.9rem;color:#6b7280;">Including waste allowance</div>
+          <div class="result-sub">Includes waste allowance</div>
         </div>
-        
+
         <div class="result-row">
-          <span>Top/Bottom Plates:</span>
-          <span id="framing-plates">0 pieces</span>
-        </div>
-        <div class="result-row">
-          <span>Headers Needed:</span>
-          <span id="framing-headers-count">0</span>
+          <span>Top & Bottom Plates:</span>
+          <span id="framing-plates">0 ft</span>
         </div>
         <div class="result-row">
-          <span>Total Linear Feet:</span>
-          <span id="framing-linear">0 ft</span>
+          <span>Wall Area:</span>
+          <span id="framing-area">0 sq ft</span>
         </div>
         <div class="result-row">
-          <span>Material Cost:</span>
-          <span id="framing-material">$0</span>
+          <span>Stud Cost:</span>
+          <span id="framing-stud-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <span>Labor Estimate:</span>
-          <span id="framing-labor">$0</span>
+          <span>Sheathing:</span>
+          <span id="framing-sheathing-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <strong>Total Project Cost:</strong>
-          <strong id="framing-total">$0</strong>
+          <span>Hardware:</span>
+          <span id="framing-hardware-cost">$0.00</span>
         </div>
-        
+        <div class="result-row">
+          <span>Labor:</span>
+          <span id="framing-labor-cost">$0.00</span>
+        </div>
+        <div class="result-row">
+          <strong>Total Cost:</strong>
+          <strong id="framing-total-cost">$0.00</strong>
+        </div>
+
         <div class="actions">
-          <button class="btn btn-secondary" data-action="save">💾 Save</button>
-          <button class="btn btn-secondary" data-action="export">📊 Export</button>
-          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
-          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
+          <button class="btn btn-secondary is-disabled" data-action="copy" disabled>📋 Copy Summary</button>
+          <button class="btn btn-secondary is-disabled" data-action="export" disabled>📊 Export CSV</button>
+          <button class="btn btn-secondary is-disabled" data-action="pdf" disabled>🧾 Export PDF</button>
+          <button class="btn btn-secondary is-disabled" data-action="print" disabled>🖨️ Print</button>
         </div>
       </div>
     </div>
     <div class="disclaimer">⚠️ ROM estimate only. Add 10% for waste. Verify with local building codes for structural requirements.</div>
-  </div>
-
+  </section>
   <!-- PAINT CALCULATOR -->
   <section id="paint-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-paint" data-calc="paint" hidden>
     <div class="calc-intro">
       <h2>🎨 Professional Paint Calculator</h2>
       <p>Calculate paint quantities, primer needs, and project costs with coverage adjustments.</p>
     </div>
-    
+
     <div class="calc-grid">
       <div class="input-section">
         <h3>Surface Details</h3>
-        
+
         <div class="input-group-row">
           <div class="input-group">
-            <label>Total Wall Area (sq ft)</label>
-            <input type="number" id="paint-area" data-field="wall-area" value="400" min="0">
+            <label for="paint-area">Total Wall Area (sq ft)</label>
+            <input type="number" id="paint-area" value="400" min="50" step="10">
           </div>
           <div class="input-group">
-            <label>Doors & Windows (sq ft)</label>
-            <input type="number" id="paint-openings" data-field="openings" value="80" min="0">
+            <label for="paint-openings">Doors & Windows (sq ft)</label>
+            <input type="number" id="paint-openings" value="60" min="0" step="5">
           </div>
         </div>
-        
+
         <div class="input-group">
-          <label>Surface Texture</label>
-          <select id="paint-texture" data-field="texture">
-            <option value="smooth">Smooth (400 sq ft/gallon)</option>
-            <option value="light">Light Texture (350 sq ft/gallon)</option>
-            <option value="medium">Medium Texture (300 sq ft/gallon)</option>
-            <option value="heavy">Heavy Texture (250 sq ft/gallon)</option>
-          </select>
-        </div>
-        
-        <div class="input-group">
-          <label>Number of Coats</label>
-          <select id="paint-coats" data-field="coats">
+          <label for="paint-coats">Number of Coats</label>
+          <select id="paint-coats">
             <option value="1">1 Coat</option>
-            <option value="2" selected>2 Coats (recommended)</option>
-            <option value="3">3 Coats (full coverage)</option>
+            <option value="2" selected>2 Coats</option>
+            <option value="3">3 Coats</option>
+            <option value="4">4 Coats (high coverage)</option>
           </select>
         </div>
-        
+
         <div class="input-group">
-          <label>Paint Quality</label>
-          <select id="paint-quality" data-field="quality">
-            <option value="basic">Basic - $35/gallon</option>
-            <option value="premium">Premium - $55/gallon</option>
-            <option value="ultra">Ultra Premium - $75/gallon</option>
+          <label for="paint-texture">Surface Texture</label>
+          <select id="paint-texture">
+            <option value="smooth">Smooth (350 sq ft/gal)</option>
+            <option value="textured">Light Texture (300 sq ft/gal)</option>
+            <option value="heavy">Heavy Texture (250 sq ft/gal)</option>
           </select>
         </div>
-        
+
         <div class="input-group">
-          <label>Primer Needed?</label>
-          <select id="paint-primer" data-field="primer">
-            <option value="no">No Primer</option>
-            <option value="yes">Yes, Primer Required (+$45/gal)</option>
+          <label for="paint-quality">Paint Quality</label>
+          <select id="paint-quality">
+            <option value="standard">Standard Contractor Grade</option>
+            <option value="premium">Premium Finish</option>
+            <option value="builder">Builder Grade</option>
           </select>
         </div>
-        
-        <button class="btn btn-primary" data-action="calculate">🧮 Calculate Paint</button>
+
+        <div class="input-group">
+          <label class="checkbox">
+            <input type="checkbox" id="paint-primer"> Include primer coat
+          </label>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-action="calculate">🧮 Calculate Paint</button>
       </div>
-      
-      <div class="results-section">
-        <h3>📊 Paint Requirements</h3>
-        <div class="result-box">
-          <div>Paint Needed:</div>
-          <div class="result-main" id="paint-gallons" data-out="paint-gal">0.00 gallons</div>
-          <div style="font-size:0.9rem;color:#6b7280;">Including 10% waste factor</div>
+
+      <div class="results-section" aria-live="polite" aria-label="Paint results">
+        <div class="result-header">
+          <h3>📊 Paint & Cost</h3>
+          <p data-result-summary>Enter dimensions and click calculate.</p>
         </div>
-        
+        <div class="result-box">
+          <div>Gallons of Paint</div>
+          <div class="result-main" id="paint-gallons">0.00</div>
+          <div class="result-sub">Includes waste & coat adjustments</div>
+        </div>
+
         <div class="result-row">
           <span>Paintable Area:</span>
-          <span id="paint-net-area" data-out="paintable">0 sq ft</span>
+          <span id="paint-paintable-area">0 sq ft</span>
         </div>
         <div class="result-row">
-          <span>Primer Needed:</span>
-          <span id="paint-primer-gallons" data-out="primer-gal">0 gallons</span>
+          <span>Primer Gallons:</span>
+          <span id="paint-primer-gallons">0.00</span>
         </div>
         <div class="result-row">
           <span>Paint Cost:</span>
-          <span id="paint-cost" data-out="paint-cost">$0</span>
+          <span id="paint-cost">$0.00</span>
         </div>
         <div class="result-row">
           <span>Primer Cost:</span>
-          <span id="paint-primer-cost" data-out="primer-cost">$0</span>
+          <span id="paint-primer-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <span>Labor Estimate:</span>
-          <span id="paint-labor" data-out="labor">$0</span>
+          <span>Labor Cost:</span>
+          <span id="paint-labor-cost">$0.00</span>
         </div>
         <div class="result-row">
-          <strong>Total Project Cost:</strong>
-          <strong id="paint-total" data-out="total">$0</strong>
+          <span>Material Cost:</span>
+          <span id="paint-material-cost">$0.00</span>
         </div>
-        
+        <div class="result-row">
+          <strong>Total Cost:</strong>
+          <strong id="paint-total-cost">$0.00</strong>
+        </div>
+
         <div class="actions">
-          <button class="btn btn-secondary" data-action="save">💾 Save</button>
-          <button class="btn btn-secondary" data-action="export">📊 Export</button>
-          <button class="btn btn-secondary" data-action="share">🔗 Share</button>
-          <button class="btn btn-secondary" data-action="print">🖨️ Print</button>
-        </div>
-        
-        <!-- Email Form -->
-        <div class="form-row email-send" data-email style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 6px;">
-          <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #374151;">📧 Email results to:</label>
-          <div style="display: flex; gap: 8px; align-items: stretch;">
-            <input type="email" placeholder="your@email.com" aria-label="Email results" data-field="email" style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;" required>
-            <button type="button" class="btn btn-secondary" data-action="email" style="padding: 8px 16px; white-space: nowrap; font-size: 14px;">Send</button>
-            <input type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" data-field="hp">
-          </div>
+          <button class="btn btn-secondary is-disabled" data-action="copy" disabled>📋 Copy Summary</button>
+          <button class="btn btn-secondary is-disabled" data-action="export" disabled>📊 Export CSV</button>
+          <button class="btn btn-secondary is-disabled" data-action="pdf" disabled>🧾 Export PDF</button>
+          <button class="btn btn-secondary is-disabled" data-action="print" disabled>🖨️ Print</button>
         </div>
       </div>
     </div>
-    <div class="disclaimer">⚠️ Coverage varies by surface porosity, application method, and paint viscosity. Always purchase 10-15% extra for touch-ups.</div>
-  </div>
-
+    <div class="disclaimer">⚠️ Estimates reflect average spray application with 10% waste. Always confirm coverage with paint manufacturer specifications.</div>
+  </section>
   <!-- ROOFING CALCULATOR -->
   <section id="roofing-calc" class="calculator-panel" role="tabpanel" aria-labelledby="tab-roofing" data-calc="roofing" hidden>
     <div class="calc-intro">
@@ -2948,7 +2960,14 @@ window.addEventListener('load', () => {
 </script>
 
 <!-- Working Calculator Engine -->
-<script src="/js/calculators.js"></script>
+<script type="module" src="/assets/js/calculator-suite.20240218.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').catch(console.error);
+    });
+  }
+</script>
 
 <!-- Export Manager -->
 
