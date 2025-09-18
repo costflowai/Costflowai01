@@ -39,14 +39,20 @@
     
     <script>
         // Test script loading
-        setTimeout(() => {
+        const ready = window.costflowCalculatorsReady;
+        const fallback = () => {
             if (typeof initializeAllCalculators === 'function') {
                 console.log('✅ Calculator script loaded successfully!');
             } else {
                 console.error('❌ Calculator script failed to load!');
                 document.body.innerHTML += '<div style="background: red; color: white; padding: 20px; margin: 20px 0;">❌ JavaScript Error: Calculator script not loaded</div>';
             }
-        }, 1000);
+        };
+        if (ready && typeof ready.then === 'function') {
+            ready.then(() => console.log('✅ Calculator module loaded successfully!')).catch(fallback);
+        } else {
+            setTimeout(fallback, 1000);
+        }
     </script>
 </body>
 </html>

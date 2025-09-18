@@ -512,7 +512,12 @@
 
 <script>
     // Fallback initialization
-    if (typeof initializeAllCalculators === 'function') {
+    const ready = window.costflowCalculatorsReady;
+    if (ready && typeof ready.then === 'function') {
+        ready
+            .then(() => console.log('✅ Calculators module loaded successfully'))
+            .catch(() => console.error('❌ Calculator module failed to load'));
+    } else if (typeof initializeAllCalculators === 'function') {
         console.log('✅ Calculators script loaded successfully');
     } else {
         console.error('❌ Calculator script failed to load');

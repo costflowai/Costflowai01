@@ -3,7 +3,7 @@
  * Professional roofing material and installation cost estimation
  */
 
-import { registerCalculator } from './registry.js';
+import { registerCalculator } from './registry.20240218.js';
 
 // Material pricing (per square - 100 sq ft)
 const MATERIAL_PRICING = {
