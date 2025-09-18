@@ -1,0 +1,1 @@
+{"ci":{"collect":{"staticDistDir":"."},"assert":{"assertions":{"categories:performance":["error",0.9],"categories:accessibility":["error",0.9],"categories:seo":["error",0.9]}}}}

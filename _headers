@@ -1,4 +1,4 @@
-# Site-wide security headers (CSP now handled by edge function)
+# Site-wide security headers (mirrors netlify.toml)
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

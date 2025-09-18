@@ -2,26 +2,35 @@
   publish = "src"
 
 [[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-
-[[headers]]
-  for = "/css/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/js/*"
+  for = "/vendor/*"
   [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/assets/js/*"
+  for = "/*"
   [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
+    Cache-Control = "max-age=0, must-revalidate"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'nonce-{%NONCE%}' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://www.googletagmanager.com; font-src 'self' data:; base-uri 'self'; frame-ancestors 'none';"
+
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/vendor/*"
+  to = "/vendor/:splat"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/calculator/*"
@@ -32,3 +41,9 @@
   from = "/calc/*"
   to = "/calculators/:splat"
   status = 301
+
+# SPA fallback must be last so assets bypass it
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

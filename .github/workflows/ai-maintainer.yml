@@ -1,0 +1,37 @@
+name: AI Maintainer
+
+on:
+  schedule:
+    - cron: "*/15 0-10 * * *"
+  workflow_dispatch:
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci || npm i
+      - run: npm run lint || true
+      - run: npm run build || true
+      - run: npx playwright install --with-deps
+      - run: npm test || true
+      - run: npx lhci autorun || true
+      - name: Ask AI to fix failures
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node tools/ai-fix.js
+      - name: Re-run tests after AI patch
+        run: |
+          npm run build
+          npm test
+          npx lhci autorun
+      - name: Create PR if diffs
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "AI nightly fixes"
+          commit-message: "AI: nightly fixes"
+          branch: ai/nightly-fixes
