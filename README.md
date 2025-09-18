@@ -1,61 +1,50 @@
-# CostFlowAI - Construction Cost Calculator
+# CostFlowAI Static Site
 
-Professional construction cost estimation tool with multiple calculators.
+Enterprise-grade static site for CostFlowAI with a calculator-first experience, reusable engine, and explainable exports.
 
-## Features
-- Concrete Calculator
-- Framing Calculator
-- Paint Calculator
-- Roofing Calculator
-- Electrical Calculator
-- HVAC Calculator
-- And more...
+## Project Layout
 
-## Development
-- Static HTML/CSS/JS site
-- Deployed on Netlify
-- Modern ES modules with hashed asset filenames
-
-### Local Setup
-1. Install dependencies (used for testing only):
-   ```bash
-   npm install
-   ```
-2. Open `src/calculators/index.html` in your browser (no build step required).
-
-### Run Tests
-Unit tests validate calculator math using JSDOM:
-```bash
-npm test
+```
+/                Root Netlify deploy
+├── assets/      CSS, JS, and data bundles
+├── calculators/ Dedicated calculator entry points
+├── blog/        Generated blog output (run build:blog)
+├── content/     Markdown sources for posts
+├── templates/   HTML templates used by build tools
+├── tools/       Node scripts for blog, search, and CSP nonce injection
+└── vendor/      Locally vendored jsPDF, XLSX, and Lunr equivalents
 ```
 
-### Deployment
-```bash
-npm run deploy
-```
-The Netlify configuration adds cache-busting headers and a CSP for production.
+## Commands
 
-## File Structure
-- `/src` - All source files
-  - `/css` - Stylesheets
-  - `/js` - JavaScript files
-  - `/images` - Image assets
-  - `/assets` - Other assets
-  - `/calculators` - Calculator pages
-- `/netlify` - Netlify functions and configuration
+- `npm run build:blog` – Build blog pages, RSS, sitemap, and search index.
+- `npm run build:nonce` – Inject a unique CSP nonce into every script tag.
+- `npm run build` – Run both tasks.
+- `npm test` – Execute Playwright smoke tests.
+- `npm run lint` – Lint JavaScript sources with ESLint.
+- `npm run lh` – Execute Lighthouse CI (threshold ≥90).
 
-## Deployment
-The site is deployed on Netlify with automatic builds from the main branch.
+## Calculator Engine
 
-## Calculator Features
-- Real-time calculations
-- Export to PDF, CSV
-- Formula transparency
-- Regional pricing
-- Mobile-responsive design
+Each calculator module exports `init`, `compute`, `explain`, and `export` APIs. The flagship **Concrete Slab Pro** calculator delivers:
 
-## Tech Stack
-- HTML5
-- CSS3 (Custom Properties, Grid, Flexbox)
-- Vanilla JavaScript (ES6+)
-- Netlify (Hosting & Functions)
+- Volume, rebar, labor, and equipment calculations
+- Regionalized pricing with override badges
+- Explainable math and accessible results
+- CSV, XLSX, PDF, and print-ready exports
+
+Additional calculators ship as structured stubs using the same engine, ready for feature build-out.
+
+## Blog Pipeline
+
+Markdown posts with YAML frontmatter are rendered into semantic HTML using `tools/build_blog.mjs`. The build also produces RSS, sitemap, tag archives, and a Lunr-style search index for the homepage search experience.
+
+## Security & Hosting
+
+- Strict Content Security Policy enforced via Netlify headers with build-time nonce injection
+- No inline JavaScript (JSON-LD only) and zero third-party CDNs
+- Static assets served from `/assets` and `/vendor` with forced 200 redirects
+
+## Testing
+
+Playwright specs validate the Concrete Slab Pro calculator math, accessibility, and export affordances, while Lighthouse CI maintains ≥90 scores for Performance, Accessibility, and SEO.

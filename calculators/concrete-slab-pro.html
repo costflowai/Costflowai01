@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concrete Slab Pro Calculator | CostFlowAI</title>
+    <meta name="description" content="Professional ROM calculator for concrete slabs, reinforcement, and placement." />
+    <link rel="canonical" href="https://costflow.ai/calculators/concrete-slab-pro.html" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/layout.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/calculators.css" />
+    <link rel="stylesheet" href="/assets/css/print.css" media="print" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Concrete Slab Pro Calculator",
+        "description": "Compute concrete volumes, reinforcement, labor, and equipment for structural slabs.",
+        "step": [
+          { "@type": "HowToStep", "name": "Enter slab geometry" },
+          { "@type": "HowToStep", "name": "Adjust pricing overrides" },
+          { "@type": "HowToStep", "name": "Review ROM totals and export" }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div class="banner" role="status">
+      <span aria-hidden="true">⚠️</span>
+      <span><strong>CostFlowAI</strong> is under active development—thanks for your patience.</span>
+    </div>
+    <div class="site">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <a href="/" class="site-logo"><strong>CostFlowAI</strong></a>
+          <nav aria-label="Primary">
+            <a href="/calculators/index.html" aria-current="page">Calculators</a>
+            <a href="/blog/index.html">Insights</a>
+          </nav>
+        </div>
+      </header>
+      <main class="site-main">
+        <div class="site-main__inner">
+          <section class="calculator-shell" data-calculator-shell data-calculator-id="concrete-slab-pro">
+            <form class="calculator-form" novalidate>
+              <h1>Concrete Slab Pro</h1>
+              <p class="input-group__help">Enter slab geometry, reinforcement, and pricing assumptions. Calculate when all required inputs validate.</p>
+              <div class="error-summary" role="alert" hidden></div>
+
+              <div class="input-group">
+                <label for="length_ft">Length (ft)</label>
+                <input id="length_ft" name="length_ft" type="number" step="0.1" min="1" required />
+                <p class="input-group__help" data-error-for="length_ft"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="width_ft">Width (ft)</label>
+                <input id="width_ft" name="width_ft" type="number" step="0.1" min="1" required />
+                <p class="input-group__help" data-error-for="width_ft"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="thickness_in">Thickness (in)</label>
+                <input id="thickness_in" name="thickness_in" type="number" step="0.1" min="1" required />
+                <p class="input-group__help" data-error-for="thickness_in"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="waste_percent">Waste (%)</label>
+                <input id="waste_percent" name="waste_percent" type="number" step="0.5" min="0" max="50" required />
+                <p class="input-group__help" data-error-for="waste_percent"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="rebar_grid_in">Rebar Grid (inches on-center)</label>
+                <select id="rebar_grid_in" name="rebar_grid_in" required></select>
+                <p class="input-group__help" data-error-for="rebar_grid_in"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="rebar_lap_in">Rebar Lap (in)</label>
+                <input id="rebar_lap_in" name="rebar_lap_in" type="number" step="1" min="0" required />
+                <p class="input-group__help" data-error-for="rebar_lap_in"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="concrete_unit_price">Concrete $/yd³ (override)</label>
+                <input id="concrete_unit_price" name="concrete_unit_price" type="number" step="0.01" min="0" aria-describedby="concrete-unit-help" />
+                <p id="concrete-unit-help" class="input-group__help">Leave blank to use regional pricing.</p>
+                <p class="input-group__help" data-error-for="concrete_unit_price"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="labor_rate">Labor $/hr (override)</label>
+                <input id="labor_rate" name="labor_rate" type="number" step="0.01" min="0" aria-describedby="labor-rate-help" />
+                <p id="labor-rate-help" class="input-group__help">Override default finisher crew rate.</p>
+                <p class="input-group__help" data-error-for="labor_rate"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="productivity_yd3_hr">Productivity (yd³/hr)</label>
+                <input id="productivity_yd3_hr" name="productivity_yd3_hr" type="number" step="0.1" min="0.1" required />
+                <p class="input-group__help" data-error-for="productivity_yd3_hr"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="equipment_flat">Equipment flat ($)</label>
+                <input id="equipment_flat" name="equipment_flat" type="number" step="1" min="0" aria-describedby="equipment-help" />
+                <p id="equipment-help" class="input-group__help">Leave blank to use concrete pump allowance.</p>
+                <p class="input-group__help" data-error-for="equipment_flat"></p>
+              </div>
+
+              <div class="input-group">
+                <label for="region">Region</label>
+                <select id="region" name="region" aria-describedby="region-help">
+                  <option value="national">National Baseline</option>
+                  <option value="west">West Coast</option>
+                  <option value="mountain">Mountain States</option>
+                  <option value="midwest">Midwest</option>
+                  <option value="south">Southeast</option>
+                  <option value="northeast">Northeast Corridor</option>
+                </select>
+                <p id="region-help" class="input-group__help">Regional factors adjust material and labor pricing.</p>
+              </div>
+
+              <fieldset class="input-group">
+                <legend>Pricing modifiers</legend>
+                <label><input type="checkbox" name="include_markup" value="1" checked /> Include 10% markup</label>
+                <label><input type="checkbox" name="include_tax" value="1" checked /> Include 8.25% sales tax</label>
+              </fieldset>
+
+              <button class="button" type="submit" data-action="calculate">Calculate</button>
+            </form>
+            <section class="calculator-results" aria-live="polite">
+              <div class="calculator-results__header">
+                <h2>Results</h2>
+                <div class="badge">ROM only</div>
+              </div>
+              <div class="results-live-region" aria-live="polite"></div>
+              <div data-result="summary"></div>
+              <div data-result="table"></div>
+              <section aria-labelledby="assumptions-heading">
+                <h3 id="assumptions-heading">Assumptions</h3>
+                <div data-result="assumptions"></div>
+              </section>
+              <div class="accordion">
+                <button type="button" class="accordion__button" data-action="show-math" aria-expanded="false">
+                  Show Math
+                  <span aria-hidden="true">▾</span>
+                </button>
+                <div class="accordion__content" data-panel="show-math" hidden></div>
+              </div>
+              <div class="export-actions">
+                <button type="button" class="button" data-export="csv">Export CSV</button>
+                <button type="button" class="button" data-export="xlsx">Export XLSX</button>
+                <button type="button" class="button" data-export="pdf">Export PDF</button>
+                <button type="button" class="button" data-export="print">Print</button>
+              </div>
+              <p class="disclaimer">ROM only; verify with licensed professionals.</p>
+            </section>
+          </section>
+        </div>
+      </main>
+      <footer class="site-footer">
+        <div class="site-footer__inner">
+          <p>&copy; 2025 CostFlowAI. Preconstruction intelligence for enterprise teams.</p>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/assets/js/app.js"></script>
+  </body>
+</html>
